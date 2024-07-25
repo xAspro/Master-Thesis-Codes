@@ -158,10 +158,10 @@ def croom(i, ax, zrange, yticklabels=False, xticklabels=False, nofirstylabel=Tru
     if plotmybins:
         lfi = our_lf(zrange)
 
-        print np.unique(lfi.sid)
-        print 'nqso =', lfi.sid[lfi.sid==15].size
-        print 'nqso all =', lfi.sid_all[lfi.sid_all==15].size
-        print 'faintest qso: ', np.max(lfi.M1450_all[lfi.sid_all==15])
+        print( np.unique(lfi.sid))
+        print( 'nqso =', lfi.sid[lfi.sid==15].size)
+        print( 'nqso all =', lfi.sid_all[lfi.sid_all==15].size)
+        print( 'faintest qso: ', np.max(lfi.M1450_all[lfi.sid_all==15]))
 
         # Plot 2SLAQ LF 
         sid_croom = 15
@@ -194,7 +194,7 @@ def croom(i, ax, zrange, yticklabels=False, xticklabels=False, nofirstylabel=Tru
                     yerr=np.vstack((uperr, downerr)),
                     fmt='None',zorder=2)
         
-    print 'i=', i
+    print( 'i=', i)
 
     if i == 1:
         mags = np.linspace(-16, -31)
@@ -320,7 +320,7 @@ def croom(i, ax, zrange, yticklabels=False, xticklabels=False, nofirstylabel=Tru
     # if i == 7:
     #     mags = np.linspace(-19, -31)
     #    # p = [-5.341, -23.341, -2.773, -0.890]
-    #    # print log10phi(p, mags)
+    #    # print( log10phi(p, mags))
     #     #plt.plot(mags, log10phi(p, mags), c='k')
     #     p = [-5.557, -24.203, -3.059, -1.234]
     #     plt.plot(mags, log10phi(p, mags), c='k', lw=2)

@@ -29,7 +29,7 @@ cfit = False
 def plot_model(composite, param_number, ax):
 
     if param_number == 0:
-        print 'phi'
+        print( 'phi')
 
     nsample = 10000
     np.random.seed()
@@ -183,7 +183,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     if cfit:
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 2)
-        print coeffs 
+        print( coeffs )
         # plt.plot(zc, T(coeffs)(zc+1), lw=1, c='k', dashes=[7,2],
         #          label='Least-square Chebyshev French curve', zorder=3)
 
@@ -192,7 +192,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
 
         sigma = uperr + downerr 
         popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-        print popt
+        print( popt)
         plt.plot(zc, func(zc+1, *popt), lw=1, c='k', dashes=[7,2])
 
     curvefit = False
@@ -205,7 +205,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
 
         sigma = u - l 
         popt, pcov = curve_fit(func, zmean, c, sigma=sigma, p0=[-12.2, 6.6, 4.6, 4.9, -0.1])
-        print popt
+        print( popt)
         plt.plot(zc, func(zc, *popt), lw=1, c='r', dashes=[7,2])
 
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
@@ -242,7 +242,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
 
     if compOpt is not None:
         M = compOpt.atz(z, compOpt.getparams(compOpt.bf.x)[1])
-        print M
+        print( M)
         ax.plot(z, M, color='g', zorder=2, dashes=[7,2])
 
     if composite is not None:
@@ -288,7 +288,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     if cfit:
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 1)
-        print 'cm=', coeffs
+        print( 'cm=', coeffs)
         # plt.plot(zc, T(coeffs)(zc+1), lw=1, c='k', dashes=[7,2], zorder=3) 
 
         def func(z, p0, p1):
@@ -296,7 +296,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
 
         sigma = np.abs(u-l)
         popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-        print popt
+        print( popt)
         plt.plot(zc, func(zc+1, *popt), lw=1, c='k', dashes=[7,2])
 
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='new', dtype='bad')
@@ -328,7 +328,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
 
         sigma = u - l 
         popt, pcov = curve_fit(func, zmean, c, sigma=sigma, p0=[-22.,1,1])
-        print popt
+        print( popt)
         plt.plot(zc, func(zc, *popt), lw=1, c='r', dashes=[7,2])
         
     ax.set_xticks((0,1,2,3,4,5,6,7))
@@ -406,14 +406,14 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     if cfit: 
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1.0, c, 2)
-        print 'c=', coeffs
+        print( 'c=', coeffs)
 
         def func(z, p0, p1, p2):
             return T([p0, p1, p2])(z)
 
         sigma = u-l
         popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-        print popt
+        print( popt)
         plt.plot(zc, func(zc+1, *popt), lw=1, c='k', dashes=[7,2],
                  label=r'French curve')
 
@@ -427,7 +427,7 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
 
         sigma = u - l 
         popt, pcov = curve_fit(func, zmean, c, sigma=sigma, p0=[-4,4.2,2.0,1.4,-0.7])
-        print popt
+        print( popt)
         plt.plot(zc, func(zc, *popt), lw=1, c='r', dashes=[7,2])
         
         
@@ -495,8 +495,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
             ax.fill_between(z, down, y2=up, color='grey', zorder=1)
 
         # bfs = np.median(rsample, axis=0) 
-        # print 'median beta (beta):', composite.getparams(bfs)[3]
-        # print 'median beta (samples):', composite.getparams(bf)[3]
+        # print( 'median beta (beta):', composite.getparams(bfs)[3])
+        # print( 'median beta (samples):', composite.getparams(bf)[3])
 
         beta = np.median(beta, axis=0)
         ax.plot(z, beta, color='k', zorder=2, lw=1)
@@ -520,7 +520,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     if cfit:
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 3)
-        print coeffs
+        print( coeffs)
         # plt.plot(zc, T(coeffs)(zc+1), lw=1, c='k', dashes=[7,2], zorder=3)
 
         def func(z, p0, p1, p2, p3):
@@ -528,14 +528,14 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
         sigma = u - l 
         popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-        print 'cb=', popt
+        print( 'cb=', popt)
         plt.plot(zc, func(zc+1, *popt), lw=1, c='r', dashes=[7,2])
 
     polyfit = False
     if polyfit:
         zc = np.linspace(0, 7, 500)
         p = np.polyfit(np.log10(zmean+10), c, 2)
-        print p
+        print( p)
         # plt.plot(zc, np.polyval(p, np.log10((zc+1))), lw=1, c='k', dashes=[7,2], zorder=3)
         plt.plot(zc, np.polyval(p, np.log10((zc+10))), lw=1, c='k', dashes=[7,2], zorder=3)
 
@@ -549,7 +549,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
         sigma = u - l 
         popt, pcov = curve_fit(func, zmean, c, sigma=sigma, p0=[-4,4.2,2.0,1.4,-0.7])
-        print popt
+        print( popt)
         plt.plot(zc, func(zc, *popt), lw=1, c='k', dashes=[7,2])
 
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='new', dtype='bad')
@@ -582,7 +582,7 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False):
     
     fig = plt.figure(figsize=(6, 6), dpi=100)
 
-    print 'laying out figure'
+    print( 'laying out figure')
 
     K = 4
     factor = 2.0           # size of one side of one panel
@@ -596,7 +596,7 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False):
     fig.subplots_adjust(left=lb, bottom=lb, right=tr, top=tr,
                         wspace=whspace, hspace=whspace)
 
-    print 'plotting now'
+    print( 'plotting now')
     
     plot_phi_star(fig, composite, individuals=individuals, compOpt=compOpt)
     plot_m_star(fig, composite, individuals=individuals, compOpt=compOpt)

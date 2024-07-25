@@ -55,7 +55,7 @@ def get_lf(lf, z_plot, sids):
 
     #     dm = abs(msel[1]-msel[0])
 
-    #     for i in xrange(msel.size):
+    #     for i in range(msel.size):
     #         if (m >= msel[i]-dm) and (m < msel[i]+dm):
     #             bincount += 1 
     #             if psel[i] > 0.0:
@@ -77,7 +77,7 @@ def get_lf(lf, z_plot, sids):
         dm = abs(msel[1]-msel[0])
         n = int(abs(mhigh-mlow)/dm)+1
 
-        for i in xrange(msel.size):
+        for i in range(msel.size):
             if (mlow >= msel[i]-dm) and (mlow < msel[i]+dm):
                 for j in range(n):
                     try: 
@@ -92,10 +92,10 @@ def get_lf(lf, z_plot, sids):
     bins = [-28.23, -27.73, -27.23, -26.73, -26.23, -25.73]
     # h = np.histogram(m,bins=bins,weights=1.0/(p*v1))
     h = np.histogram(m,bins=bins,weights=1.0/v1)
-    print m[v1==0.0]
-    print p[v1==0.0]
-    # print volm(-26.73, msel, psel, vol, pd=True)
-    print '----'
+    print( m[v1==0.0])
+    print( p[v1==0.0])
+    # print( volm(-26.73, msel, psel, vol, pd=True))
+    print( '----')
     
     # # Stripe 82 
     # area = 235.0 # deg^2
@@ -131,15 +131,15 @@ def get_lf(lf, z_plot, sids):
     # does not say so.
     n = np.histogram(m,bins=bins)[0]
 
-    print n 
+    print( n )
 
     nlims = pci(n,interval='frequentist-confidence')
     nlims *= phi/n 
     uperr = np.log10(nlims[1]) - logphi 
     downerr = logphi - np.log10(nlims[0])
 
-    print mags
-    print logphi 
+    print( mags)
+    print( logphi )
 
     return mags, left, right, logphi, uperr, downerr
 
@@ -196,8 +196,8 @@ def draw(lf, z_plot, composite=None, dirname=''):
     phi_uerr = phi_uerr[sid==8]
     phi_lerr = phi_lerr[sid==8]
 
-    print phi
-    print M1450
+    print( phi)
+    print( M1450)
 
     dr7 = [0, 1, 2, 4, 6]
 

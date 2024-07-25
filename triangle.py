@@ -102,7 +102,7 @@ def corner(xs, bins=20, range=None, weights=None, color="k",
         vertical dashed lines.
 
     verbose : bool (optional)
-        If true, print the values of the computed quantiles.
+        If true, print( the values of the computed quantiles.)
 
     plot_contours : bool (optional)
         Draw contours for dense regions of the plot.

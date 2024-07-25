@@ -36,8 +36,8 @@ def get_lf(lf, z_plot, sids):
     p = lf.p[sample_selection]
     sid = lf.sid[sample_selection]
 
-    print m
-    print np.sort(m)
+    print( m)
+    print( np.sort(m))
     
     m = m[p!=0.0]
     p = p[p!=0.0]
@@ -90,7 +90,7 @@ def get_lf(lf, z_plot, sids):
 
     m1 = np.concatenate((m[:2],m[3:6]))
     v1 = np.array([volm(x, msel, psel, vol, zsel) for x in m1])
-    print 'v1=', v1 
+    print( 'v1=', v1 )
 
     # Jiang 2009
     area = 195.0 # deg^2
@@ -136,8 +136,8 @@ def get_lf(lf, z_plot, sids):
     # left = mags - b[:-1]
     # right = b[1:] - mags
     
-    print mags
-    print phi 
+    print( mags)
+    print( phi )
     
     return mags, left, right, logphi, uperr, downerr
 
@@ -194,8 +194,8 @@ def draw(lf, z_plot, composite=None, dirname=''):
     phi_uerr = phi_uerr[sid==9]
     phi_lerr = phi_lerr[sid==9]
 
-    print phi
-    print M1450
+    print( phi)
+    print( M1450)
 
     ax.scatter(M1450[:3], phi[:3], c='b', label='Jiang et al.\ 2009 SDSS Main', edgecolor='None', zorder=303) 
     ax.errorbar(M1450[:3], phi[:3], ecolor='b', capsize=0,

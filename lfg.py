@@ -65,7 +65,7 @@ if case == 0:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
 
     #import bins
 
@@ -102,7 +102,7 @@ elif case == 1:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
 
     lfg.run_mcmc()
 
@@ -123,7 +123,7 @@ elif case == 2:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
     
     lfg.prior_min_values = np.array([-15.0, 0.0, -5.0, -30.0, -10.0,
                                      0.0, -2.0, -7.0, -5.0, -5.0, 0.0,
@@ -151,7 +151,7 @@ elif case == 3:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
 
     lfg.prior_min_values = np.array([-15.0, 0.0, -5.0, -30.0, -10.0,
                                      0.0, -2.0, -7.0, -5.0, -5.0, 0.0,
@@ -184,7 +184,7 @@ elif case == 4:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
 
     lfg.prior_min_values = np.array([-10, 0, -5, -20, -10, 0, -2, -7, -5, -10, -10, -10])
     lfg.prior_max_values = np.array([-2, 10, 5, -10, -1, 2, 2, -1, 5, 10, 10, 10])
@@ -202,7 +202,7 @@ elif case == 5:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
 
 elif case == 6:
 
@@ -215,7 +215,7 @@ elif case == 6:
     
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
 
 elif case == 7:
 
@@ -228,7 +228,7 @@ elif case == 7:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
 
 elif case == 8:
 
@@ -241,7 +241,7 @@ elif case == 8:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
 
 elif case == 8:
 
@@ -254,7 +254,7 @@ elif case == 8:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
     
 elif case == 9:
 
@@ -267,7 +267,7 @@ elif case == 9:
 
     method = 'Nelder-Mead'
     b = lfg.bestfit(g, method=method)
-    print b
+    print( b)
 
     lfg.prior_min_values = np.array([-10, 0, -5, -20, -10, 0, -2, -7, -5, -10, -10, -10, -10])
     lfg.prior_max_values = np.array([-2, 10, 5, -10, -1, 2, 2, -1, 5, 10, 10, 10, 10])

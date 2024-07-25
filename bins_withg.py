@@ -52,11 +52,11 @@ for i, zl in enumerate(zls):
 
     lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
 
-    print 'z =', zl
-    print '{:d} quasars in this bin.'.format(lfi.z.size)
-    print 'sids (samples): '+'  '.join(['{:2d}'.format(int(x)) for x in np.unique(lfi.sid)])
-    print 'sids (maps): '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps])
-    print ' '
+    print( 'z =', zl)
+    print( '{:d} quasars in this bin.'.format(lfi.z.size))
+    print( 'sids (samples): '+'  '.join(['{:2d}'.format(int(x)) for x in np.unique(lfi.sid)]))
+    print( 'sids (maps): '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps]))
+    print( ' ')
     
     g = (np.log10(1.e-6), -25.0, -3.0, -1.5)
     b = lfi.bestfit(g, method=method)

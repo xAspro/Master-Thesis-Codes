@@ -42,7 +42,7 @@ def binvol(m, zrange, bins, msel, psel, vsel, zsel):
     corr = np.loadtxt('Data_new/giallongo15_sel_correction.dat', usecols=(4,), unpack=True)
 
     total_vol = 0.0
-    for i in xrange(msel.size):
+    for i in range(msel.size):
         if (msel[i] >= mlow) and (msel[i] < mhigh):
             if (zsel[i] >= zrange[0]) and (zsel[i] < zrange[1]):
                 total_vol += vsel[i]*psel[i]*dm[i]/corr[i]
@@ -118,7 +118,7 @@ def plot(ax, lf, zrange):
 
     handles, labels = ax.get_legend_handles_labels()
 
-    print handles
+    print( handles)
 
     if zrange[0] < 4.2: 
         myorder = [2,4,3,5,1,0]

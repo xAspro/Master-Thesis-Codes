@@ -1,7 +1,7 @@
 import numpy as np
 
 data = np.loadtxt('rtg2_data.txt')
-print data.shape
+print( data.shape)
 
 z = data[:,0]
 
@@ -66,4 +66,4 @@ for i in range(len(z)-1,-1,-1):
                   g_21[i], dg_21_plus[i], dg_21_minus[i])
 
                   
-    print s 
+    print( s )

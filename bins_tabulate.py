@@ -21,5 +21,5 @@ for i in range(len(zmean)):
 
     s = r'{:.2f} & {:.2f} & {:.2f} & {:.2f}^{{+{:.2f}}}_{{-{:.2f}}} & {:.2f}^{{+{:.2f}}}_{{-{:.2f}}} & {:.2f}^{{+{:.2f}}}_{{-{:.2f}}} & {:.2f}^{{+{:.2f}}}_{{-{:.2f}}} \\'.format(zmean[i], zmin[i], zmax[i], phic[i], phi_uperr[i], phi_downerr[i], mc[i], m_uperr[i], m_downerr[i], ac[i], a_uperr[i], a_downerr[i], bc[i], b_uperr[i], b_downerr[i])
 
-    print s 
+    print( s )
 

@@ -28,6 +28,6 @@ def write(lfg1, lfg2, lfg3):
     
     for i in range(14):
         fs = r'${:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$ & ${:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$ & ${:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$ \\'
-        print fs.format(*d[i])
+        print( fs.format(*d[i]))
 
     

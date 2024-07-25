@@ -160,9 +160,9 @@ def get_fit_mcmc(individuals):
     u18 = np.array([x.rhoqso[0] for x in individuals_good])
     l18 = np.array([x.rhoqso[1] for x in individuals_good])
 
-    print 'z=',z
-    print 'e1450--18=',c18
-    print 'e1450--18*factor=',(c18)*((912.0/1450.0)**0.61)
+    print( 'z=',z)
+    print( 'e1450--18=',c18)
+    print( 'e1450--18*factor=',(c18)*((912.0/1450.0)**0.61))
     
     z1450, b1450, up1450, down1450, p = get_fits(z, uz, lz, c18, u18, l18)
             
@@ -249,7 +249,7 @@ def print_fits(individuals):
     lzerr = zs-lz 
 
     for i in range(len(zs)):
-        print zs[i], lz[i], uz[i], em[i]/1.0e24, em_up[i]/1.0e24, em_low[i]/1.0e24, em_1450[i]/1.0e24, em_up_1450[i]/1.0e24, em_low_1450[i]/1.0e24, em21[i]/1.0e24, em21_up[i]/1.0e24, em21_low[i]/1.0e24, em21_1450[i]/1.0e24, em21_up_1450[i]/1.0e24, em21_low_1450[i]/1.0e24
+        print( zs[i], lz[i], uz[i], em[i]/1.0e24, em_up[i]/1.0e24, em_low[i]/1.0e24, em_1450[i]/1.0e24, em_up_1450[i]/1.0e24, em_low_1450[i]/1.0e24, em21[i]/1.0e24, em21_up[i]/1.0e24, em21_low[i]/1.0e24, em21_1450[i]/1.0e24, em21_up_1450[i]/1.0e24, em21_low_1450[i]/1.0e24)
     
     return
 

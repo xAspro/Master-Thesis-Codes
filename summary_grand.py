@@ -529,7 +529,7 @@ def plot_phi_star(fig):
     handles, labels = ax.get_legend_handles_labels()
 
     for i, x in enumerate(labels):
-        print i, x 
+        print( i, x )
 
     #myorder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0]
     myorder = [11, 8, 4, 2, 10, 1, 5, 3, 9, 7, 6, 0]

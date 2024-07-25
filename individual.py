@@ -295,7 +295,7 @@ class lf:
                                       'disp': False})
 
         if not result.success:
-            print 'Likelihood optimisation did not converge.'
+            print( 'Likelihood optimisation did not converge.')
 
         self.bf = result 
         return result
@@ -435,7 +435,7 @@ class lf:
         """
 
         v = 0.0
-        for i in xrange(selmap.m.size):
+        for i in range(selmap.m.size):
             if (selmap.m[i] >= mrange[0]) and (selmap.m[i] < mrange[1]):
                 if (selmap.z[i] >= zrange[0]) and (selmap.z[i] < zrange[1]):
                     if selmap.sid == 7:

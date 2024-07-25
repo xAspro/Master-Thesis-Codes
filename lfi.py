@@ -91,19 +91,19 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat',
              #  'Giallongo et al.\ 2015')]
 
 method = 'Nelder-Mead'
-
+print(sys.argv)
 zmin = float(sys.argv[1])
 zmax = float(sys.argv[2])
 WRITE_PARAMS = int(sys.argv[3])
 
 zl = (zmin, zmax) 
 lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
-print '{:d} quasars in this bin.'.format(lfi.z.size)
+print( '{:d} quasars in this bin.'.format(lfi.z.size))
 
 g = (np.log10(1.e-6), -25.0, -3.0, -1.5)
 
 b = lfi.bestfit(g, method=method)
-print b
+print( b)
 
 if zmin < 0.3:
     lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -10.0])
@@ -125,7 +125,7 @@ assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
     
 lfi.run_mcmc()
 bf = np.median(lfi.samples, axis=0)
-print bf 
+print( bf )
 
 lfi.get_percentiles()
 

@@ -45,7 +45,7 @@ def binvol(m, zrange, bins, msel, psel, vsel, zsel, totv):
     dm = 0.1
     n = int(abs(mhigh-mlow)/dm)
 
-    for i in xrange(msel.size):
+    for i in range(msel.size):
         if (msel[i] >= mlow) and (msel[i] < mhigh):
             if (zsel[i] >= zrange[0]) and (zsel[i] < zrange[1]):
                 total_vol += vsel[i]*psel[i]*dm
