@@ -76,7 +76,7 @@ def plot_phi_star(fig, composite, sample=False, lfs=None, lfsMock=None):
 
     sigma = uperr + downerr 
     popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-    print popt
+    print( popt)
     plt.plot(zc, func(zc+1, *popt), lw=2, c='r', dashes=[8,3], label='linear fit to black points')
 
     zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
@@ -180,7 +180,7 @@ def plot_m_star(fig, composite, sample=False, lfs=None, lfsMock=None):
 
     sigma = np.abs(uperr + downerr)
     popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-    print popt
+    print( popt)
     plt.plot(zc, func(zc+1, *popt), lw=2, c='r', dashes=[8,3])
 
     zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
@@ -278,7 +278,7 @@ def plot_alpha(fig, composite, sample=False, lfs=None, lfsMock=None):
 
     sigma = uperr + downerr
     popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-    print popt
+    print( popt)
     plt.plot(zc, func(zc+1, *popt), lw=2, c='r', dashes=[8,3])
 
     zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
@@ -383,7 +383,7 @@ def plot_beta(fig, composite, sample=False, lfs=None, lfsMock=None):
 
     sigma = uperr + downerr 
     popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-    print popt
+    print( popt)
     plt.plot(zc, func(zc+1, *popt), lw=2, c='r', dashes=[8,3])
 
     zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
@@ -432,7 +432,7 @@ def summary_plot(composite=None, sample=False, lfs=None, lfsMock=None):
     
     fig = plt.figure(figsize=(6, 6), dpi=100)
 
-    print 'laying out figure'
+    print( 'laying out figure')
 
     K = 4
     factor = 2.0           # size of one side of one panel
@@ -446,7 +446,7 @@ def summary_plot(composite=None, sample=False, lfs=None, lfsMock=None):
     fig.subplots_adjust(left=lb, bottom=lb, right=tr, top=tr,
                         wspace=whspace, hspace=whspace)
 
-    print 'plotting now'
+    print( 'plotting now')
     
     plot_phi_star(fig, composite, sample=sample, lfs=lfs, lfsMock=lfsMock)
     plot_m_star(fig, composite, sample=sample, lfs=lfs, lfsMock=lfsMock)

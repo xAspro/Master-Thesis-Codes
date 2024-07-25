@@ -45,7 +45,7 @@ def binvol(m, zrange, bins, msel, psel, vsel, zsel):
     dm = 0.05
     n = int(abs(mhigh-mlow)/dm)
 
-    for i in xrange(msel.size):
+    for i in range(msel.size):
         if (msel[i] >= mlow) and (msel[i] < mhigh):
             if (zsel[i] >= zrange[0]) and (zsel[i] < zrange[1]):
                 total_vol += vsel[i]*psel[i]*dm
@@ -90,9 +90,9 @@ def get_lf(zrange, bins, old=True):
     v2 = np.array([binvol(x, zrange, bins, msel, psel, vol, zsel) for x in m[12:]])
 
     v = np.concatenate((v1,v2))
-    print v.size
+    print( v.size)
     v_nonzero = v[np.where(v>0.0)]
-    print v_nonzero.size
+    print( v_nonzero.size)
     m = m[np.where(v>0.0)]
     
     h = np.histogram(m,bins=bins,weights=1.0/(v_nonzero))
@@ -109,7 +109,7 @@ def get_lf(zrange, bins, old=True):
 
     n = np.histogram(m,bins=bins)[0]
 
-    print n 
+    print( n )
 
     nlims = pci(n,interval='frequentist-confidence')
     nlims *= phi/n 

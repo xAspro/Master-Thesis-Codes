@@ -21,7 +21,7 @@ median18 = data['median']
 up18 = data['up']
 down18 = data['down']
 
-print 'median18=', median18[:10]
+print( 'median18=', median18[:10])
 
 data = np.load('e1450_21_21feb.npz')
 z21 = data['z']
@@ -29,7 +29,7 @@ median21 = data['median']
 up21 = data['up']
 down21 = data['down']
 
-print 'median21=', median21[:10]
+print( 'median21=', median21[:10])
 
 # z18 = data['z']
 # medianbright18 = data['medianbright']
@@ -60,7 +60,7 @@ print 'median21=', median21[:10]
 # down21_912 = data['down']
 # up21_912 = data['up']
 
-print 'data loaded'
+print( 'data loaded')
 
 z_HM12 = np.loadtxt('z_HM12.txt')
 data_HM12 = np.loadtxt('hm12.txt')
@@ -488,8 +488,8 @@ def j(emodel, loglf=None, theta=None, dz=0.1, n_ws=200, n_ws_int=100, zmax=7.0):
     zs = np.linspace(zmax, zmin, num=n)
     gs = []
 
-    print 'zmax=', zmax
-    print 'zmin=', zmin 
+    print( 'zmax=', zmax)
+    print( 'zmin=', zmin )
     
     for z in zs:
 
@@ -1101,7 +1101,7 @@ def draw_g(lfg, z2=None, g2=None, individuals=None):
     g = np.zeros((nsample, nzs))
 
     for i, x in enumerate(rsample):
-        print i 
+        print( i )
         z, g[i] = j(emissivity, loglf=lfg.log10phi, theta=x, zmax=zmax)
 
     up = np.percentile(g, 15.87, axis=0)/1.0e-12
@@ -1204,11 +1204,11 @@ def draw_g_paper():
     labels = ('0.01', '0.1', '1')
     plt.yticks(locs, labels)
 
-    print 'e18'
+    print( 'e18')
     z, g = j(emissivity_18, zmax=6.5)
-    print 'e18d'
+    print( 'e18d')
     z, g_down = j(emissivity_18_down, zmax=6.5)
-    print 'e18u'
+    print( 'e18u')
     z, g_up = j(emissivity_18_up, zmax=6.5)
     g18f = ax.fill_between(z, g_up/1.0e-12, y2=g_down/1.0e-12,
                            color='red', zorder=5,
@@ -1219,11 +1219,11 @@ def draw_g_paper():
     gamma18_up = g_up
     gamma18_low = g_down 
 
-    print 'e21'
+    print( 'e21')
     z, g = j(emissivity_21, zmax=6.5)
-    print 'e21d'
+    print( 'e21d')
     z, g_down = j(emissivity_21_down, zmax=6.5)
-    print 'e21u'
+    print( 'e21u')
     z, g_up = j(emissivity_21_up, zmax=6.5)
     g21f = ax.fill_between(z, g_up/1.0e-12, y2=g_down/1.0e-12,
                            color='blue', zorder=5,
@@ -1273,14 +1273,14 @@ def draw_g_paper():
                                 gamma18[i], gamma18_up[i], gamma18_low[i],
                                 gamma21[i], gamma21_up[i], gamma21_low[i]))
 
-    print 'hm12'
+    print( 'hm12')
     zs_hm12, gs_hm12 = j(em_qso_hm12)
     ax.plot(zs_hm12, gs_hm12/1.0e-12, c='maroon', lw=2, zorder=4,
             label='Haardt \& Madau 2012 QSOs', dashes=[7,2])
 
     g_hm12_total(ax)
 
-    print 'mh15'
+    print( 'mh15')
     zs_mh15, gs_mh15 = j(em_qso_mh15)
     ax.plot(zs_mh15, gs_mh15/1.0e-12, c='darkgreen', lw=1,
             label=r'Madau \& Haardt 2015', zorder=2, dashes=[1,1])
@@ -1360,11 +1360,11 @@ def draw_g_referee(zmax):
     labels = ('0.01', '0.1', '1')
     plt.yticks(locs, labels)
 
-    print 'e18'
+    print( 'e18')
     z, g = j(emissivity_18, zmax=zmax)
-    print 'e18d'
+    print( 'e18d')
     z, g_down = j(emissivity_18_down, zmax=zmax)
-    print 'e18u'
+    print( 'e18u')
     z, g_up = j(emissivity_18_up, zmax=zmax)
     g18f = ax.fill_between(z, g_up/1.0e-12, y2=g_down/1.0e-12,
                            color='red', zorder=5,
@@ -1375,11 +1375,11 @@ def draw_g_referee(zmax):
     gamma18_up = g_up
     gamma18_low = g_down 
 
-    print 'e21'
+    print( 'e21')
     z, g = j(emissivity_21, zmax=zmax)
-    print 'e21d'
+    print( 'e21d')
     z, g_down = j(emissivity_21_down, zmax=zmax)
-    print 'e21u'
+    print( 'e21u')
     z, g_up = j(emissivity_21_up, zmax=zmax)
     g21f = ax.fill_between(z, g_up/1.0e-12, y2=g_down/1.0e-12,
                            color='blue', zorder=5,
@@ -1390,14 +1390,14 @@ def draw_g_referee(zmax):
     gamma21_up = g_up
     gamma21_low = g_down 
 
-    print 'hm12'
+    print( 'hm12')
     zs_hm12, gs_hm12 = j(em_qso_hm12)
     ax.plot(zs_hm12, gs_hm12/1.0e-12, c='maroon', lw=2, zorder=4,
             label='Haardt \& Madau 2012 QSOs', dashes=[7,2])
 
     g_hm12_total(ax)
 
-    print 'mh15'
+    print( 'mh15')
     zs_mh15, gs_mh15 = j(em_qso_mh15)
     ax.plot(zs_mh15, gs_mh15/1.0e-12, c='darkgreen', lw=1,
             label=r'Madau \& Haardt 2015', zorder=2, dashes=[1,1])

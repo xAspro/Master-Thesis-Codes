@@ -167,7 +167,7 @@ lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
 g = (np.log10(1.e-6), -25.0, -3.0, -1.5)
 
 b = lfi.bestfit(g, method=method)
-print b
+print( b)
 
 lfi.create_param_range()
 
@@ -186,5 +186,5 @@ lfi.chains()
 
 lfi.draw(lfi.z.mean(),plotlit=False)
 
-# print 'WIAC=', waic.waic(lfi) 
+# print( 'WIAC=', waic.waic(lfi) )
 

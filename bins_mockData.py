@@ -66,24 +66,24 @@ def bins(composite):
 
     for i, zl in enumerate(zls):
 
-        print 'z =', zl
+        print( 'z =', zl)
         # zmid = (zl[0]+zl[1])/2
         # t = theta(composite, zmid)
-        # print zmid, t
+        # print( zmid, t)
         
         lfi = lf(composite.bf.x, composite, quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
 
-        print '{:d} quasars in this bin.'.format(lfi.z.size)
+        print( '{:d} quasars in this bin.'.format(lfi.z.size))
 
-        print 'sids: '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps])
-        print 'size: '+'  '.join(['{:5}'.format(x.z.size) for x in lfi.maps])
-        print 'pmax: '+'  '.join(['{:.6f}'.format(x.p.max()) for x in lfi.maps])
-        print 'pmin: '+'  '.join(['{:.6f}'.format(x.p.min()) for x in lfi.maps])
-        print ' '
+        print( 'sids: '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps]))
+        print( 'size: '+'  '.join(['{:5}'.format(x.z.size) for x in lfi.maps]))
+        print( 'pmax: '+'  '.join(['{:.6f}'.format(x.p.max()) for x in lfi.maps]))
+        print( 'pmin: '+'  '.join(['{:.6f}'.format(x.p.min()) for x in lfi.maps]))
+        print( ' ')
 
         g = (np.log10(1.e-6), -25.0, -3.0, -1.5)
         b = lfi.bestfit(g, method=method)
-        print b 
+        print( b )
 
         lfi.prior_min_values = np.array([-14.0, -32.0, -10.0, -4.0])
         zmin, zmax = zl 

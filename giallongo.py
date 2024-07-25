@@ -41,7 +41,7 @@ def binvol(m, zrange, bins, msel, psel, vsel, zsel):
     corr = np.loadtxt('Data_new/giallongo15_sel_correction.dat', usecols=(4,), unpack=True)
 
     total_vol = 0.0
-    for i in xrange(msel.size):
+    for i in range(msel.size):
         if (msel[i] >= mlow) and (msel[i] < mhigh):
             if (zsel[i] >= zrange[0]) and (zsel[i] < zrange[1]):
                 total_vol += vsel[i]*psel[i]*dm[i]/corr[i]
@@ -123,9 +123,9 @@ def render(ax, zrange):
     bins = np.array([-23.5, -21.5, -20.5, -19.5, -18.5])
 
     mags, left, right, logphi, uperr, downerr = get_lf(zrange, bins)
-    print zrange
-    print mags
-    print 10.0**(phi-logphi[-len(phi):])
+    print( zrange)
+    print( mags)
+    print( 10.0**(phi-logphi[-len(phi):]))
 
     ax.scatter(mags, logphi, c='g', edgecolor='None', zorder=306, label='my binning', s=35)
     ax.errorbar(mags, logphi, ecolor='g', capsize=0,

@@ -191,12 +191,12 @@ def plot_gamma(composite, individuals=None, zlims=(2.0,6.5), dirname='', fast=Tr
             ga = np.array([rtg.gamma_HI(rs, composite.log10phi, theta) for rs in z])
             ga = np.log10(ga)+12.0
             count = 1 
-            print count 
+            print( count )
             rindices = np.random.randint(len(composite.samples), size=100)
             for theta in composite.samples[rindices]:
                 g = np.array([rtg.gamma_HI(rs, composite.log10phi, theta) for rs in z])
                 count += 1
-                print count 
+                print( count )
                 g = np.log10(g)+12.0
                 ax.plot(z, g, color='#67a9cf', alpha=0.3, zorder=1)
                 ga = np.vstack((ga, g))
@@ -284,7 +284,7 @@ def plot_gamma(composite, individuals=None, zlims=(2.0,6.5), dirname='', fast=Tr
                 lz = np.array([x.z.min() for x in individuals])
                 uzerr = uz-zs
                 lzerr = zs-lz 
-                print zs
+                print( zs)
 
                 g = []
                 for x in individuals:
@@ -349,12 +349,12 @@ def draw(individuals, composite=None):
         ga = np.array([rtg.gamma_HI(rs, composite.log10phi, theta) for rs in z])
 
         count = 1 
-        print count 
+        print( count )
         rindices = np.random.randint(len(composite.samples), size=100)
         for theta in composite.samples[rindices]:
             g = np.array([rtg.gamma_HI(rs, composite.log10phi, theta) for rs in z])
             count += 1
-            print count 
+            print( count )
             ax.plot(z, g, color='#67a9cf', alpha=0.3, zorder=1)
 
         bf = composite.samples.median(axis=0)
@@ -788,7 +788,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
         em21_low_1450 = c2 - l2 
         
         for i in range(len(zs)):
-            print zs[i], lz[i], uz[i], em[i]/1.0e24, em_up[i]/1.0e24, em_low[i]/1.0e24, em_1450[i]/1.0e24, em_up_1450[i]/1.0e24, em_low_1450[i]/1.0e24, em21[i]/1.0e24, em21_up[i]/1.0e24, em21_low[i]/1.0e24, em21_1450[i]/1.0e24, em21_up_1450[i]/1.0e24, em21_low_1450[i]/1.0e24
+            print( zs[i], lz[i], uz[i], em[i]/1.0e24, em_up[i]/1.0e24, em_low[i]/1.0e24, em_1450[i]/1.0e24, em_up_1450[i]/1.0e24, em_low_1450[i]/1.0e24, em21[i]/1.0e24, em21_up[i]/1.0e24, em21_low[i]/1.0e24, em21_1450[i]/1.0e24, em21_up_1450[i]/1.0e24, em21_low_1450[i]/1.0e24)
 
         return 
             
@@ -872,7 +872,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
         em_low_1450 = c2 - l2 
         
         for i in range(len(zs)):
-            print zs[i], lz[i], uz[i], em[i]/1.0e23, em_up[i]/1.0e23, em_low[i]/1.0e23, em_1450[i]/1.0e23, em_up_1450[i]/1.0e23, em_low_1450[i]/1.0e23    
+            print( zs[i], lz[i], uz[i], em[i]/1.0e23, em_up[i]/1.0e23, em_low[i]/1.0e23, em_1450[i]/1.0e23, em_up_1450[i]/1.0e23, em_low_1450[i]/1.0e23    )
 
     sigma = u-l 
     samples = fit_emissivity.fit(zs, em, sigma)
@@ -891,7 +891,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
     tabulate = False
     if tabulate:
         for i in range(len(em21)):
-            print r'{:.1f}  {:.3e}  {:.3e}'.format(z[i], em18[i], em21[i])
+            print( r'{:.1f}  {:.3e}  {:.3e}'.format(z[i], em18[i], em21[i]))
             
     zg, eg, zg_lerr, zg_uerr, eg_lerr, eg_uerr = np.loadtxt('Data_new/giallongo15_emissivity.txt', unpack=True)
     
@@ -1201,9 +1201,9 @@ def draw_emissivity_18(all_individuals, composite=None, select=False):
     handles.append((tw18f,tw18))
     labels.append('Kulkarni et al.\ 2019 (this work; fit)')
 
-    print len(handles)
+    print( len(handles))
     for i, x in enumerate(labels):
-        print i, x 
+        print( i, x )
 
     myorder = [9, 13, 8, 11, 10, 12, 6, 0, 1, 2, 3, 4, 5, 7, 14]
     handles = [handles[x] for x in myorder]
@@ -1379,9 +1379,9 @@ def draw_emissivity_18_talk(all_individuals, zlims, composite=None, select=False
     handles.append((tw18f,tw18))
     labels.append('Kulkarni et al.\ 2018 (fit)')
 
-    print len(handles)
+    print( len(handles))
     for i, x in enumerate(labels):
-        print i, x 
+        print( i, x )
 
     myorder = [0,3,4,5,6,7,1,2,8]
     handles = [handles[x] for x in myorder]

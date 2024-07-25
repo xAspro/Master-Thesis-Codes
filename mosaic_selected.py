@@ -18,14 +18,14 @@ def plot(lf, ax, composite=None, yticklabels=False, xticklabels=False,
     """
 
     z_plot = lf.z.mean()
-    print z_plot
+    print( z_plot)
 
     ind, co1, co2, co3 = render(ax, lf, composite=composite, c2=c2, c3=c3)
 
     ax.set_xlim(-19.0, -31.0)
     ax.set_ylim(-12.0, -4.0)
 
-    print ax.get_ylim()
+    print( ax.get_ylim())
 
     ax.set_xticks(np.arange(-31, -16, 4))
     ax.set_yticks(np.arange(-12, -3, 2))

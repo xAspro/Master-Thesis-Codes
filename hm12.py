@@ -133,43 +133,43 @@ def plot_dtaudn():
     fn = n * vf_HM12(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='k', label='$z=3.5$') 
 
-    print 'z=', z
+    print( 'z=', z)
     t1 = np.trapz(fn, x=np.log(n))
-    print 't1=', t1 
+    print( 't1=', t1 )
     
     fn = n * f(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='k', dashes=[7,2])
 
     t2 = np.trapz(fn, x=np.log(n))
-    print 't2=', t2
+    print( 't2=', t2)
     
     z = 2.0
     fn = n * vf_HM12(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='r', label='$z=2.0$') 
 
-    print 'z=', z
+    print( 'z=', z)
     t1 = np.trapz(fn, x=np.log(n))
-    print 't1=', t1 
+    print( 't1=', t1 )
     
     fn = n * f(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='r', dashes=[7,2])
 
     t2 = np.trapz(fn, x=np.log(n))
-    print 't2=', t2
+    print( 't2=', t2)
     
     z = 5.0
     fn = n * vf_HM12(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='b', label='$z=5.0$')
 
-    print 'z=', z
+    print( 'z=', z)
     t1 = np.trapz(fn, x=np.log(n))
-    print 't1=', t1 
+    print( 't1=', t1 )
     
     fn = n * f(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='b', dashes=[7,2])
 
     t2 = np.trapz(fn, x=np.log(n))
-    print 't2=', t2
+    print( 't2=', t2)
     
     plt.legend(loc='upper left', fontsize=12, handlelength=3,
                frameon=False, framealpha=0.0, labelspacing=.1,
@@ -203,14 +203,14 @@ def check_z_refinement_emissivity():
     ax.plot(zs, e, lw=2, c='k')
     plt.title('{:g}'.format(dz))
 
-    print np.sum(np.abs(dtdz(zs))*e*dz*c_mpcPerYr*(1.0+zs)**3*cmbympc**2/(4.0*np.pi))
+    print( np.sum(np.abs(dtdz(zs))*e*dz*c_mpcPerYr*(1.0+zs)**3*cmbympc**2/(4.0*np.pi)))
 
     j = 0.0
     for z in zs:
         e2 = emissivity_HM12(ws/(1.0+z), z, grid=False)
         j = j + (e2*c_mpcPerYr*np.abs(dtdz(z))*dz*(1.0+z)**3)/(4.0*np.pi)
         j = j*cmbympc**2 
-    print j
+    print( j)
 
     plt.savefig('czre.pdf', bbox_inches='tight')
     plt.close('all')
@@ -367,7 +367,7 @@ def check_emissivity():
     erg_to_eV = 6.2415091e11
 
     dnu2 = np.diff(np.log(nu))
-    print np.unique(dnu2)
+    print( np.unique(dnu2))
 
     show_qso_spectrum = False
     

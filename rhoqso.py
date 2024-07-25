@@ -452,9 +452,9 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
     #     plt.plot(z, e[i], lw=2, c='red', zorder=5, alpha=0.1)
 
     # up = np.percentile(e, 15.87, axis=0)
-    # print 'up=', up 
+    # print( 'up=', up )
     # down = np.percentile(e, 84.13, axis=0)
-    # print 'down=', down
+    # print( 'down=', down)
     # tw18f = ax.fill_between(z, down, y2=up, color='red', zorder=5, alpha=0.6, edgecolor='None')
     
     # b = np.median(e, axis=0)

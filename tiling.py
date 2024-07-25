@@ -13,8 +13,8 @@ import sys
 
 in_file = 'smooth_maps/' + sys.argv[1]
 out_file = 'smooth_maps/' + sys.argv[1][:-4] + '_with_tiles.dat'
-print 'Reading ' + in_file
-print 'Writing to ' + out_file
+print( 'Reading ' + in_file)
+print( 'Writing to ' + out_file)
 
 data = np.loadtxt(in_file)
 fl = open(out_file, 'w')
@@ -146,8 +146,8 @@ fl.write('# dmags = ' + str(np.unique(dmags.round(decimals=4))) + '\n')
 
 fl.close()
 
-print '# dzs = ' + str(np.unique(dzs.round(decimals=4)))
-print '# dmags = ' + str(np.unique(dmags.round(decimals=4)))
+print( '# dzs = ' + str(np.unique(dzs.round(decimals=4))))
+print( '# dmags = ' + str(np.unique(dmags.round(decimals=4))))
 
 
 

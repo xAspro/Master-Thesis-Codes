@@ -40,7 +40,7 @@ if case == 0:
     z = np.linspace(0, 7, 500)
 
     coeffs = chebfit(zmean[:-1]+1.0, c[:-1], 1)
-    print coeffs
+    print( coeffs)
     plt.plot(z, T(coeffs)(z+1), lw=2, c='forestgreen') 
 
     plt.savefig('cfit_alpha.pdf',bbox_inches='tight')
@@ -74,11 +74,11 @@ elif case == 1:
     z = np.linspace(0, 7, 500)
 
     coeffs = chebfit(zmean+1, c, 2)
-    print coeffs
+    print( coeffs)
     plt.plot(z, T(coeffs)(z+1), lw=2, c='forestgreen') 
 
     # coeffs = chebfit(zmean, c, 3)
-    # print coeffs
+    # print( coeffs)
     # plt.plot(z, T(coeffs)(z), lw=2, c='tomato') 
 
     plt.savefig('cfit_beta.pdf',bbox_inches='tight')
@@ -112,7 +112,7 @@ elif case == 2:
     z = np.linspace(0, 7, 500)
 
     coeffs = chebfit(zmean+1, c, 1)
-    print coeffs
+    print( coeffs)
     plt.plot(z, T(coeffs)(z+1), lw=2, c='forestgreen') 
 
     plt.savefig('cfit_mstar.pdf',bbox_inches='tight')
@@ -146,7 +146,7 @@ elif case == 3:
     z = np.linspace(0, 7, 500)
 
     coeffs = chebfit(zmean+1, c, 2)
-    print coeffs
+    print( coeffs)
     plt.plot(z, T(coeffs)(z+1), lw=2, c='forestgreen') 
 
     plt.savefig('cfit_phistar.pdf',bbox_inches='tight')

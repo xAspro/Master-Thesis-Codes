@@ -44,4 +44,4 @@ for i in range(len(zmean)):
                   e1450_18[i], de1450_18_plus[i], de1450_18_minus[i],
                   e912_21[i], de912_21_plus[i], de912_21_minus[i],
                   e1450_21[i], de1450_21_plus[i], de1450_21_minus[i])
-    print s 
+    print( s )

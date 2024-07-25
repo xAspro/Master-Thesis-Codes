@@ -180,7 +180,7 @@ data.append(s)
 sum = 0
 for x in data: 
     sum += x.z.size
-print 'Total number of AGN:', sum+3 # 3 qsos added by hand above.
+print( 'Total number of AGN:', sum+3) # 3 qsos added by hand above.
     
 plot_data(data)
 

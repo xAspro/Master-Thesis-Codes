@@ -51,11 +51,11 @@ def fit(x, y, sigma):
     samples = sampler.chain[:, 500:, :].reshape((-1, ndim))
     
     bf = np.median(samples, axis=0)
-    print 'bf=', bf
+    print( 'bf=', bf)
     down = np.percentile(samples, 15.87, axis=0)
-    print 'down=', down
+    print( 'down=', down)
     up = np.percentile(samples, 84.13, axis=0)
-    print 'up=', up 
+    print( 'up=', up )
 
     # plt.figure()
     # f = corner.corner(samples, labels=['a', 'b', 'c', 'd', 'e'], truths=bf)
