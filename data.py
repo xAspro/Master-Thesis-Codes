@@ -104,7 +104,7 @@ def plot_data(data):
     plt.legend(loc='upper right', fontsize=12, handlelength=3,
                frameon=False, framealpha=0.0, labelspacing=.1,
                handletextpad=0.4, borderpad=0.2,markerscale=.5)
-
+    
     plt.savefig('qsos.pdf', bbox_inches='tight')
 
     return
@@ -182,5 +182,6 @@ for x in data:
     sum += x.z.size
 print( 'Total number of AGN:', sum+3) # 3 qsos added by hand above.
     
+# print(data)
 plot_data(data)
 
