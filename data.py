@@ -16,6 +16,7 @@ Histogram of all quasar data used in this study.
 """
 
 def getqlums(lumfile):
+    print("In data.py getqlums")
 
     """Read quasar luminosities."""
 
@@ -25,8 +26,10 @@ def getqlums(lumfile):
     return z, mag, p
 
 class sample:
+    print("In data.py class-sample")
 
     def __init__(self, sample_data_files, color='None', label=None):
+        print("In data.py class-sample __init__")
 
         for f in sample_data_files: 
             z, m, p = getqlums(f)
@@ -45,7 +48,8 @@ class sample:
         return 
 
 def plot_data(data):
-
+    # Command to let user know that the output will be stored in qsos.pdf
+    print("In data.py plot_data\nOutput will be stored in qsos.pdf")
     fig = plt.figure(figsize=(14, 7), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
 

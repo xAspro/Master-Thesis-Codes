@@ -10,9 +10,11 @@ import matplotlib.pyplot as plt
 c_angPerSec = 2.998e18
 
 def luminosity(M):
+    print("In qso.py luminosity")
     return 10.0**((51.60-M)/2.5) # ergs s^-1 Hz^-1 
 
 def fnu(nu, z):
+    print("In qso.py fnu")
     
     # SED power law index is from Beta's paper.
     M = -22.0
@@ -34,6 +36,7 @@ def fnu(nu, z):
 vfnu = np.vectorize(fnu)
 
 def plot_qso_emissivity():
+    print("In qso.py plot_qso_emissivity")
 
     """Plot HM12 qso emissivity. 
     

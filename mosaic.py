@@ -10,6 +10,7 @@ from drawlf import render
 
 def plot(lf, ax, composite=None, yticklabels=False, xticklabels=False,
          nofirstylabel=True, nolastxlabel=True, nofirstxlabel=False, legend=False):
+    print("In mosaic.py plot")
 
     """
 
@@ -78,6 +79,8 @@ def plot(lf, ax, composite=None, yticklabels=False, xticklabels=False,
     return 
     
 def draw(lfs, composite=None):
+    print("In mosaic.py draw")
+
 
     nplots_x = 5
     nplots_y = 5

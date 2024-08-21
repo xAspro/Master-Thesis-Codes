@@ -1,7 +1,8 @@
 import sys 
 import numpy as np
 import individual
-reload(individual)
+import importlib
+importlib.reload(individual)
 from individual import lf
 import mosaic
 import drawlf
