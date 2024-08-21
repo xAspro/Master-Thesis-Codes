@@ -53,8 +53,8 @@ def plot_phi_star(fig):
     zmean, zl, zu, u, l, c = getParam(0)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color=colors[0], edgecolor='None', zorder=2, s=36)
     ax.errorbar(zmean, c, ecolor=colors[0], capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -155,7 +155,7 @@ def plot_alpha(fig):
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
                 fmt='None', zorder=2)
-    ax.scatter(zmean, c, color='#ffffff', edgecolor='tomato', zorder=2, s=30, label='with Giallongo et al.\ 2015 AGN')
+    ax.scatter(zmean, c, color='#ffffff', edgecolor='tomato', zorder=2, s=30, label='with Giallongo et al. 2015 AGN')
 
     plt.legend(loc='upper right', fontsize=10, handlelength=2,
                frameon=False, framealpha=0.0, labelspacing=.1,

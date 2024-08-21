@@ -76,21 +76,21 @@ def plot_data(quasar_files):
           (0.5490196078431373, 0.03529411764705882, 0.0),
           (0.4627450980392157, 0.0, 0.6313725490196078)]
     
-    labels=['BOSS DR9 color-selected (Ross et al.\ 2013)',
-            'SDSS DR7 with Richards et al.\ (2006) selection',
-            'Glikman et al.\ (2011)',
-            'SDSS DR7 with McGreer et al.\ (2013) selection',
-            'Stripe 82 McGreer et al.\ (2013)',
-            'Extended Stripe 82 McGreer et al.\ (2013)',
+    labels=['BOSS DR9 color-selected (Ross et al. 2013)',
+            'SDSS DR7 with Richards et al. (2006) selection',
+            'Glikman et al. (2011)',
+            'SDSS DR7 with McGreer et al. (2013) selection',
+            'Stripe 82 McGreer et al. (2013)',
+            'Extended Stripe 82 McGreer et al. (2013)',
             'CFHQS Very Wide Survey Willott et al. (2010)',
-            'SDSS Fan et al.\ (2006)',
-            'SDSS Deep Jiang et al.\ (2009)',
-            'SDSS Deep Jiang et al.\ (2008)',
+            'SDSS Fan et al. (2006)',
+            'SDSS Deep Jiang et al. (2009)',
+            'SDSS Deep Jiang et al. (2008)',
             'CFHQS Deep Survey Willott et al. (2010)']
 
-    plot_sample(2, color=cs[5], edgecolor=cs[5], label='BOSS DR9 variability-selected Ross et al.\ 2013 (no selection map)')
-    plot_sample(3, color=cs[0], edgecolor=cs[0], label='BOSS+MMT Palanque-Delabrouille et al.\ 2013 (only give $M_{g, z=2}$)')
-    plot_sample(4, color=cs[1], edgecolor=cs[1], label='SWIRE Siana et al.\ 2008 (high spectroscopic incompleteness')
+    plot_sample(2, color=cs[5], edgecolor=cs[5], label='BOSS DR9 variability-selected Ross et al. 2013 (no selection map)')
+    plot_sample(3, color=cs[0], edgecolor=cs[0], label='BOSS+MMT Palanque-Delabrouille et al. 2013 (only give $M_{g, z=2}$)')
+    plot_sample(4, color=cs[1], edgecolor=cs[1], label='SWIRE Siana et al. 2008 (high spectroscopic incompleteness')
     plot_sample(5, color=cs[2], edgecolor=cs[2], label='COSMOS Masters et al. 2012 (photometric redshifts)')
     plot_sample(12, color=cs[3], edgecolor=cs[3], label='VVDS Type 1 QLF Bongiorno et al. 2007 (uncertain $M_B$--$M_{1450}$ conversion)')
     plot_sample(14, color=cs[4], edgecolor=cs[4], label='COMBO17 Wolf et al. 2003 (why are we not using this?)')

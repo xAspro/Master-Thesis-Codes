@@ -68,31 +68,31 @@ def plot_f_vs_z():
     z = np.linspace(0,7,num=100)
     f = vf_HM12(n, z)
     ax.plot(z, np.log10(f), lw=2, c='g',
-            label='$N_\mathrm{HI}=10^{12} \mathrm{cm}^{-2}$') 
+            label=r'$N_\mathrm{HI}=10^{12} \mathrm{cm}^{-2}$') 
     
     n = 1.0e16
     z = np.linspace(0,7,num=100)
     f = vf_HM12(n, z)
     ax.plot(z, np.log10(f), lw=2, c='k',
-            label='$N_\mathrm{HI}=10^{16} \mathrm{cm}^{-2}$') 
+            label=r'$N_\mathrm{HI}=10^{16} \mathrm{cm}^{-2}$') 
 
     n = 1.0e18
     z = np.linspace(0,7,num=100)
     f = vf_HM12(n, z)
     ax.plot(z, np.log10(f), lw=2, c='b',
-            label='$N_\mathrm{HI}=10^{18} \mathrm{cm}^{-2}$') 
+            label=r'$N_\mathrm{HI}=10^{18} \mathrm{cm}^{-2}$') 
     
     n = 1.0e20
     z = np.linspace(0,7,num=100)
     f = vf_HM12(n, z)
     ax.plot(z, np.log10(f), lw=2, c='r',
-            label='$N_\mathrm{HI}=10^{20} \mathrm{cm}^{-2}$') 
+            label=r'$N_\mathrm{HI}=10^{20} \mathrm{cm}^{-2}$') 
 
     n = 1.0e22
     z = np.linspace(0,7,num=100)
     f = vf_HM12(n, z)
     ax.plot(z, np.log10(f), lw=2, c='brown',
-            label='$N_\mathrm{HI}=10^{22} \mathrm{cm}^{-2}$') 
+            label=r'$N_\mathrm{HI}=10^{22} \mathrm{cm}^{-2}$') 
     
     plt.legend(loc='lower left', fontsize=12, handlelength=3,
                frameon=False, framealpha=0.0, labelspacing=.1,
@@ -117,7 +117,7 @@ def plot_dtaudn():
     ax.tick_params('x', which='major', pad=6)
 
     ax.set_ylabel(r'$\log_{10} N_\mathrm{HI} f(N_\mathrm{HI},z)'+
-                  '[1-\exp{(-N_\mathrm{HI}\sigma_{912})}]$')
+                  r'[1-\exp{(-N_\mathrm{HI}\sigma_{912})}]$')
     ax.set_xlabel(r'$\log_{10}(N_\mathrm{HI}/\mathrm{cm}^{-2})$') 
 
     ax.set_ylim(-3, 0)
@@ -134,13 +134,13 @@ def plot_dtaudn():
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='k', label='$z=3.5$') 
 
     print( 'z=', z)
-    t1 = np.trapz(fn, x=np.log(n))
+    t1 = np.trapezoid(fn, x=np.log(n))
     print( 't1=', t1 )
     
     fn = n * f(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='k', dashes=[7,2])
 
-    t2 = np.trapz(fn, x=np.log(n))
+    t2 = np.trapezoid(fn, x=np.log(n))
     print( 't2=', t2)
     
     z = 2.0
@@ -148,13 +148,13 @@ def plot_dtaudn():
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='r', label='$z=2.0$') 
 
     print( 'z=', z)
-    t1 = np.trapz(fn, x=np.log(n))
+    t1 = np.trapezoid(fn, x=np.log(n))
     print( 't1=', t1 )
     
     fn = n * f(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='r', dashes=[7,2])
 
-    t2 = np.trapz(fn, x=np.log(n))
+    t2 = np.trapezoid(fn, x=np.log(n))
     print( 't2=', t2)
     
     z = 5.0
@@ -162,13 +162,13 @@ def plot_dtaudn():
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='b', label='$z=5.0$')
 
     print( 'z=', z)
-    t1 = np.trapz(fn, x=np.log(n))
+    t1 = np.trapezoid(fn, x=np.log(n))
     print( 't1=', t1 )
     
     fn = n * f(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='b', dashes=[7,2])
 
-    t2 = np.trapz(fn, x=np.log(n))
+    t2 = np.trapezoid(fn, x=np.log(n))
     print( 't2=', t2)
     
     plt.legend(loc='upper left', fontsize=12, handlelength=3,

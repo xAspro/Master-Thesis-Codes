@@ -83,8 +83,11 @@ def getqlums(lumfile, zlims=None):
 def getselfn(selfile, zlims=None):
 
     """Read selection map."""
+    # print("In getselfn")
+    # print("selfile: ", selfile)
 
     with open(selfile,'r') as f: 
+        # print("f: ", f)
         z, mag, p, dz, dm = np.loadtxt(f, usecols=(1,2,3,4,5), unpack=True)
 
     if zlims is None:

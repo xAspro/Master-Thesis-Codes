@@ -166,7 +166,7 @@ phi_err = np.log10(phi_err * 1.0e-9)
 ax.errorbar(M1450, phi, ecolor='b', capsize=0,
             xerr=np.vstack((M1450_lerr, M1450_uerr)),
             yerr=np.vstack((phi_lerr, phi_uerr)), fmt='none', zorder=303)
-ax.scatter(M1450, phi, c='#ffffff', label='McGreer et al.\ 2013 SDSS DR7',
+ax.scatter(M1450, phi, c='#ffffff', label='McGreer et al. 2013 SDSS DR7',
            edgecolor='b', zorder=304, s=32)
 
 # Plot binned LF from literature
@@ -182,7 +182,7 @@ phi_err = np.log10(phi_err * 1.0e-9)
 ax.errorbar(M1450, phi, ecolor='r', capsize=0,
             xerr=np.vstack((M1450_lerr, M1450_uerr)),
             yerr=np.vstack((phi_lerr, phi_uerr)), fmt='none', zorder=305)
-ax.scatter(M1450, phi, c='#ffffff', label='McGreer et al.\ 2013 SDSS Stripe 82',
+ax.scatter(M1450, phi, c='#ffffff', label='McGreer et al. 2013 SDSS Stripe 82',
            edgecolor='r', zorder=306, s=32)
 
 zrange = (4.7, 5.1)

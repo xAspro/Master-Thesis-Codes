@@ -114,7 +114,7 @@ def render(ax, zrange):
     phi_lerr = phi_lerr[select]
     phi_uerr = phi_uerr[select]
 
-    ax.scatter(m, phi, c='r', label='Giallongo et al.\ 2015', edgecolor='None', zorder=303, s=32) 
+    ax.scatter(m, phi, c='r', label='Giallongo et al. 2015', edgecolor='None', zorder=303, s=32) 
     ax.errorbar(m, phi, ecolor='r', capsize=0,
                 xerr=np.vstack((m_lerr, m_uerr)),
                 yerr=np.vstack((phi_lerr, phi_uerr)), fmt='None', zorder=304)

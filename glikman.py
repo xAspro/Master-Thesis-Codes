@@ -148,7 +148,7 @@ phi_glikman = np.log10(phi_glikman)
 ax.errorbar(M1450_glikman[4:], phi_glikman[4:], ecolor='r', capsize=0,
             xerr=np.vstack((M1450_glikman_lerr[4:], M1450_glikman_uerr[4:])),
             yerr=np.vstack((phi_glikman_llogerr[4:], phi_glikman_ulogerr[4:])), fmt='none', zorder=305)
-ax.scatter(M1450_glikman[4:], phi_glikman[4:], c='#ffffff', label='Glikman et al.\ 2011 NDWFS+DLS', edgecolor='r', zorder=306, s=32)
+ax.scatter(M1450_glikman[4:], phi_glikman[4:], c='#ffffff', label='Glikman et al. 2011 NDWFS+DLS', edgecolor='r', zorder=306, s=32)
 
 zrange = (3.5, 5.2)
 bins = np.array([-26.0, -25.0, -24.0, -23.0, -22.0, -21])

@@ -13,22 +13,22 @@ import individual
 
 selnfiles = []
 
-# [('smooth_maps/dr7z2p2_selfunc_with_tiles.dat', 6248.0, 13, r'Richards et al.\ 2006'),
-#              ('smooth_maps/croom09sgp_selfunc_with_tiles.dat', 64.2, 15, r'Croom et al.\ 2009'),
-#              ('smooth_maps/croom09ngp_selfunc_with_tiles.dat', 127.7, 15, r'Croom et al.\ 2009'),
-#              ('smooth_maps/ross13_selfunc2_with_tiles.dat', 2236.0, 1, r'Ross et al.\ 2013'),
-#              ('smooth_maps/dr7z3p7_selfunc_with_tiles.dat', 6248.0, 13, r'Richards et al.\ 2006'),
-#              ('smooth_maps/glikman11_selfunc_ndwfs_with_tiles.dat', 1.71, 6, r'Glikman et al.\ 2011'),
-#              ('smooth_maps/glikman11_selfunc_dls_with_tiles.dat', 2.05, 6, r'Glikman et al.\ 2011'),
-#              ('smooth_maps/yang16_sel_with_tiles.dat', 14555.0, 17, r'Yang et al.\ 2016'),
-#              ('smooth_maps/mcgreer13_dr7selfunc_with_tiles.dat', 6248.0, 8, r'McGreer et al.\ 2013'),
-#              ('smooth_maps/mcgreer13_s82selfunc_with_tiles.dat', 235.0, 8, r'McGreer et al.\ 2013'),
-#              ('smooth_maps/jiang16main_selfunc_with_tiles.dat', 11240.0, 18, r'Jiang et al.\ 2016'),
-#              ('smooth_maps/jiang16overlap_selfunc_with_tiles.dat', 4223.0, 18, r'Jiang et al.\ 2016'),
-#              ('smooth_maps/jiang16s82_selfunc_with_tiles.dat', 277.0, 18, r'Jiang et al.\ 2016'),
-#              ('smooth_maps/willott10_cfhqsdeepsel_with_tiles.dat', 4.47, 10, r'Willott et al.\ 2010'),
-#              ('smooth_maps/willott10_cfhqsvwsel_with_tiles.dat', 494.0, 10, r'Willott et al.\ 2010'),
-#              ('smooth_maps/kashikawa15_sel_with_tiles.dat', 6.5, 11, r'Kashikawa et al.\ 2015')]
+# [('smooth_maps/dr7z2p2_selfunc_with_tiles.dat', 6248.0, 13, r'Richards et al. 2006'),
+#              ('smooth_maps/croom09sgp_selfunc_with_tiles.dat', 64.2, 15, r'Croom et al. 2009'),
+#              ('smooth_maps/croom09ngp_selfunc_with_tiles.dat', 127.7, 15, r'Croom et al. 2009'),
+#              ('smooth_maps/ross13_selfunc2_with_tiles.dat', 2236.0, 1, r'Ross et al. 2013'),
+#              ('smooth_maps/dr7z3p7_selfunc_with_tiles.dat', 6248.0, 13, r'Richards et al. 2006'),
+#              ('smooth_maps/glikman11_selfunc_ndwfs_with_tiles.dat', 1.71, 6, r'Glikman et al. 2011'),
+#              ('smooth_maps/glikman11_selfunc_dls_with_tiles.dat', 2.05, 6, r'Glikman et al. 2011'),
+#              ('smooth_maps/yang16_sel_with_tiles.dat', 14555.0, 17, r'Yang et al. 2016'),
+#              ('smooth_maps/mcgreer13_dr7selfunc_with_tiles.dat', 6248.0, 8, r'McGreer et al. 2013'),
+#              ('smooth_maps/mcgreer13_s82selfunc_with_tiles.dat', 235.0, 8, r'McGreer et al. 2013'),
+#              ('smooth_maps/jiang16main_selfunc_with_tiles.dat', 11240.0, 18, r'Jiang et al. 2016'),
+#              ('smooth_maps/jiang16overlap_selfunc_with_tiles.dat', 4223.0, 18, r'Jiang et al. 2016'),
+#              ('smooth_maps/jiang16s82_selfunc_with_tiles.dat', 277.0, 18, r'Jiang et al. 2016'),
+#              ('smooth_maps/willott10_cfhqsdeepsel_with_tiles.dat', 4.47, 10, r'Willott et al. 2010'),
+#              ('smooth_maps/willott10_cfhqsvwsel_with_tiles.dat', 494.0, 10, r'Willott et al. 2010'),
+#              ('smooth_maps/kashikawa15_sel_with_tiles.dat', 6.5, 11, r'Kashikawa et al. 2015')]
 
 # smoothmaps = [individual.selmap(x) for x in selnfiles]
 
@@ -54,7 +54,7 @@ def rhoqso(loglf, theta, mlim, z, fit='individual', mbright=-35.0):
     else:
         farr = f(loglf, theta, m, z, fit='individual')
     
-    return np.trapz(farr, m) # cMpc^-3
+    return np.trapezoid(farr, m) # cMpc^-3
 
 
 def get_rhoqso(lfi, mlim, z, fit='individual', mbright=-35.0):

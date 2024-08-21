@@ -119,7 +119,7 @@ def richards(ax, zrange, yticklabels=False, xticklabels=False, nofirstylabel=Tru
     phi_uerr = np.log10(phiu)-phi
     phi_lerr = phi-np.log10(phil)
     
-    ax.scatter(m, phi, c='#ffffff', s=30, label='Richards et al.\ 2006',
+    ax.scatter(m, phi, c='#ffffff', s=30, label='Richards et al. 2006',
                edgecolor='r', zorder=304)
     ax.errorbar(m, phi, ecolor='r', capsize=0, 
                 yerr=np.vstack((phi_lerr, phi_uerr)), fmt='None', zorder=303)

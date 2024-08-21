@@ -37,15 +37,15 @@ if case == 'Mgz2_coverage':
     
     selnfiles = [('Data_new/dr7z2p2_selfunc.dat',
                   0.1, 0.05, 6248.0, 13,
-                  r'SDSS DR7 Richards et al.\ 2006'),
+                  r'SDSS DR7 Richards et al. 2006'),
 
                  ('croom_mgz2_photometric_coverage/croom09_selfunc_photometric_hostcorrected_coverage_sgp.dat',
                   0.3, 0.05, 64.2, 15,
-                  r'2SLAQ Croom et al.\ 2009'),
+                  r'2SLAQ Croom et al. 2009'),
 
                  ('croom_mgz2_photometric_coverage/croom09_selfunc_photometric_hostcorrected_coverage_ngp.dat',
                   0.3, 0.05, 127.7, 15,
-                  r'2SLAQ Croom et al.\ 2009')]
+                  r'2SLAQ Croom et al. 2009')]
     
 elif case == 'Mgz2_zsuccess_coverage':
 
@@ -55,15 +55,15 @@ elif case == 'Mgz2_zsuccess_coverage':
     
     selnfiles = [('Data_new/dr7z2p2_selfunc.dat',
                   0.1, 0.05, 6248.0, 13,
-                  r'SDSS DR7 Richards et al.\ 2006'),
+                  r'SDSS DR7 Richards et al. 2006'),
 
                  ('croom_mgz2_photometric_zsuccess_coverage/croom09_selfunc_photometric_hostcorrected_zsuccess_coverage_sgp.dat',
                   0.3, 0.05, 64.2, 15,
-                  r'2SLAQ Croom et al.\ 2009'),
+                  r'2SLAQ Croom et al. 2009'),
 
                  ('croom_mgz2_photometric_zsuccess_coverage/croom09_selfunc_photometric_hostcorrected_zsuccess_coverage_ngp.dat',
                   0.3, 0.05, 127.7, 15,
-                  r'2SLAQ Croom et al.\ 2009')]
+                  r'2SLAQ Croom et al. 2009')]
 
 elif case == 'Mgz2_zsuccess':
 
@@ -73,15 +73,15 @@ elif case == 'Mgz2_zsuccess':
     
     selnfiles = [('Data_new/dr7z2p2_selfunc.dat',
                   0.1, 0.05, 6248.0, 13,
-                  r'SDSS DR7 Richards et al.\ 2006'),
+                  r'SDSS DR7 Richards et al. 2006'),
 
                  ('croom_mgz2_photometric_zsuccess/croom09_selfunc_photometric_hostcorrected_zsuccess.dat',
                   0.3, 0.05, 64.2, 15,
-                  r'2SLAQ Croom et al.\ 2009'),
+                  r'2SLAQ Croom et al. 2009'),
 
                  ('croom_mgz2_photometric_zsuccess/croom09_selfunc_photometric_hostcorrected_zsuccess.dat',
                   0.3, 0.05, 127.7, 15,
-                  r'2SLAQ Croom et al.\ 2009')]
+                  r'2SLAQ Croom et al. 2009')]
 
 elif case == 'Mgz2_unprocessed':
 
@@ -91,15 +91,15 @@ elif case == 'Mgz2_unprocessed':
 
     selnfiles = [('Data_new/dr7z2p2_selfunc.dat',
                   0.1, 0.05, 6248.0, 13,
-                  r'SDSS DR7 Richards et al.\ 2006'),
+                  r'SDSS DR7 Richards et al. 2006'),
 
                  ('croom_mgz2_photometric/croom09_selfunc_photometric_hostcorrected.dat',
                   0.3, 0.05, 64.2, 15,
-                  r'2SLAQ Croom et al.\ 2009'),
+                  r'2SLAQ Croom et al. 2009'),
 
                  ('croom_mgz2_photometric/croom09_selfunc_photometric_hostcorrected.dat',
                   0.3, 0.05, 127.7, 15,
-                  r'2SLAQ Croom et al.\ 2009')]
+                  r'2SLAQ Croom et al. 2009')]
     
 else:
     qlumfiles = ['Data_new/dr7z2p2_sample.dat',
@@ -108,15 +108,15 @@ else:
 
     selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat',
                   6248.0, 13,
-                  r'SDSS DR7 Richards et al.\ 2006'),
+                  r'SDSS DR7 Richards et al. 2006'),
                  
                  ('Selmaps_with_tiles/croom09sgp_selfunc.dat',
                   64.2, 15,
-                  r'2SLAQ Croom et al.\ 2009'),
+                  r'2SLAQ Croom et al. 2009'),
 
                  ('Selmaps_with_tiles/croom09ngp_selfunc.dat',
                   127.7, 15,
-                  r'2SLAQ Croom et al.\ 2009')]
+                  r'2SLAQ Croom et al. 2009')]
     
 
 def our_lf(zrange):

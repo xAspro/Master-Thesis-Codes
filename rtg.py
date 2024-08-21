@@ -144,7 +144,7 @@ def emissivity(nu, z, loglf, theta, individual=False):
     m = np.linspace(mlims[0], mlims[1], num=1000)
     farr = emissivity_integrand(nu, z, loglf, theta, m, individual=individual)
 
-    e = np.trapz(farr, m) # erg s^-1 Hz^-1 cMpc^-3
+    e = np.trapezoid(farr, m) # erg s^-1 Hz^-1 cMpc^-3
     e *= (1.0+z)**3 # erg s^-1 Hz^-1 pMpc^-3
 
     return e # erg s^-1 Hz^-1 pMpc^-3
@@ -172,7 +172,7 @@ def j(nu0, z0, *args, **kwargs):
     # j has units of erg s^-1 Mpc^-2 Hz^-1.
     j = np.array([integrand(r, *args, **kwargs) for r in rs])
     
-    r = np.trapz(j, x=rs) # erg s^-1 Mpc^-2 Hz^-1 
+    r = np.trapezoid(j, x=rs) # erg s^-1 Mpc^-2 Hz^-1 
     r /= (4.0*np.pi) # erg s^-1 Mpc^-2 Hz^-1 sr^-1  
     
     return r # erg s^-1 Mpc^-2 Hz^-1 sr^-1  
@@ -207,7 +207,7 @@ def gamma_HI(z, *args, **kwargs):
                 cmbympc**2 / (hplanck * 1.0e7 * nu)) # s^-1 sr^-1 Hz^-1 Hz 
 
     g = np.array([integrand(n, *args, **kwargs) for n in lognu]) # s^-1 sr^-1 
-    r = np.trapz(g, x=lognu) # s^-1 sr^-1 
+    r = np.trapezoid(g, x=lognu) # s^-1 sr^-1 
     r *= 4.0*np.pi # s^-1
 
     return r # s^-1 

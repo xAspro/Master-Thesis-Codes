@@ -201,14 +201,14 @@ def draw(lf, z_plot, composite=None, dirname=''):
 
     dr7 = [0, 1, 2, 4, 6]
 
-    ax.scatter(M1450[dr7], phi[dr7], c='b', label='McGreer et al.\ 2013 SDSS DR7', edgecolor='None', zorder=303) 
+    ax.scatter(M1450[dr7], phi[dr7], c='b', label='McGreer et al. 2013 SDSS DR7', edgecolor='None', zorder=303) 
     ax.errorbar(M1450[dr7], phi[dr7], ecolor='b', capsize=0,
                 xerr=np.vstack((M1450_lerr[dr7], M1450_uerr[dr7])),
                 yerr=np.vstack((phi_lerr[dr7], phi_uerr[dr7])), fmt=None,zorder=304)
 
     # mask = np.ones(len(M1450), dtype=bool)
     # mask[dr7] = False 
-    # ax.scatter(M1450[mask], phi[mask], c='darkgreen', label='McGreer et al.\ 2013 Stripe 82', edgecolor='None', zorder=303) 
+    # ax.scatter(M1450[mask], phi[mask], c='darkgreen', label='McGreer et al. 2013 Stripe 82', edgecolor='None', zorder=303) 
     # ax.errorbar(M1450[mask], phi[mask], ecolor='darkgreen', capsize=0,
     #             xerr=np.vstack((M1450_lerr[mask], M1450_uerr[mask])),
     #             yerr=np.vstack((phi_lerr[mask], phi_uerr[mask])), fmt=None,zorder=304)

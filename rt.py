@@ -107,7 +107,7 @@ def j(nu0, z0, zmax=6.0, dz=0.1):
     # rs = np.arange(2.0, zmax, dz)
     rs = np.arange(z0, zmax, dz)
     j = np.array([integrand(r) for r in rs])
-    r = np.trapz(j, x=rs)
+    r = np.trapezoid(j, x=rs)
     r /= (4.0*np.pi)  
     
     return r # ergs/s/Mpc^2/Hz/sr 
@@ -142,7 +142,7 @@ def gamma_HI(z, numax=1.0e18, dnu=0.1):
         return nu * j(nu, z) * sigma_HI(nu) * cmbympc**2 / (hplanck * 1.0e7 * nu) # s^-1 sr^-1 Hz^-1 
 
     g = np.array([integrand(n) for n in lognu])
-    r = np.trapz(g, x=lognu) # s^-1 sr^-1 
+    r = np.trapezoid(g, x=lognu) # s^-1 sr^-1 
     r *= 4.0*np.pi # s^-1 
 
     return r # s^-1 

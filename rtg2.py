@@ -296,7 +296,7 @@ def tau_eff(nu, z):
     N_HI_max = 10.0**21.55 # Limit taken in HM12 Table 1. 
     n = np.logspace(np.log(N_HI_min), np.log(N_HI_max), num=50, base=np.e)
     fn = n * vf_HM12(n, z) * (1.0-np.exp(-n*sigma_HI(nu)))
-    return np.trapz(fn, x=np.log(n))
+    return np.trapezoid(fn, x=np.log(n))
 
 def luminosity(M):
 
@@ -375,7 +375,7 @@ def emissivity(w, z, loglf, theta, mbright=-30, mfaint=-18):
 
     farr = np.array([10.0**loglf(theta, x, z)*vfnu(nu, x) for x in m])
 
-    return np.trapz(farr, m, axis=0) # erg s^-1 Hz^-1 Mpc^-3
+    return np.trapezoid(farr, m, axis=0) # erg s^-1 Hz^-1 Mpc^-3
 
 def emissivity_18(w, z):
 
@@ -510,7 +510,7 @@ def j(emodel, loglf=None, theta=None, dz=0.1, n_ws=200, n_ws_int=100, zmax=7.0):
         nu_int = np.logspace(np.log10(nu0), 18, num=n_ws_int)
         n_int = np.interp(nu_int, nu_rest[::-1], n[::-1])
         s = np.array([sigma_HI(x) for x in nu_int])
-        g = np.trapz(n_int*s, x=nu_int) # s^-1 
+        g = np.trapezoid(n_int*s, x=nu_int) # s^-1 
 
         gs.append(g)
 
@@ -546,7 +546,7 @@ def calverley(ax):
     gml_low = 10.0**gm - 10.0**(gm-gm_sigma)
     
     ax.scatter(zm, gml, c='k', edgecolor='None',
-               label='Calverley et al.\ 2011', s=64, marker='v') 
+               label='Calverley et al. 2011', s=64, marker='v') 
     ax.errorbar(zm, gml, ecolor='k', capsize=5,
                 elinewidth=1.5, capthick=1.5,
                 yerr=np.vstack((gml_low, gml_up)),
@@ -566,7 +566,7 @@ def wyithe11(ax):
     gml_low = gm_l
     
     ax.scatter(zm, gml, c='k', edgecolor='None',
-               label='Wyithe \& Bolton 2011', s=64, marker='^')
+               label='Wyithe & Bolton 2011', s=64, marker='^')
     
     ax.errorbar(zm, gml, ecolor='k', capsize=5,
                 elinewidth=1.5, capthick=1.5,
@@ -590,7 +590,7 @@ def daloisio18(ax):
     gml_low = gm_l
     
     ax.scatter(zm, gml, c='dodgerblue', edgecolor='None',
-               label="D'Aloisio et al.\ 2018", s=64, marker='h')
+               label="D'Aloisio et al. 2018", s=64, marker='h')
     
     ax.errorbar(zm, gml, ecolor='dodgerblue', capsize=5,
                 elinewidth=1.5, capthick=1.5,
@@ -619,7 +619,7 @@ def davies17(ax):
     gml_low = 10.0**gm - 10.0**(gm-gm_l)
     
     ax.scatter(zm, gml, c='g', edgecolor='None',
-               label="Davies et al.\ 2018", s=64, marker='s')
+               label="Davies et al. 2018", s=64, marker='s')
     
     ax.errorbar(zm, gml, ecolor='g', capsize=5,
                 elinewidth=1.5, capthick=1.5,
@@ -659,7 +659,7 @@ def bb13(ax, puc=False):
 
     if puc:
         ax.scatter(1+zm, gml, c='k', edgecolor='None', marker='v',
-                   label='Becker \& Bolton 2013', s=64, zorder=10)
+                   label='Becker & Bolton 2013', s=64, zorder=10)
         ax.errorbar(1+zm, gml, ecolor='k', capsize=5,
                     elinewidth=2, capthick=3,
                     yerr=np.vstack((gml_low, gml_up)),
@@ -668,7 +668,7 @@ def bb13(ax, puc=False):
         return
         
     ax.scatter(zm, gml, c='k', edgecolor='None',
-               label='Becker \& Bolton 2013', s=64, zorder=10)
+               label='Becker & Bolton 2013', s=64, zorder=10)
     ax.errorbar(zm, gml, ecolor='k', capsize=5,
                 elinewidth=2, capthick=3,
                 yerr=np.vstack((gml_low, gml_up)),
@@ -687,16 +687,16 @@ def g_hm12_total(ax, puc=False):
         j_hm12 = bkgintens_HM12(c_angPerSec/nu, r*np.ones_like(nu), grid=False)
         n = 4.0*np.pi*j_hm12/(hplanck*nu)
         s = np.array([sigma_HI(x) for x in nu])
-        g_hm12.append(np.trapz(n*s, x=nu)) # s^-1
+        g_hm12.append(np.trapezoid(n*s, x=nu)) # s^-1
 
     if puc:
         ax.plot(1+zs, np.array(g_hm12)/1.0e-12, c='brown', lw=1, dashes=[1,1],
-                label='Haardt \& Madau 2012', zorder=2)
+                label='Haardt & Madau 2012', zorder=2)
         return
 
         
     ax.plot(zs, np.array(g_hm12)/1.0e-12, c='brown', lw=1, dashes=[1,1],
-            label='Haardt \& Madau 2012')
+            label='Haardt & Madau 2012')
 
     return
 
@@ -806,10 +806,10 @@ def kollmeier(ax, puc=False):
 
     if puc:
         ax.scatter(1+z, g*1.0e12, c='k', edgecolor='None',
-                   label='Kollmeier et al.\ 2014', s=64, marker='p')
+                   label='Kollmeier et al. 2014', s=64, marker='p')
     else:
         ax.scatter(z, g*1.0e12, c='k', edgecolor='None',
-                   label='Kollmeier et al.\ 2014', s=64)
+                   label='Kollmeier et al. 2014', s=64)
 
     return
 
@@ -827,7 +827,7 @@ def bolton17(ax):
     g = 1.87e-12 # s^-1
 
     ax.scatter(1+z, g*1.0e12, c='k', edgecolor='None',
-               label='Bolton et al.\ 2017', s=64, marker='s')
+               label='Bolton et al. 2017', s=64, marker='s')
 
     return
 
@@ -844,13 +844,13 @@ def shull(ax, puc=False):
     if puc: 
         z = np.linspace(0, 0.47)
         g = 5.0e-14 * (1.0+z)**4.4 # s^-1
-        ax.plot(1+z, g*1.0e12, lw=2, c='k', label='Shull et al.\ 2015',
+        ax.plot(1+z, g*1.0e12, lw=2, c='k', label='Shull et al. 2015',
                 dashes=[7,2], zorder=5)
         return
     
     z = np.linspace(0, 0.47)
     g = 5.0e-14 * (1.0+z)**4.4 # s^-1
-    ax.plot(z, g*1.0e12, lw=4, c='#8c564b', label='Shull et al.\ 2015')
+    ax.plot(z, g*1.0e12, lw=4, c='#8c564b', label='Shull et al. 2015')
 
     return
 
@@ -869,12 +869,12 @@ def khaire(ax, puc=False):
 
     if puc:
         ax.plot(1+z, g*1.0e12, lw=2, c='peru',
-                label='Khaire \& Srianand 2015 QSOs',
+                label='Khaire & Srianand 2015 QSOs',
                 zorder=2, dashes=[5,2])
         return 
         
     ax.plot(z, g*1.0e12, lw=2, c='peru',
-            label='Khaire \& Srianand 2015 QSOs',
+            label='Khaire & Srianand 2015 QSOs',
             zorder=2, dashes=[5,2])
 
     return
@@ -893,12 +893,12 @@ def puchwein(ax, puc=False):
     if puc:
 
         ax.plot(1+z, g*1.0e12, lw=2, c='brown',
-                label='Puchwein et al.\ 2018',
+                label='Puchwein et al. 2018',
                 dashes=[7,2], zorder=2)
         return
     
     ax.plot(z, g*1.0e12, lw=2, c='grey',
-            label='Puchwein et al.\ 2018',
+            label='Puchwein et al. 2018',
             dashes=[7,2], zorder=2)
 
     return
@@ -915,7 +915,7 @@ def bolton(ax):
     z = np.array([2.0, 3.0, 4.0, 5.0])
     g = np.array([1.87e-12, 9.15e-13, 8.83e-13, 7.55e-13]) # s^-1
 
-    ax.plot(z, g*1.0e12, lw=2, c='#9467bd', label='Bolton et al.\ 2017')
+    ax.plot(z, g*1.0e12, lw=2, c='#9467bd', label='Bolton et al. 2017')
 
     return 
 
@@ -934,12 +934,12 @@ def onorbe(ax, puc=False):
 
     if puc:
         ax.plot(1+z, g*1.0e12, c='grey', lw=2,
-                label='O\~norbe et al.\ 2017',
+                label='O~norbe et al. 2017',
                 dashes=[2,2], zorder=2)
         return
         
     ax.plot(z, g*1.0e12, c='grey', lw=2,
-            label='O\~norbe et al.\ 2017',
+            label='O~norbe et al. 2017',
             dashes=[2,2], zorder=2)
     
     return
@@ -966,7 +966,7 @@ def viel(ax, puc=False):
         rect = mpatches.Rectangle((zmin, emin),  dz, de,
                                   ec='k', color='#ffffff',
                                   lw=2, zorder=10,
-                                  label='Viel et al.\ 2017')
+                                  label='Viel et al. 2017')
         ax.add_patch(rect)
         
         return
@@ -992,7 +992,7 @@ def gaikwad_a(ax):
     gerr = np.array([1.613e-14, 2.258e-14, 3.978e-14, 5.590e-14])
 
     ax.scatter(z, g*1.0e12, c='#d62728', edgecolor='None',
-               label='Gaikwad et al.\ 2017a',
+               label='Gaikwad et al. 2017a',
                s=64, zorder=10, linewidths=1.5) 
 
     ax.errorbar(z, g*1.0e12, ecolor='#d62728', capsize=0,
@@ -1025,7 +1025,7 @@ def gaikwad_b(ax, puc=False):
     if puc: 
 
         ax.scatter(1+z, g*1.0e12, c='k', edgecolor='None',
-                   label='Gaikwad et al.\ 2017b', 
+                   label='Gaikwad et al. 2017b', 
                    s=64, zorder=10, linewidths=1.5) 
 
         ax.errorbar(1+z, g*1.0e12, ecolor='k', capsize=0,
@@ -1036,7 +1036,7 @@ def gaikwad_b(ax, puc=False):
         return
     
     ax.scatter(z, g*1.0e12, c='k', edgecolor='None',
-               label='Gaikwad et al.\ 2017b', marker='p',
+               label='Gaikwad et al. 2017b', marker='p',
                s=80, zorder=10, linewidths=1.5) 
 
     return
@@ -1063,7 +1063,7 @@ def fumagalli(ax, puc=False):
                                   dz, de, ec='orange',
                                   color='None', lw=2,
                                   zorder=10,
-                                  label='Fumagalli et al.\ 2017')
+                                  label='Fumagalli et al. 2017')
         ax.add_patch(rect)
 
     return
@@ -1118,13 +1118,13 @@ def draw_g(lfg, z2=None, g2=None, individuals=None):
     
     zs_hm12, gs_hm12 = j(em_qso_hm12)
     ax.plot(zs_hm12, gs_hm12/1.0e-12, c='dodgerblue', lw=2,
-            label='Haardt \& Madau 2012 QSOs')
+            label='Haardt & Madau 2012 QSOs')
 
     g_hm12_total(ax)
 
     zs_mh15, gs_mh15 = j(em_qso_mh15)
     ax.plot(zs_mh15, gs_mh15/1.0e-12, c='forestgreen', lw=2,
-            label=r'Madau \& Haardt 2015')
+            label=r'Madau & Haardt 2015')
     
     bb13(ax)
     calverley(ax)
@@ -1144,7 +1144,7 @@ def draw_g(lfg, z2=None, g2=None, individuals=None):
     gg_uerr *= 1.0e12
     
     ax.scatter(zg, gg, c='grey', edgecolor='None',
-               label=r'Giallongo et al.\ 2015 ($M<-18$)',
+               label=r'Giallongo et al. 2015 ($M<-18$)',
                s=72, zorder=4)
 
     ax.errorbar(zg, gg, ecolor='grey', capsize=0, fmt='None', elinewidth=2,
@@ -1276,14 +1276,14 @@ def draw_g_paper():
     print( 'hm12')
     zs_hm12, gs_hm12 = j(em_qso_hm12)
     ax.plot(zs_hm12, gs_hm12/1.0e-12, c='maroon', lw=2, zorder=4,
-            label='Haardt \& Madau 2012 QSOs', dashes=[7,2])
+            label='Haardt & Madau 2012 QSOs', dashes=[7,2])
 
     g_hm12_total(ax)
 
     print( 'mh15')
     zs_mh15, gs_mh15 = j(em_qso_mh15)
     ax.plot(zs_mh15, gs_mh15/1.0e-12, c='darkgreen', lw=1,
-            label=r'Madau \& Haardt 2015', zorder=2, dashes=[1,1])
+            label=r'Madau & Haardt 2015', zorder=2, dashes=[1,1])
     
     bb13(ax)
     calverley(ax)
@@ -1311,7 +1311,7 @@ def draw_g_paper():
                 zorder=11, mew=1)
 
     ax.scatter(zg, gg, c='#ffffff', edgecolor='tomato',
-               label='Giallongo et al.\ 2015 ($M_\mathrm{1450}<-18$)',
+               label=r'Giallongo et al. 2015 ($M_\mathrm{1450}<-18$)',
                s=55, zorder=11, linewidths=1.5)
     
     khaire(ax)
@@ -1324,9 +1324,9 @@ def draw_g_paper():
 
     handles, labels = ax.get_legend_handles_labels()
     handles.append((g18f,g18))
-    labels.append('Kulkarni et al.\ 2019 (this work; $M_\mathrm{1450}<-18$)')
+    labels.append(r'Kulkarni et al. 2019 (this work; $M_\mathrm{1450}<-18$)')
     handles.append((g21f,g21))
-    labels.append('Kulkarni et al.\ 2019 (this work; $M_\mathrm{1450}<-21$)')
+    labels.append(r'Kulkarni et al. 2019 (this work; $M_\mathrm{1450}<-21$)')
 
     plt.legend(handles, labels, loc='center',
                fontsize=12, handlelength=3, frameon=False,
@@ -1393,14 +1393,14 @@ def draw_g_referee(zmax):
     print( 'hm12')
     zs_hm12, gs_hm12 = j(em_qso_hm12)
     ax.plot(zs_hm12, gs_hm12/1.0e-12, c='maroon', lw=2, zorder=4,
-            label='Haardt \& Madau 2012 QSOs', dashes=[7,2])
+            label='Haardt & Madau 2012 QSOs', dashes=[7,2])
 
     g_hm12_total(ax)
 
     print( 'mh15')
     zs_mh15, gs_mh15 = j(em_qso_mh15)
     ax.plot(zs_mh15, gs_mh15/1.0e-12, c='darkgreen', lw=1,
-            label=r'Madau \& Haardt 2015', zorder=2, dashes=[1,1])
+            label=r'Madau & Haardt 2015', zorder=2, dashes=[1,1])
     
     bb13(ax)
     calverley(ax)
@@ -1428,7 +1428,7 @@ def draw_g_referee(zmax):
                 zorder=11, mew=1)
 
     ax.scatter(zg, gg, c='#ffffff', edgecolor='tomato',
-               label='Giallongo et al.\ 2015 ($M_\mathrm{1450}<-18$)',
+               label=r'Giallongo et al. 2015 ($M_\mathrm{1450}<-18$)',
                s=55, zorder=11, linewidths=1.5)
     
     khaire(ax)
@@ -1441,9 +1441,9 @@ def draw_g_referee(zmax):
 
     handles, labels = ax.get_legend_handles_labels()
     handles.append((g18f,g18))
-    labels.append('Kulkarni et al.\ 2019 (this work; $M_\mathrm{1450}<-18$)')
+    labels.append(r'Kulkarni et al. 2019 (this work; $M_\mathrm{1450}<-18$)')
     handles.append((g21f,g21))
-    labels.append('Kulkarni et al.\ 2019 (this work; $M_\mathrm{1450}<-21$)')
+    labels.append(r'Kulkarni et al. 2019 (this work; $M_\mathrm{1450}<-21$)')
 
     legend_title = r'$z_\mathrm{max}='+'{:g}$'.format(zmax)
     plt.legend(handles, labels, loc='center',
@@ -1512,13 +1512,13 @@ def draw_g_puc():
     
     zs_hm12, gs_hm12 = j(em_qso_hm12)
     ax.plot(1+zs_hm12, gs_hm12/1.0e-12, c='grey', lw=2, zorder=2,
-            label='Haardt \& Madau 2012 QSOs', dashes=[7,2])
+            label='Haardt & Madau 2012 QSOs', dashes=[7,2])
 
     g_hm12_total(ax, puc=True)
 
     zs_mh15, gs_mh15 = j(em_qso_mh15)
     ax.plot(1+zs_mh15, gs_mh15/1.0e-12, c='forestgreen', lw=1, zorder=2, dashes=[1,1],
-            label=r'Madau \& Haardt 2015')
+            label=r'Madau & Haardt 2015')
     
     bb13(ax, puc=True)
 
@@ -1549,9 +1549,9 @@ def draw_g_puc():
 
     handles, labels = [], [] 
     handles.append((g18f,g18))
-    labels.append('Kulkarni et al.\ 2019 (this work; $M_\mathrm{1450}<-18$)')
+    labels.append(r'Kulkarni et al. 2019 (this work; $M_\mathrm{1450}<-18$)')
     handles.append((g21f,g21))
-    labels.append('Kulkarni et al.\ 2019 (this work; $M_\mathrm{1450}<-21$)')
+    labels.append(r'Kulkarni et al. 2019 (this work; $M_\mathrm{1450}<-21$)')
 
     l2 = plt.legend(handles, labels, loc='lower right',
                     fontsize=11, handlelength=3, frameon=False,
@@ -1618,13 +1618,13 @@ def draw_g_puc_talk():
     
     zs_hm12, gs_hm12 = j(em_qso_hm12)
     ax.plot(1+zs_hm12, gs_hm12/1.0e-12, c='grey', lw=2, zorder=2,
-            label='Haardt \& Madau 2012 QSOs', dashes=[7,2])
+            label='Haardt & Madau 2012 QSOs', dashes=[7,2])
 
     g_hm12_total(ax, puc=True)
 
     zs_mh15, gs_mh15 = j(em_qso_mh15)
     ax.plot(1+zs_mh15, gs_mh15/1.0e-12, c='forestgreen', lw=1, zorder=2, dashes=[1,1],
-            label=r'Madau \& Haardt 2015')
+            label=r'Madau & Haardt 2015')
     
     bb13(ax, puc=True)
 
@@ -1655,9 +1655,9 @@ def draw_g_puc_talk():
 
     handles, labels = [], [] 
     handles.append((g18f,g18))
-    labels.append('Kulkarni et al.\ 2018 (this work; $M_\mathrm{1450}<-18$)')
+    labels.append(r'Kulkarni et al. 2018 (this work; $M_\mathrm{1450}<-18$)')
     handles.append((g21f,g21))
-    labels.append('Kulkarni et al.\ 2018 (this work; $M_\mathrm{1450}<-21$)')
+    labels.append(r'Kulkarni et al. 2018 (this work; $M_\mathrm{1450}<-21$)')
 
     l2 = plt.legend(handles, labels, loc='lower right',
                     fontsize=11, handlelength=3, frameon=False,
@@ -1723,13 +1723,13 @@ def draw_g_talk():
 
     zs_hm12, gs_hm12 = j(em_qso_hm12)
     ax.plot(zs_hm12, gs_hm12/1.0e-12, c='maroon', lw=2, zorder=4,
-            label='Haardt \& Madau 2012 QSOs', dashes=[7,2])
+            label='Haardt & Madau 2012 QSOs', dashes=[7,2])
 
     g_hm12_total(ax)
 
     zs_mh15, gs_mh15 = j(em_qso_mh15)
     ax.plot(zs_mh15, gs_mh15/1.0e-12, c='darkgreen', lw=1,
-            label=r'Madau \& Haardt 2015', zorder=2, dashes=[1,1])
+            label=r'Madau & Haardt 2015', zorder=2, dashes=[1,1])
     
     bb13(ax)
     calverley(ax)
@@ -1757,7 +1757,7 @@ def draw_g_talk():
                 zorder=11, mew=1)
 
     ax.scatter(zg, gg, c='#ffffff', edgecolor='tomato',
-               label='Giallongo et al.\ 2015 ($M_\mathrm{1450}<-18$)',
+               label=r'Giallongo et al. 2015 ($M_\mathrm{1450}<-18$)',
                s=55, zorder=11, linewidths=1.5)
     
     khaire(ax)
@@ -1770,9 +1770,9 @@ def draw_g_talk():
 
     handles, labels = ax.get_legend_handles_labels()
     handles.append((g18f,g18))
-    labels.append('Kulkarni et al.\ 2018 ($M_\mathrm{1450}<-18$)')
+    labels.append(r'Kulkarni et al. 2018 ($M_\mathrm{1450}<-18$)')
     handles.append((g21f,g21))
-    labels.append('Kulkarni et al.\ 2018 ($M_\mathrm{1450}<-21$)')
+    labels.append(r'Kulkarni et al. 2018 ($M_\mathrm{1450}<-21$)')
 
     plt.legend(handles, labels, loc='center',
                fontsize=12, handlelength=3, frameon=False,

@@ -84,7 +84,7 @@ def plot_phi_star(fig, composite, sample=False, lfs=None, lfsMock=None):
     ax.errorbar(zm, cm, ecolor='grey', capsize=0,
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=4)
-    ax.scatter(zm, cm, color='#ffffff', edgecolor='grey', zorder=4, s=30, label='Manti et al.\ 2017')
+    ax.scatter(zm, cm, color='#ffffff', edgecolor='grey', zorder=4, s=30, label='Manti et al. 2017')
 
     ax.set_xticks((0,1,2,3,4,5,6,7))
     ax.set_ylabel(r'$\log_{10}\left(\phi_*/\mathrm{mag}^{-1}\mathrm{cMpc}^{-3}\right)$')
@@ -287,7 +287,7 @@ def plot_alpha(fig, composite, sample=False, lfs=None, lfsMock=None):
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=4)
     ax.scatter(zm, cm, color='#ffffff', edgecolor='grey',
-               zorder=4, label='Manti et al.\ 2017', s=30)
+               zorder=4, label='Manti et al. 2017', s=30)
 
     # plt.legend(loc='upper left', fontsize=10, handlelength=1,
     #            frameon=False, framealpha=0.0, labelspacing=.1,

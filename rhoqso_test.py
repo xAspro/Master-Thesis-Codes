@@ -124,13 +124,13 @@ def rhoqso(mlim, z, *params):
 
     m = np.linspace(-35.0, mlim, num=1000)
     farr = phi(z, m, *params) 
-    return np.trapz(farr, m)
+    return np.trapezoid(farr, m)
 
 def drhoqsodz(mlim, z, *params):
 
     m = np.linspace(-35.0, mlim, num=1000)
     farr = dphidz(z, m, *params) 
-    return np.trapz(farr, m)
+    return np.trapezoid(farr, m)
 
 def plotRhoQso(zmin, zmax): 
     fig = plt.figure(figsize=(7, 10), dpi=100)
