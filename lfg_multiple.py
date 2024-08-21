@@ -4,6 +4,10 @@ from composite import lf
 from composite import lf_polyb
 from summary_fromFile import summary_plot as sp
 
+##add time!!!!
+import time
+start_time = time.time()
+
 # Model 1 
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
@@ -69,11 +73,19 @@ assert(np.all(lfg1.prior_min_values < lfg1.prior_max_values))
 assert(np.all(lfg1.bf.x < lfg1.prior_max_values))
 assert(np.all(lfg1.prior_min_values < lfg1.bf.x))
 
+print("Model 1 commence run_mcmc")
+
 lfg1.run_mcmc()
+
+end_time = time.time()
+print("Time taken: ", end_time - start_time)
+print("Model 1 over")
 
 #------------------------------------------------------------
 
 # Model 2 
+
+start_time = time.time()
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/croom09sgp_sample.dat',
@@ -132,11 +144,18 @@ assert(np.all(lfg2.prior_min_values < lfg2.prior_max_values))
 assert(np.all(lfg2.bf.x < lfg2.prior_max_values))
 assert(np.all(lfg2.prior_min_values < lfg2.bf.x))
 
+print("Model 2 commence run_mcmc")
+
 lfg2.run_mcmc()
+
+end_time = time.time()
+print("Time taken: ", end_time - start_time)
+print("Model 2 over")
 
 #------------------------------------------------------------
 
 # Model 3
+start_time = time.time()
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/croom09sgp_sample.dat',
@@ -195,8 +214,16 @@ assert(np.all(lfg3.prior_min_values < lfg3.prior_max_values))
 assert(np.all(lfg3.bf.x < lfg3.prior_max_values))
 assert(np.all(lfg3.prior_min_values < lfg3.bf.x))
 
+print("Model 3 commence run_mcmc")
+
 lfg3.run_mcmc()
 
-#------------------------------------------------------------
+end_time = time.time()
+print("Time taken: ", end_time - start_time)
+print("Model 3 over")
 
+#------------------------------------------------------------
+###################################################################################################
+## What this this doing here???
 import bins 
+###################################################################################################

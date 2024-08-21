@@ -9,8 +9,8 @@ import numpy as np
 case = 3
 method = 'Powell'
 
-case = int(sys.argv[1])
-method = sys.argv[2]
+# case = int(sys.argv[1])
+# method = sys.argv[2]
 
 if case == 1:
     

@@ -18,6 +18,7 @@ from numpy.polynomial import Chebyshev as T
 from numpy.polynomial.polynomial import polyval
 
 def getselfn(selfile):
+    # print("In composite.py getselfn")
 
     """Read selection map."""
 
@@ -27,6 +28,7 @@ def getselfn(selfile):
     return z, mag, p, dz, dm 
 
 def getqlums(lumfile):
+    # print("In composite.py getqlums")
 
     """Read quasar luminosities."""
 
@@ -71,6 +73,7 @@ def getqlums(lumfile):
     return z, mag, p 
 
 def volume(z, area, cosmo=cosmo):
+    # print("In composite.py volume")
 
     omega = (area/41253.0)*4.0*np.pi # str
     volperstr = cd.diff_comoving_volume(z,**cosmo) # cMpc^3 str^-1 dz^-1
@@ -78,8 +81,10 @@ def volume(z, area, cosmo=cosmo):
     return omega*volperstr # cMpc^3 dz^-1 
 
 class selmap:
+    # print("In composite.py class-selmap")
 
     def __init__(self, selection_map_file, area, sample_id):
+        # print("In composite.py class-selmap __init__")
 
         self.z, self.m, self.p, self.dz, self.dm  = getselfn(selection_map_file)
 
@@ -162,6 +167,7 @@ class selmap:
         return
 
     def nqso(self, lumfn, theta):
+        # print("In composite.py class-selmap nqso")
 
         psi = 10.0**lumfn.log10phi(theta, self.m, self.z)
         tot = psi*self.p*self.volume*self.dz*self.dm
@@ -169,12 +175,14 @@ class selmap:
         return np.sum(tot) 
             
 class lf:
+    # print("In composite.py class-lf")
 
     """5-parameter model for beta; for polynomial model see lf_polyb below.
 
     """
 
     def __init__(self, quasar_files=None, selection_maps=None, pnum=np.array([2,2,1,1])):
+        # print("In composite.py class-lf __init__")
 
         self.pnum = pnum 
         
@@ -194,12 +202,14 @@ class lf:
         return
 
     def atz(self, z, p):
+        # print("In composite.py class-lf atz")
 
         """Redshift evolution of QLF parameters."""
         
         return T(p)(1+z)
     
     def atz_beta(self, z, p):
+        # print("In composite.py class-lf atz_beta")
 
         """Redshift evolution of QLF parameters."""
 
@@ -208,6 +218,7 @@ class lf:
         return h + f0/(10.0**(a*zeta) + 10.0**(b*zeta))
 
     def getparams(self, theta):
+        # print("In composite.py class-lf getparams")
 
         if isinstance(self.pnum, int):
             # Evolution of each LF parameter described by 'atz' using same
@@ -221,6 +232,7 @@ class lf:
         return np.split(theta,splitlocs)
 
     def log10phi(self, theta, mag, z):
+        # print("In composite.py class-lf log10phi")
 
         params = self.getparams(theta)
 
@@ -235,11 +247,13 @@ class lf:
         return np.log10(phi)
 
     def lfnorm(self, theta):
+        # print("In composite.py class-lf lfnorm")
 
         ns = np.array([x.nqso(self, theta) for x in self.maps])
         return np.sum(ns) 
         
     def neglnlike(self, theta):
+        # print("In composite.py class-lf neglnlike")
 
         logphi = self.log10phi(theta, self.M1450, self.z) # Mpc^-3 mag^-1
         logphi /= np.log10(np.e) # Convert to base e 
@@ -247,6 +261,7 @@ class lf:
         return -2.0*logphi.sum() + 2.0*self.lfnorm(theta)
 
     def bestfit(self, guess, method='Nelder-Mead'):
+        # print("In composite.py class-lf bestfit")
         result = op.minimize(self.neglnlike,
                              guess,
                              method=method, options={'maxfev': 20000,
@@ -260,6 +275,7 @@ class lf:
         return result
     
     def create_param_range(self):
+        # print("In composite.py class-lf create_param_range")
 
         half = self.bf.x/2.0
         double = 2.0*self.bf.x
@@ -270,6 +286,7 @@ class lf:
         return
 
     def lnprior(self, theta):
+        # print("In composite.py class-lf lnprior")
         """
         Set up uniform priors.
 
@@ -287,6 +304,7 @@ class lf:
         return -np.inf
 
     def lnprob(self, theta):
+        # print("In composite.py class-lf lnprob")
 
         lp = self.lnprior(theta)
         
@@ -296,6 +314,7 @@ class lf:
         return lp - self.neglnlike(theta)
 
     def run_mcmc(self):
+        # print("In composite.py class-lf run_mcmc")
         """
         Run emcee.
 
@@ -314,6 +333,7 @@ class lf:
         return
 
     def corner_plot(self, labels=None, dirname=''):
+        # print("In composite.py class-lf corner_plot")
 
         mpl.rcParams['font.size'] = '14'
         f = corner.corner(self.samples, labels=labels, truths=self.bf.x)
@@ -324,6 +344,7 @@ class lf:
         return
 
     def plot_chains(self, fig, param, ylabel):
+        # print("In composite.py class-lf plot_chains")
         ax = fig.add_subplot(self.bf.x.size, 1, param+1)
         for i in range(self.nwalkers): 
             ax.plot(self.sampler.chain[i,:,param], c='k', alpha=0.1)
@@ -337,6 +358,7 @@ class lf:
         return 
 
     def chains(self, labels=None, dirname=''):
+        # print("In composite.py class-lf chains")
 
         mpl.rcParams['font.size'] = '10'
         nparams = self.bf.x.size
@@ -354,6 +376,7 @@ class lf:
         return
 
 class lf_polyb:
+    # print("In composite.py class-lf_polyb")
 
     """Same as lf above, except this has polynomial model for beta. 
 
@@ -361,6 +384,7 @@ class lf_polyb:
     
 
     def __init__(self, quasar_files=None, selection_maps=None, pnum=np.array([2,2,1,1])):
+        # print("In composite.py class-lf_polyb __init__")
 
         self.pnum = pnum 
         
@@ -380,12 +404,14 @@ class lf_polyb:
         return
 
     def atz(self, z, p):
+        # print("In composite.py class-lf_polyb atz")
 
         """Redshift evolution of QLF parameters."""
         
         return T(p)(1+z)
     
     def getparams(self, theta):
+        # print("In composite.py class-lf_polyb getparams")
 
         if isinstance(self.pnum, int):
             # Evolution of each LF parameter described by 'atz' using same
@@ -399,6 +425,7 @@ class lf_polyb:
         return np.split(theta,splitlocs)
 
     def log10phi(self, theta, mag, z):
+        # print("In composite.py class-lf_polyb log10phi")
 
         params = self.getparams(theta)
 
@@ -412,11 +439,13 @@ class lf_polyb:
         return np.log10(phi)
 
     def lfnorm(self, theta):
+        # print("In composite.py class-lf_polyb lfnorm")
 
         ns = np.array([x.nqso(self, theta) for x in self.maps])
         return np.sum(ns) 
         
     def neglnlike(self, theta):
+        # print("In composite.py class-lf_polyb neglnlike")
 
         logphi = self.log10phi(theta, self.M1450, self.z) # Mpc^-3 mag^-1
         logphi /= np.log10(np.e) # Convert to base e 
@@ -424,6 +453,7 @@ class lf_polyb:
         return -2.0*logphi.sum() + 2.0*self.lfnorm(theta)
 
     def bestfit(self, guess, method='Nelder-Mead'):
+        # print("In composite.py class-lf_polyb bestfit")
         result = op.minimize(self.neglnlike,
                              guess,
                              method=method, options={'maxfev': 20000,
@@ -437,6 +467,7 @@ class lf_polyb:
         return result
     
     def create_param_range(self):
+        # print("In composite.py class-lf_polyb create_param_range")
 
         half = self.bf.x/2.0
         double = 2.0*self.bf.x
@@ -447,6 +478,7 @@ class lf_polyb:
         return
 
     def lnprior(self, theta):
+        # print("In composite.py class-lf_polyb lnprior")
         """
         Set up uniform priors.
 
@@ -464,6 +496,7 @@ class lf_polyb:
         return -np.inf
 
     def lnprob(self, theta):
+        # print("In composite.py class-lf_polyb lnprob")
 
         lp = self.lnprior(theta)
         
@@ -473,6 +506,7 @@ class lf_polyb:
         return lp - self.neglnlike(theta)
 
     def run_mcmc(self):
+        # print("In composite.py class-lf_polyb run_mcmc")
         """
         Run emcee.
 
@@ -491,6 +525,7 @@ class lf_polyb:
         return
 
     def corner_plot(self, labels=None, dirname=''):
+        # print("In composite.py class-lf_polyb corner_plot")
 
         mpl.rcParams['font.size'] = '14'
         f = corner.corner(self.samples, labels=labels, truths=self.bf.x)
@@ -501,6 +536,8 @@ class lf_polyb:
         return
 
     def plot_chains(self, fig, param, ylabel):
+        # print("In composite.py class-lf_polyb plot_chains")
+
         ax = fig.add_subplot(self.bf.x.size, 1, param+1)
         for i in range(self.nwalkers): 
             ax.plot(self.sampler.chain[i,:,param], c='k', alpha=0.1)
@@ -514,6 +551,7 @@ class lf_polyb:
         return 
 
     def chains(self, labels=None, dirname=''):
+        # print("In composite.py class-lf_polyb chains")
 
         mpl.rcParams['font.size'] = '10'
         nparams = self.bf.x.size

@@ -161,8 +161,20 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='new', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = - (u-c)
+    downerr = - (c-l)
+    print("zmean=", zmean)
+    print("zl=", zl)
+    print("zu=", zu)
+    print("u=", u)
+    print("c=", c)
+    print("l=", l)
+
+    print("left=", left)
+    print("right=", right)
+    print("uperr=", uperr)
+    print("downerr=", downerr)
+
     ax.errorbar(zmean, c, ecolor=colors[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -172,8 +184,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='new', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = - (u-c)
+    downerr = - (c-l)
     ax.errorbar(zmean, c, ecolor=colors[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -269,8 +281,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='new', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = - (u-c)
+    downerr = - (c-l)
     ax.errorbar(zmean, c, ecolor=colors[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -302,8 +314,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='new', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = - (u-c)
+    downerr = - (c-l)
     ax.errorbar(zmean, c, ecolor=colors[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -383,8 +395,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='new', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = - (u-c)
+    downerr = - (c-l)
     ax.errorbar(zmean, c, ecolor=colors[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -394,8 +406,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='new', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = - (u-c)
+    downerr = - (c-l)
     ax.errorbar(zmean, c, ecolor=colors[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -508,8 +520,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='new', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = - (u-c)
+    downerr = - (c-l)
     ax.errorbar(zmean, c, ecolor=colors[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -555,8 +567,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='new', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = - (u-c)
+    downerr = - (c-l)
     ax.errorbar(zmean, c, ecolor=colors[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -604,6 +616,7 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False):
     plot_beta(fig, composite, individuals=individuals, compOpt=compOpt)
 
     plt.savefig('evolution.pdf',bbox_inches='tight')
+    print("In summary.py summary_plot > plt.savefig('evolution.pdf',bbox_inches='tight')")
 
     mpl.rcParams['font.size'] = '22'
     
