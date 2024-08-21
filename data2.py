@@ -65,7 +65,7 @@ def plot_data(data):
     zlim = (z-bin_width/2.0, z+bin_width/2.0)
     nbins = 1
     n, bins, patches = plt.hist(z, bins=nbins, range=zlim, color=u'#f77189', 
-                                histtype='stepfilled', ec='none', label='UKIDSS Mortlock et al.\ (2011)')
+                                histtype='stepfilled', ec='none', label='UKIDSS Mortlock et al. (2011)')
             
     ax.set_xlabel(r'redshift')
     ax.set_ylabel(r'Number of quasars')
@@ -92,105 +92,105 @@ shuffle(cs)
 data = []
 
 f = ['Data_new/dr7z2p2_sample.dat']
-l = r'SDSS DR7 with Richards et al.\ (2006) selection function'
+l = r'SDSS DR7 with Richards et al. (2006) selection function'
 s = sample(f, color=cs[0], label=l)
 data.append(s)
 
 f = ['Data_new/croom09sgp_sample.dat',
      'Data_new/croom09ngp_sample.dat']
-l = r'2SLAQ NGP+SGP Croom et al.\ (2009a, 2009b)'
+l = r'2SLAQ NGP+SGP Croom et al. (2009a, 2009b)'
 s = sample(f, color=cs[1], label=l)
 data.append(s)
 
 f = ['Data_new/dr7z3p7_sample.dat']
-l = r'SDSS DR7 with Richards et al.\ (2006) selection function'
+l = r'SDSS DR7 with Richards et al. (2006) selection function'
 s = sample(f, color=cs[0])
 # Use only up to z = 4.7 to avoid overlap with McGreer and Yang 
 s.z = s.z[s.z<4.7]
 data.append(s)
 
 f = ['Data_new/bossdr9color.dat']
-l = r'BOSS DR9 colour-selected Ross et al.\ (2013)'
+l = r'BOSS DR9 colour-selected Ross et al. (2013)'
 s = sample(f, color=cs[2], label=l)
 data.append(s)
 
 f = ['Data_new/yang16_sample.dat']
-l = r'SDSS+Wise Yang et al.\ (2016)'
+l = r'SDSS+Wise Yang et al. (2016)'
 s = sample(f, color=cs[3], label=l)
 data.append(s)
 
 f = ['Data_new/mcgreer13_dr7sample.dat']
-l = r'SDSS DR7 McGreer et al.\ (2013)'
+l = r'SDSS DR7 McGreer et al. (2013)'
 s = sample(f, color=cs[4], label=l)
 data.append(s)
 
 f = ['Data_new/mcgreer13_s82sample.dat']
-l = r'SDSS Stripe 82 McGreer et al.\ (2013)'
+l = r'SDSS Stripe 82 McGreer et al. (2013)'
 s = sample(f, color=cs[5], label=l)
 data.append(s)
 
 f = ['Data_new/mcgreer13_dr7extend.dat']
-l = r'SDSS DR7 extended McGreer et al.\ (2013)'
+l = r'SDSS DR7 extended McGreer et al. (2013)'
 s = sample(f, color=cs[6], label=l)
 data.append(s)
 
 f = ['Data_new/mcgreer13_s82extend.dat']
-l = r'SDSS Stripe 82 extended McGreer et al.\ (2013)'
+l = r'SDSS Stripe 82 extended McGreer et al. (2013)'
 s = sample(f, color=cs[7], label=l)
 data.append(s)
 
 f = ['Data/glikman11qso.dat']
-l = r'NDWFS+DLS Glikman et al.\ (2011)'
+l = r'NDWFS+DLS Glikman et al. (2011)'
 s = sample(f, color=cs[8], label=l)
 data.append(s)
 
 f = ['Data_new/giallongo15_sample.dat']
-l = r'CANDELS GOODS-S Giallongo et al.\ (2015)'
+l = r'CANDELS GOODS-S Giallongo et al. (2015)'
 s = sample(f, color=cs[9], label=l)
 data.append(s)
 
 f = ['Data_new/jiang08_sample.dat']
-l = r'SDSS Deep Jiang et al.\ (2008, 2009)'
+l = r'SDSS Deep Jiang et al. (2008, 2009)'
 s = sample(f, color=cs[10], label=l)
 data.append(s)
 
 f = ['Data_new/jiang09_sample.dat']
-l = r'SDSS Deep Jiang et al.\ (2009)'
+l = r'SDSS Deep Jiang et al. (2009)'
 s = sample(f, color=cs[10])
 data.append(s)
 
 f = ['Data_new/jiang16main_sample.dat']
-l = r'SDSS Main Jiang et al.\ (2016)'
+l = r'SDSS Main Jiang et al. (2016)'
 s = sample(f, color=cs[11], label=l)
 data.append(s)
 
 f = ['Data_new/fan06_sample.dat']
-l = r'SDSS Fan et al.\ (2006)'
+l = r'SDSS Fan et al. (2006)'
 s = sample(f, color=cs[12], label=l)
 data.append(s)
 
 f = ['Data_new/jiang16overlap_sample.dat']
-l = r'SDSS Overlap Jiang et al.\ (2016)'
+l = r'SDSS Overlap Jiang et al. (2016)'
 s = sample(f, color=cs[13], label=l)
 data.append(s)
 
 f = ['Data_new/jiang16s82_sample.dat']
-l = r'SDSS Stripe 82 Jiang et al.\ (2016)'
+l = r'SDSS Stripe 82 Jiang et al. (2016)'
 s = sample(f, color=cs[14], label=l)
 data.append(s)
 
 f = ['Data_new/willott10_cfhqsdeepsample.dat']
-l = r'CFHQS Deep Willott et al.\ (2010)'
+l = r'CFHQS Deep Willott et al. (2010)'
 s = sample(f, color=cs[15], label=l)
 data.append(s)
 
 f = ['Data_new/willott10_cfhqsvwsample.dat']
-l = r'CFHQS Very Wide Willott et al.\ (2010)'
+l = r'CFHQS Very Wide Willott et al. (2010)'
 s = sample(f, color=cs[16], label=l)
 data.append(s)
 
 f = ['Data_new/kashikawa15_sample.dat']
-l = r'Subaru High-$z$ Quasar Survey Kashikawa et al.\ (2010)'
+l = r'Subaru High-$z$ Quasar Survey Kashikawa et al. (2010)'
 s = sample(f, color=cs[17], label=l)
 data.append(s)
 

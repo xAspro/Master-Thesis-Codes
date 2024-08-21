@@ -58,7 +58,7 @@ def get_lf(lf, z_plot, sids):
     #     t = np.isclose(magsel, mag, rtol=0.0, atol=dm*0.5)
     #     rs = zsel[t][probsel[t]>0.0]
     #     vl = volsel[t][probsel[t]>0.0]
-    #     return np.trapz(vl, rs) 
+    #     return np.trapezoid(vl, rs) 
     #     # return np.sum(volsel[t][probsel[t]>0.0], dtype=np.float64)
 
     # def volm(mag, magsel, probsel, volsel, zsel):
@@ -197,12 +197,12 @@ def draw(lf, z_plot, composite=None, dirname=''):
     print( phi)
     print( M1450)
 
-    ax.scatter(M1450[:3], phi[:3], c='b', label='Jiang et al.\ 2009 SDSS Main', edgecolor='None', zorder=303) 
+    ax.scatter(M1450[:3], phi[:3], c='b', label='Jiang et al. 2009 SDSS Main', edgecolor='None', zorder=303) 
     ax.errorbar(M1450[:3], phi[:3], ecolor='b', capsize=0,
                 xerr=np.vstack((M1450_lerr[:3], M1450_uerr[:3])),
                 yerr=np.vstack((phi_lerr[:3], phi_uerr[:3])), fmt=None,zorder=304)
 
-    ax.scatter(M1450[3:], phi[3:], c='darkgreen', label='Jiang et al.\ 2009 SDSS Deep', edgecolor='None', zorder=303) 
+    ax.scatter(M1450[3:], phi[3:], c='darkgreen', label='Jiang et al. 2009 SDSS Deep', edgecolor='None', zorder=303) 
     ax.errorbar(M1450[3:], phi[3:], ecolor='darkgreen', capsize=0,
                 xerr=np.vstack((M1450_lerr[3:], M1450_uerr[3:])),
                 yerr=np.vstack((phi_lerr[3:], phi_uerr[3:])), fmt=None,zorder=304)

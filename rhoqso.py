@@ -23,7 +23,7 @@ def rhoqso(loglf, theta, mlim, z, fit='individual', mbright=-35.0):
     else:
         farr = f(loglf, theta, m, z, fit='individual')
     
-    return np.trapz(farr, m) # cMpc^-3
+    return np.trapezoid(farr, m) # cMpc^-3
 
 def get_rhoqso(lfi, mlim, z, fit='individual', mbright=-35.0):
 

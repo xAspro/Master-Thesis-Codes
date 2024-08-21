@@ -28,71 +28,71 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat',
               6248.0, 13,
-              r'SDSS DR7 Richards et al.\ 2006'),
+              r'SDSS DR7 Richards et al. 2006'),
              
              ('Selmaps_with_tiles/croom09sgp_selfunc.dat',
               64.2, 15,
-              r'2SLAQ Croom et al.\ 2009'),
+              r'2SLAQ Croom et al. 2009'),
              
              ('Selmaps_with_tiles/croom09ngp_selfunc.dat',
               127.7, 15,
-              r'2SLAQ Croom et al.\ 2009'),
+              r'2SLAQ Croom et al. 2009'),
              
              ('Selmaps_with_tiles/ross13_selfunc2.dat',
               2236.0, 1,
-              r'BOSS DR9 Ross et al.\ 2013'),
+              r'BOSS DR9 Ross et al. 2013'),
              
              ('Selmaps_with_tiles/dr7z3p7_selfunc.dat',
               6248.0, 13,
-              r'SDSS DR7 Richards et al.\ 2006'),
+              r'SDSS DR7 Richards et al. 2006'),
              
              ('Selmaps_with_tiles/glikman11_selfunc_ndwfs.dat',
                1.71, 6,
-              r'NDWFS+DLS Glikman et al.\ 2011'),
+              r'NDWFS+DLS Glikman et al. 2011'),
              
              ('Selmaps_with_tiles/glikman11_selfunc_dls.dat',
                2.05, 6,
-              r'NDWFS+DLS Glikman et al.\ 2011'),
+              r'NDWFS+DLS Glikman et al. 2011'),
              
              ('Selmaps_with_tiles/yang16_sel.dat',
               14555.0, 17,
-              r'SDSS+WISE Yang et al.\ 2016'),
+              r'SDSS+WISE Yang et al. 2016'),
              
              ('Selmaps_with_tiles/mcgreer13_dr7selfunc.dat',
               6248.0, 8,
-              r'SDSS DR7 McGreer et al.\ 2013'),
+              r'SDSS DR7 McGreer et al. 2013'),
              
              ('Selmaps_with_tiles/mcgreer13_s82selfunc.dat',
               235.0, 8,
-              r'S82 McGreer et al.\ 2013'),
+              r'S82 McGreer et al. 2013'),
              
              ('Selmaps_with_tiles/jiang16main_selfunc.dat',
               11240.0, 18,
-              r'SDSS Jiang et al.\ 2016'),
+              r'SDSS Jiang et al. 2016'),
              
              ('Selmaps_with_tiles/jiang16overlap_selfunc.dat',
               4223.0, 18,
-              r'SDSS Jiang et al.\ 2016'),
+              r'SDSS Jiang et al. 2016'),
              
              ('Selmaps_with_tiles/jiang16s82_selfunc.dat',
               277.0, 18,
-              r'SDSS Jiang et al.\ 2016'),
+              r'SDSS Jiang et al. 2016'),
              
              ('Selmaps_with_tiles/willott10_cfhqsdeepsel.dat',
                4.47, 10,
-              r'CFHQS Willott et al.\ 2010'),
+              r'CFHQS Willott et al. 2010'),
              
              ('Selmaps_with_tiles/willott10_cfhqsvwsel.dat',
                494.0, 10,
-              r'CFHQS Willott et al.\ 2010'),
+              r'CFHQS Willott et al. 2010'),
              
              ('Selmaps_with_tiles/kashikawa15_sel.dat',
                6.5, 11,
-              r'Subaru Kashikawa et al.\ 2015')]
+              r'Subaru Kashikawa et al. 2015')]
              
              # ('Selmaps_with_tiles/giallongo15_sel.dat',
              #  0.0, 0.0, 0.047, 7,
-             #  'Giallongo et al.\ 2015')]
+             #  'Giallongo et al. 2015')]
 
 method = 'Nelder-Mead'
 print(sys.argv)

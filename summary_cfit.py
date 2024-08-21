@@ -189,7 +189,7 @@ def plot_alpha(fig, composite, sample=False):
                 fmt='None', zorder=2)
 
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt', usecols=(0,10,11,12), unpack=True)
-    # ax.scatter(zm, cm, color='k', edgecolor='None', zorder=2, label='Manti et al.\ 2017')
+    # ax.scatter(zm, cm, color='k', edgecolor='None', zorder=2, label='Manti et al. 2017')
     # ax.errorbar(zm, cm, ecolor='k', capsize=0,
     #             yerr=np.vstack((uperr, downerr)),
     #             fmt='None', zorder=2)

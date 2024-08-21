@@ -335,7 +335,7 @@ def plot_giallongo_z5p75(lf, ax, mags):
     p = (log10phi_star_giallongo, M_star_giallongo, alpha, beta)
     
     phi_fit = lf.log10phi(p, mags)
-    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al.\ 2015 fit at $z=5.75$', dashes=[7,2])
+    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al. 2015 fit at $z=5.75$', dashes=[7,2])
 
     return 
 
@@ -350,7 +350,7 @@ def plot_giallongo_z4p75(lf, ax, mags):
     p = (log10phi_star_giallongo, M_star_giallongo, alpha, beta)
     
     phi_fit = lf.log10phi(p, mags)
-    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al.\ 2015 fit at $z=4.75$', dashes=[7,2])
+    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al. 2015 fit at $z=4.75$', dashes=[7,2])
 
     return 
 
@@ -365,7 +365,7 @@ def plot_giallongo_z4p25(lf, ax, mags):
     p = (log10phi_star_giallongo, M_star_giallongo, alpha, beta)
     
     phi_fit = lf.log10phi(p, mags)
-    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al.\ 2015 fit at $z=4.25$', dashes=[7,2])
+    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al. 2015 fit at $z=4.25$', dashes=[7,2])
 
     return 
 
@@ -385,7 +385,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         indf = plot_posterior_sample_lfs(lf, ax, (-32.0, -16.0), lw=1,
                                        c='#ffbf00', alpha=0.1, zorder=2) 
         indbf = plot_bestfit_lf(lf, ax, mag_plot, lw=2,
-                             c='#ffbf00', zorder=3, label='Kulkarni et al.\ 2018 (this work)')
+                             c='#ffbf00', zorder=3, label='Kulkarni et al. 2018 (this work)')
 
         # indbf = plot_bestfit_lf(lf, ax, mag_plot, lw=2,
         #                      c='#ffbf00', zorder=3)

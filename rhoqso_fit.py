@@ -22,7 +22,7 @@ def rhoqso(loglf, theta, mlim, mbright=-23.0):
     m = np.linspace(mbright, mlim, num=100)
     farr = np.array([(10.0**loglf(theta, x))*luminosity(x) for x in m])
     
-    return np.trapz(farr, m) # ergs s^-1 Hz^-1 cMpc^-3
+    return np.trapezoid(farr, m) # ergs s^-1 Hz^-1 cMpc^-3
 
 def get_rhoqso(lfi, mlim, mbright=-23):
 
@@ -50,7 +50,7 @@ def rhoqso_912(loglf, theta, mlim, mbright=-30.0):
     m = np.linspace(mbright, mlim, num=100)
     farr = np.array([10.0**loglf(theta, x)*luminosity(x)*((912.0/1450.0)**0.61) for x in m])
     
-    return np.trapz(farr, m) # ergs s^-1 Hz^-1 cMpc^-3
+    return np.trapezoid(farr, m) # ergs s^-1 Hz^-1 cMpc^-3
 
 def get_rhoqso_912(lfi, mlim, mbright=-30):
 

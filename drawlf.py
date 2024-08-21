@@ -24,7 +24,7 @@ function in individual.py but is more flexible.
 """
 
 def lfsample(theta, n, mlims):
-    print("In drawlf.py lfsample")
+    # print("In drawlf.py lfsample")
 
     """
     Return n qso magnitudes between mlims[0] and mlims[1] when the LF
@@ -36,7 +36,7 @@ def lfsample(theta, n, mlims):
     mmax = mlims[1]
 
     def lnprob(x, theta):
-        print("In drawlf.py lfsample lnprob")
+        # print("In drawlf.py lfsample lnprob")
 
         if x < mmax and x > mmin: 
             mag = x 
@@ -61,7 +61,7 @@ def lfsample(theta, n, mlims):
     return np.random.choice(sample, n)
     
 def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
-    print("In drawlf.py plot_posterior_sample_lfs")
+    # print("In drawlf.py plot_posterior_sample_lfs")
 
     nmags = 100
     mags = np.linspace(*maglims, num=nmags)
@@ -79,7 +79,7 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     return f
 
 def plot_bestfit_lf(lf, ax, mags, **kwargs):
-    print("In drawlf.py plot_bestfit_lf")
+    # print("In drawlf.py plot_bestfit_lf")
 
     bf = np.median(lf.samples, axis=0)
     phi_fit = lf.log10phi(bf, mags)
@@ -87,7 +87,7 @@ def plot_bestfit_lf(lf, ax, mags, **kwargs):
     return bf 
 
 def binVol(self, selmap, mrange, zrange):
-    print("In drawlf.py binVol")
+    # print("In drawlf.py binVol")
 
     """
 
@@ -108,7 +108,7 @@ def binVol(self, selmap, mrange, zrange):
 
 
 def binVol_all(self, selmap, mrange, zrange):
-    print("In drawlf.py binVol_all")
+    # print("In drawlf.py binVol_all")
 
     """
 
@@ -129,7 +129,7 @@ def binVol_all(self, selmap, mrange, zrange):
 
 
 def totBinVol(lf, m, mbins, selmaps):
-    print("In drawlf.py totBinVol")
+    # print("In drawlf.py totBinVol")
 
     """
 
@@ -150,7 +150,7 @@ def totBinVol(lf, m, mbins, selmaps):
 
 
 def totBinVol_all(lf, m, mbins, selmaps):
-    print("In drawlf.py totBinVol_all")
+    # print("In drawlf.py totBinVol_all")
 
     """
 
@@ -171,7 +171,7 @@ def totBinVol_all(lf, m, mbins, selmaps):
 
 
 def get_lf(lf, sid, z_plot, special='None'):
-    print("In drawlf.py get_lf")
+    # print("In drawlf.py get_lf")
     
     # Bin data.  This is only for visualisation and to compare
     # with reported binned values.  
@@ -234,7 +234,7 @@ def get_lf(lf, sid, z_plot, special='None'):
 
 
 def get_lf_all(lf, sid, z_plot, special='None'):
-    print("In drawlf.py get_lf_all")
+    # print("In drawlf.py get_lf_all")
 
     # Bin data.  This is only for visualisation and to compare
     # with reported binned values.  
@@ -293,7 +293,7 @@ def get_lf_all(lf, sid, z_plot, special='None'):
 
 
 def get_lf_sample(lf, sid, z_plot):
-    print("In drawlf.py get_lf_sample")
+    # print("In drawlf.py get_lf_sample")
 
     # Bin data.  This is only for visualisation and to compare
     # with reported binned values.  
@@ -349,7 +349,7 @@ def get_lf_sample(lf, sid, z_plot):
 
 
 def plot_giallongo_z5p75(lf, ax, mags):
-    print("In drawlf.py plot_giallongo_z5p75")
+    # print("In drawlf.py plot_giallongo_z5p75")
 
     M_star_giallongo = -23.4
     log10phi_star_giallongo = -5.8
@@ -359,13 +359,13 @@ def plot_giallongo_z5p75(lf, ax, mags):
     p = (log10phi_star_giallongo, M_star_giallongo, alpha, beta)
     
     phi_fit = lf.log10phi(p, mags)
-    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al.\ 2015 fit at $z=5.75$', dashes=[7,2])
+    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al. 2015 fit at $z=5.75$', dashes=[7,2])
 
     return 
 
 
 def plot_giallongo_z4p75(lf, ax, mags):
-    print("In drawlf.py plot_giallongo_z4p75")
+    # print("In drawlf.py plot_giallongo_z4p75")
 
     M_star_giallongo = -23.6
     log10phi_star_giallongo = -5.7
@@ -375,13 +375,13 @@ def plot_giallongo_z4p75(lf, ax, mags):
     p = (log10phi_star_giallongo, M_star_giallongo, alpha, beta)
     
     phi_fit = lf.log10phi(p, mags)
-    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al.\ 2015 fit at $z=4.75$', dashes=[7,2])
+    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al. 2015 fit at $z=4.75$', dashes=[7,2])
 
     return 
 
 
 def plot_giallongo_z4p25(lf, ax, mags):
-    print("In drawlf.py plot_giallongo_z4p25")
+    # print("In drawlf.py plot_giallongo_z4p25")
 
     M_star_giallongo = -23.2
     log10phi_star_giallongo = -5.2
@@ -391,13 +391,13 @@ def plot_giallongo_z4p25(lf, ax, mags):
     p = (log10phi_star_giallongo, M_star_giallongo, alpha, beta)
     
     phi_fit = lf.log10phi(p, mags)
-    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al.\ 2015 fit at $z=4.25$', dashes=[7,2])
+    ax.plot(mags, phi_fit, lw=2, c='r', zorder=100, label=r'Giallongo et al. 2015 fit at $z=4.25$', dashes=[7,2])
 
     return 
 
 
 def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=True, c2=None, c3=None):
-    print("In drawlf.py render")
+    # print("In drawlf.py render")
 
     """
 
@@ -571,7 +571,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         return 
 
 def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_fit=True):
-    print("In drawlf.py draw")
+    # print("In drawlf.py draw")
 
     """
 

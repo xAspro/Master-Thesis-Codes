@@ -78,7 +78,7 @@ def croom09(ax, param):
     ax.errorbar(z, p, ecolor=clr['croom09'], capsize=2,
                 yerr=np.vstack((pdownerr, puperr)), 
                 fmt='None', zorder=180, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color=clr['croom09'], edgecolor='k', zorder=180, s=20, marker="h", linewidths=0.5, label=r'Croom et al.\ 2009')
+    ax.scatter(z, p, color=clr['croom09'], edgecolor='k', zorder=180, s=20, marker="h", linewidths=0.5, label=r'Croom et al. 2009')
 
     return
 
@@ -117,7 +117,7 @@ def ross13_s82(ax, param):
     ax.errorbar(z, c, ecolor='#ff7f0e', capsize=2,
                 yerr=np.vstack((downerr, uperr)),
                 fmt='None', zorder=190, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    p = ax.scatter(z, c, color='#ff7f0e', edgecolor='k', zorder=190, s=20, label='Ross et al.\ 2013', linewidths=0.5)
+    p = ax.scatter(z, c, color='#ff7f0e', edgecolor='k', zorder=190, s=20, label='Ross et al. 2013', linewidths=0.5)
 
     return p 
 
@@ -139,7 +139,7 @@ def masters12(ax, param):
         ax.errorbar(z, p, ecolor='k', capsize=2,
                     xerr=np.vstack((zdownerr, zuperr)),
                     fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-        ax.scatter(z, p, color=clr['masters12'], edgecolor='k', zorder=2, s=20, label='Masters et al.\ 2012', marker='^', linewidths=0.5)
+        ax.scatter(z, p, color=clr['masters12'], edgecolor='k', zorder=2, s=20, label='Masters et al. 2012', marker='^', linewidths=0.5)
 
         return
 
@@ -159,7 +159,7 @@ def masters12(ax, param):
                 xerr=np.vstack((zdownerr, zuperr)),
                 yerr=perr,
                 fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color=clr['masters12'], edgecolor='k', zorder=2, s=20, label='Masters et al.\ 2012', marker='^', linewidths=0.5)
+    ax.scatter(z, p, color=clr['masters12'], edgecolor='k', zorder=2, s=20, label='Masters et al. 2012', marker='^', linewidths=0.5)
 
     return
 
@@ -177,7 +177,7 @@ def jiang16(ax, param):
         ax.errorbar(z, p, ecolor='k', capsize=2,
                     xerr=np.vstack((zdownerr, zuperr)),
                     fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-        ax.scatter(z, p, color=clr['jiang16'], edgecolor='k', zorder=2, s=20, label='Jiang et al.\ 2016', marker='s', linewidths=0.5)
+        ax.scatter(z, p, color=clr['jiang16'], edgecolor='k', zorder=2, s=20, label='Jiang et al. 2016', marker='s', linewidths=0.5)
         
         return
 
@@ -190,7 +190,7 @@ def jiang16(ax, param):
                     xerr=np.vstack((zdownerr, zuperr)),
                     yerr=np.vstack((pdownerr, puperr)),
                     fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-        ax.scatter(z, p, color=clr['jiang16'], edgecolor='k', zorder=2, s=20, label='Jiang et al.\ 2016', marker='s', linewidths=0.5)
+        ax.scatter(z, p, color=clr['jiang16'], edgecolor='k', zorder=2, s=20, label='Jiang et al. 2016', marker='s', linewidths=0.5)
 
         return 
 
@@ -204,7 +204,7 @@ def jiang16(ax, param):
                     xerr=np.vstack((zdownerr, zuperr)),
                     yerr=np.vstack((pdownerr, puperr)),
                     fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-        ax.scatter(z, p, color=clr['jiang16'], edgecolor='k', zorder=2, s=20, label='Jiang et al.\ 2016', marker='s', linewidths=0.5)
+        ax.scatter(z, p, color=clr['jiang16'], edgecolor='k', zorder=2, s=20, label='Jiang et al. 2016', marker='s', linewidths=0.5)
 
         return
 
@@ -214,7 +214,7 @@ def jiang16(ax, param):
     ax.errorbar(z, p, ecolor='k', capsize=2,
                 xerr=np.vstack((zdownerr, zuperr)),
                 fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color=clr['jiang16'], edgecolor='k', zorder=2, s=20, label='Jiang et al.\ 2016', marker='s', linewidths=0.5)
+    ax.scatter(z, p, color=clr['jiang16'], edgecolor='k', zorder=2, s=20, label='Jiang et al. 2016', marker='s', linewidths=0.5)
 
     return
 
@@ -256,7 +256,7 @@ def glikman11(ax, param):
                 xerr=np.vstack((zdownerr, zuperr)),
                 yerr=np.vstack((pdownerr, puperr)),
                 fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color='#9467bd', edgecolor='k', zorder=2, s=20, marker='D', linewidths=0.5, label=r'Glikman et al.\ 2011')
+    ax.scatter(z, p, color='#9467bd', edgecolor='k', zorder=2, s=20, marker='D', linewidths=0.5, label=r'Glikman et al. 2011')
 
     return
 
@@ -285,7 +285,7 @@ def giallongo15(ax, param):
     ax.errorbar(z, p, ecolor='k', capsize=2,
                 xerr=np.vstack((zdownerr, zuperr)),
                 fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color=clr['giallongo15'], edgecolor='k', zorder=2, s=20, marker='v', linewidths=0.5, label=r'Giallongo et al.\ 2015')
+    ax.scatter(z, p, color=clr['giallongo15'], edgecolor='k', zorder=2, s=20, marker='v', linewidths=0.5, label=r'Giallongo et al. 2015')
 
     return
 
@@ -312,7 +312,7 @@ def akiyama18(ax, param):
                     xerr=np.vstack((zdownerr, zuperr)),
                     yerr=np.vstack((pdownerr, puperr)),
                     fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-        ax.scatter(z, p, color='#e377c2', edgecolor='k', zorder=2, s=20, marker='p', linewidths=0.5, label=r'Akiyama et al.\ 2018')
+        ax.scatter(z, p, color='#e377c2', edgecolor='k', zorder=2, s=20, marker='p', linewidths=0.5, label=r'Akiyama et al. 2018')
         return
         
     if param == 1:
@@ -331,7 +331,7 @@ def akiyama18(ax, param):
                 xerr=np.vstack((zdownerr, zuperr)),
                 yerr=perr,
                 fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color='#e377c2', edgecolor='k', zorder=2, s=20, marker='p', linewidths=0.5, label=r'Akiyama et al.\ 2018')
+    ax.scatter(z, p, color='#e377c2', edgecolor='k', zorder=2, s=20, marker='p', linewidths=0.5, label=r'Akiyama et al. 2018')
 
     return
 
@@ -350,7 +350,7 @@ def onoue17(ax, param):
         ax.errorbar(z, p, ecolor='k', capsize=2,
                     xerr=np.vstack((zdownerr, zuperr)),
                     fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-        ax.scatter(z, p, color=clr['onoue17'], edgecolor='k', zorder=2, s=20, marker='<', linewidths=0.5, label=r'Onoue et al.\ 2017')
+        ax.scatter(z, p, color=clr['onoue17'], edgecolor='k', zorder=2, s=20, marker='<', linewidths=0.5, label=r'Onoue et al. 2017')
         
 
         return
@@ -367,7 +367,7 @@ def onoue17(ax, param):
         ax.errorbar(z, p, ecolor='k', capsize=2,
                     xerr=np.vstack((zdownerr, zuperr)),
                     fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-        ax.scatter(z, p, color=clr['onoue17'], edgecolor='k', zorder=2, s=20, marker='<', linewidths=0.5, label=r'Onoue et al.\ 2017')
+        ax.scatter(z, p, color=clr['onoue17'], edgecolor='k', zorder=2, s=20, marker='<', linewidths=0.5, label=r'Onoue et al. 2017')
         
 
         return
@@ -382,7 +382,7 @@ def onoue17(ax, param):
                 xerr=np.vstack((zdownerr, zuperr)),
                 yerr=np.vstack((pdownerr, puperr)),
                 fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color=clr['onoue17'], edgecolor='k', zorder=2, s=20, marker='<', linewidths=0.5, label=r'Onoue et al.\ 2017')
+    ax.scatter(z, p, color=clr['onoue17'], edgecolor='k', zorder=2, s=20, marker='<', linewidths=0.5, label=r'Onoue et al. 2017')
 
     return
 
@@ -405,7 +405,7 @@ def schulze09(ax, param):
 
     ax.errorbar(z, p, ecolor='k', capsize=2,
                 fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color=clr['schulze09'], edgecolor='k', zorder=2, s=30, marker='>', linewidths=0.5, label=r'Schulze et al.\ 2009')
+    ax.scatter(z, p, color=clr['schulze09'], edgecolor='k', zorder=2, s=30, marker='>', linewidths=0.5, label=r'Schulze et al. 2009')
 
     return
 
@@ -439,7 +439,7 @@ def yang16(ax, param):
                 xerr=np.vstack((zdownerr, zuperr)),
                 yerr=perr,
                 fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color='#17becf', edgecolor='k', zorder=2, s=40, marker='*', linewidths=0.5, label=r'Yang et al.\ 2016')
+    ax.scatter(z, p, color='#17becf', edgecolor='k', zorder=2, s=40, marker='*', linewidths=0.5, label=r'Yang et al. 2016')
 
     return
 
@@ -469,7 +469,7 @@ def mcgreer13(ax, param):
         ax.errorbar(z, p, ecolor='k', capsize=2,
                     xerr=np.vstack((zdownerr, zuperr)),
                     fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-        ax.scatter(z, p, color=clr['mcgreer13'], edgecolor='k', zorder=2, s=20, marker='8', label=r'McGreer et al.\ 2013', linewidths=0.5)
+        ax.scatter(z, p, color=clr['mcgreer13'], edgecolor='k', zorder=2, s=20, marker='8', label=r'McGreer et al. 2013', linewidths=0.5)
         return
         
     if param == 3:
@@ -481,7 +481,7 @@ def mcgreer13(ax, param):
                 xerr=np.vstack((zdownerr, zuperr)),
                 yerr=np.vstack((pdownerr, puperr)),
                 fmt='None', zorder=2, linewidths=0.5, elinewidths=0.5, capthick=0.5)
-    ax.scatter(z, p, color=clr['mcgreer13'], edgecolor='k', zorder=2, s=20, marker='8', label=r'McGreer et al.\ 2013', linewidths=0.5)
+    ax.scatter(z, p, color=clr['mcgreer13'], edgecolor='k', zorder=2, s=20, marker='8', label=r'McGreer et al. 2013', linewidths=0.5)
 
     return
 
@@ -502,13 +502,13 @@ def plot_phi_star(fig):
     zmean, zl, zu, u, l, c = getParam(0)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
                 fmt='None', zorder=200)
-    ax.scatter(zmean, c, color=clr['kulkarni19'], edgecolor='k', zorder=200, s=30, linewidths=0.5, label=r'Kulkarni et al.\ 2019 (this work)')
+    ax.scatter(zmean, c, color=clr['kulkarni19'], edgecolor='k', zorder=200, s=30, linewidths=0.5, label=r'Kulkarni et al. 2019 (this work)')
 
     p_ross = ross13_s82(ax, 0)
     masters12(ax, 0)

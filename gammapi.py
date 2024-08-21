@@ -6,6 +6,7 @@ mpl.rcParams['font.family'] = 'serif'
 mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '22'
 import matplotlib.pyplot as plt
+plt.rcParams['text.usetex'] = True
 import rtg 
 from scipy.optimize import curve_fit
 import fit_emissivity
@@ -33,7 +34,7 @@ def emissivity(loglf, theta, z, mlims, fit='composite'):
         farr = f(loglf, theta, m, z, fit='individual')
     else:
         farr = f(loglf, theta, m, z)
-    return np.trapz(farr, m) # erg s^-1 Hz^-1 Mpc^-3
+    return np.trapezoid(farr, m) # erg s^-1 Hz^-1 Mpc^-3
 
 
 def get_emissivity(lfi, z, Mfaint=-18.0):
@@ -68,7 +69,7 @@ def emissivity_1450(loglf, theta, z, mlims, fit='composite'):
         farr = f_1450(loglf, theta, m, z, fit='individual')
     else:
         farr = f_1450(loglf, theta, m, z)
-    return np.trapz(farr, m) # erg s^-1 Hz^-1 Mpc^-3
+    return np.trapezoid(farr, m) # erg s^-1 Hz^-1 Mpc^-3
 
 
 def get_emissivity_1450(lfi, z, Mfaint=-18.0):
@@ -451,19 +452,19 @@ def pd13(ax, only18=False, only21=False, style=False):
     z, e912_21, e912_18 = np.loadtxt('Data_new/emissivity_pd13.dat', usecols=(1,4,5), unpack=True)
 
     if style:
-            ax.plot(z, e912_18*1.0e24, lw=2, color='k', zorder=1, label='Palanque-Delabrouille et al.\ 2013')
+            ax.plot(z, e912_18*1.0e24, lw=2, color='k', zorder=1, label='Palanque-Delabrouille et al. 2013')
             return 
         
     if only18:
-            ax.plot(z, e912_18*1.0e24, lw=1.5, color='c', zorder=1, label='Palanque-Delabrouille et al.\ 2013', dashes=[7,2])
+            ax.plot(z, e912_18*1.0e24, lw=1.5, color='c', zorder=1, label='Palanque-Delabrouille et al. 2013', dashes=[7,2])
             return 
 
     if only21:
-            ax.plot(z, e912_21*1.0e24, lw=1.5, color='c', zorder=1, label='Palanque-Delabrouille et al.\ 2013', dashes=[7,2])
+            ax.plot(z, e912_21*1.0e24, lw=1.5, color='c', zorder=1, label='Palanque-Delabrouille et al. 2013', dashes=[7,2])
             return 
         
     ax.plot(z, e912_18*1.0e24, lw=1.5, color='sandybrown', zorder=1, dashes=[7,2])
-    ax.plot(z, e912_21*1.0e24, lw=1.5, color='sandybrown', zorder=1, label='Palanque-Delabrouille et al.\ 2013 ($M_\mathrm{1450}<-21$; dashed $<-18$)')
+    ax.plot(z, e912_21*1.0e24, lw=1.5, color='sandybrown', zorder=1, label=r'Palanque-Delabrouille et al. 2013 ($M_\mathrm{1450}<-21$; dashed $<-18$)')
     
     return 
 
@@ -472,19 +473,19 @@ def pd16(ax, only18=False, only21=False, style=False):
     z, e912_21, e912_18 = np.loadtxt('Data_new/emissivity_pd16.dat', usecols=(1,4,5), unpack=True)
 
     if style:
-        ax.plot(z, e912_18*1.0e24, lw=2, color='k', zorder=1, label='Palanque-Delabrouille et al.\ 2016')
+        ax.plot(z, e912_18*1.0e24, lw=2, color='k', zorder=1, label='Palanque-Delabrouille et al. 2016')
         return
     
     if only18:
-        ax.plot(z, e912_18*1.0e24, lw=1.5, color='c', zorder=1, label='Palanque-Delabrouille et al.\ 2016')
+        ax.plot(z, e912_18*1.0e24, lw=1.5, color='c', zorder=1, label='Palanque-Delabrouille et al. 2016')
         return
 
     if only21:
-        ax.plot(z, e912_21*1.0e24, lw=1.5, color='c', zorder=1, label='Palanque-Delabrouille et al.\ 2016')
+        ax.plot(z, e912_21*1.0e24, lw=1.5, color='c', zorder=1, label='Palanque-Delabrouille et al. 2016')
         return
     
     ax.plot(z, e912_18*1.0e24, lw=1.5, color='yellowgreen', zorder=1, dashes=[7,2])
-    ax.plot(z, e912_21*1.0e24, lw=1.5, color='yellowgreen', zorder=1, label='Palanque-Delabrouille et al.\ 2016 ($M_\mathrm{1450}<-21$; dashed $<-18$)')
+    ax.plot(z, e912_21*1.0e24, lw=1.5, color='yellowgreen', zorder=1, label=r'Palanque-Delabrouille et al. 2016 ($M_\mathrm{1450}<-21$; dashed $<-18$)')
     
     return 
 
@@ -501,7 +502,7 @@ def c17(ax, only18=False, only21=False):
         return
     
     ax.plot(z, e912_18*1.0e24, lw=1.5, color='peru', zorder=1, dashes=[7,2])
-    ax.plot(z, e912_21*1.0e24, lw=1.5, color='peru', zorder=1, label='Caditz 2017 ($M_\mathrm{1450}<-21$; dashed $<-18$)')
+    ax.plot(z, e912_21*1.0e24, lw=1.5, color='peru', zorder=1, label=r'Caditz 2017 ($M_\mathrm{1450}<-21$; dashed $<-18$)')
     
     return
 
@@ -513,7 +514,7 @@ def akiyama18(ax, only18=False, only21=False, style='k'):
 
     if style:
         ax.scatter(z, e18, c='dodgerblue', edgecolor='None',
-                   s=36, zorder=9, linewidths=2, label='Akiyama et al.\ 2018')
+                   s=36, zorder=9, linewidths=2, label='Akiyama et al. 2018')
         z_lerr = np.array([3.9-3.5])
         z_uerr = np.array([4.3-3.9])
         ax.errorbar(z, e18, ecolor='dodgerblue', capsize=0, fmt='None', elinewidth=1.5,
@@ -524,7 +525,7 @@ def akiyama18(ax, only18=False, only21=False, style='k'):
 
     if only18:
         ax.scatter(z, e18, c='dodgerblue', edgecolor='None',
-                   s=36, zorder=9, linewidths=2, label='Akiyama et al.\ 2018', marker='^')
+                   s=36, zorder=9, linewidths=2, label='Akiyama et al. 2018', marker='^')
         z_lerr = np.array([3.9-3.5])
         z_uerr = np.array([4.3-3.9])
         ax.errorbar(z, e18, ecolor='dodgerblue', capsize=0, fmt='None', elinewidth=1.5,
@@ -534,7 +535,7 @@ def akiyama18(ax, only18=False, only21=False, style='k'):
 
     if only21:
         ax.scatter(z, e21, c='dodgerblue', edgecolor='None',
-                   s=36, zorder=9, linewidths=2, label='Akiyama et al.\ 2018', marker='^')
+                   s=36, zorder=9, linewidths=2, label='Akiyama et al. 2018', marker='^')
         z_lerr = np.array([3.9-3.5])
         z_uerr = np.array([4.3-3.9])
         ax.errorbar(z, e21, ecolor='dodgerblue', capsize=0, fmt='None', elinewidth=1.5,
@@ -545,7 +546,7 @@ def akiyama18(ax, only18=False, only21=False, style='k'):
     # when showing both Mlim=-18 and -21, only need to show one
     # because the two cases give almost the same result 
     ax.scatter(z, e21, c='gold', edgecolor='None',
-               s=64, zorder=9, linewidths=2, label='Akiyama et al.\ 2018 ($M_\mathrm{1450}<-21$)')
+               s=64, zorder=9, linewidths=2, label=r'Akiyama et al. 2018 ($M_\mathrm{1450}<-21$)')
 
     z_lerr = np.array([3.9-3.5])
     z_uerr = np.array([4.3-3.9])
@@ -563,7 +564,7 @@ def parsa18(ax, only18=False, only21=False, style=False):
 
     if style:
         ax.scatter(z, e18, c='k', edgecolor='None',
-                   s=36, zorder=9, linewidths=2, label='Parsa et al.\ 2018')
+                   s=36, zorder=9, linewidths=2, label='Parsa et al. 2018')
         z_err = np.array([0.25, 0.25, 0.75])
         ax.errorbar(z, e18, ecolor='k', capsize=0, fmt='None', elinewidth=1.5,
                     xerr=z_err,
@@ -571,14 +572,14 @@ def parsa18(ax, only18=False, only21=False, style=False):
 
     if only18:
         ax.scatter(z, e18, c='dodgerblue', edgecolor='None',
-                   s=36, zorder=9, linewidths=2, label='Parsa et al.\ 2018', marker='D')
+                   s=36, zorder=9, linewidths=2, label='Parsa et al. 2018', marker='D')
         z_err = np.array([0.25, 0.25, 0.75])
         ax.errorbar(z, e18, ecolor='dodgerblue', capsize=0, fmt='None', elinewidth=1.5,
                     xerr=z_err,
                     zorder=9, mew=1, linewidths=1.5)
     if only21:
         ax.scatter(z, e21, c='dodgerblue', edgecolor='None',
-                   s=36, zorder=9, linewidths=2, label='Parsa et al.\ 2018', marker='D')
+                   s=36, zorder=9, linewidths=2, label='Parsa et al. 2018', marker='D')
         z_err = np.array([0.25, 0.25, 0.75])
         ax.errorbar(z, e21, ecolor='dodgerblue', capsize=0, fmt='None', elinewidth=1.5,
                     xerr=z_err,
@@ -597,21 +598,21 @@ def masters12(ax, only18=False, only21=False, style=False):
 
     if style:
         ax.scatter(z, e18, c='k', edgecolor='None',
-                   s=36, zorder=9, linewidths=2, label='Masters et al.\ 2012')
+                   s=36, zorder=9, linewidths=2, label='Masters et al. 2012')
         z_err = np.array([0.25, 0.25])
         ax.errorbar(z, e18, ecolor='k', capsize=0, fmt='None', elinewidth=1.5,
                     xerr=np.vstack((z_lerr, z_uerr)),
                     zorder=9, mew=1, linewidths=1.5)
     if only18:
         ax.scatter(z, e18, c='dodgerblue', edgecolor='None',
-                   s=66, zorder=9, linewidths=2, label='Masters et al.\ 2012', marker='*')
+                   s=66, zorder=9, linewidths=2, label='Masters et al. 2012', marker='*')
         z_err = np.array([0.25, 0.25])
         ax.errorbar(z, e18, ecolor='dodgerblue', capsize=0, fmt='None', elinewidth=1.5,
                     xerr=np.vstack((z_lerr, z_uerr)),
                     zorder=9, mew=1, linewidths=1.5)
     if only21:
         ax.scatter(z, e21, c='dodgerblue', edgecolor='None',
-                   s=66, zorder=9, linewidths=2, label='Masters et al.\ 2012', marker='*')
+                   s=66, zorder=9, linewidths=2, label='Masters et al. 2012', marker='*')
         z_err = np.array([0.25, 0.25])
         ax.errorbar(z, e21, ecolor='dodgerblue', capsize=0, fmt='None', elinewidth=1.5,
                     xerr=np.vstack((z_lerr, z_uerr)),
@@ -637,13 +638,13 @@ def giallongo15(ax, only18=False, only21=False, style=False):
     #             zorder=3, mew=1)
 
     # ax.scatter(zg, eg, c='dodgerblue', edgecolor='None',
-    #            label='Giallongo et al.\ 2015', marker='s',
+    #            label='Giallongo et al. 2015', marker='s',
     #            s=36, zorder=4, linewidths=1.5)
 
     if style:
         ax.scatter(z, e18, c='k', edgecolor='None',
                    s=36, zorder=4, linewidths=1.5,
-                   label='Giallongo et al.\ 2015')
+                   label='Giallongo et al. 2015')
         ax.errorbar(z, e18, ecolor='k', capsize=0,
                     fmt='None', elinewidth=1.5,
                     xerr=np.vstack((z_lerr, z_uerr)),
@@ -652,7 +653,7 @@ def giallongo15(ax, only18=False, only21=False, style=False):
     if only18:
         ax.scatter(z, e18, c='dodgerblue', edgecolor='None',
                    s=36, zorder=4, linewidths=1.5,
-                   label='Giallongo et al.\ 2015', marker='s')
+                   label='Giallongo et al. 2015', marker='s')
         ax.errorbar(z, e18, ecolor='dodgerblue', capsize=0,
                     fmt='None', elinewidth=1.5,
                     xerr=np.vstack((z_lerr, z_uerr)),
@@ -660,7 +661,7 @@ def giallongo15(ax, only18=False, only21=False, style=False):
     if only21:
         ax.scatter(z, e21, c='dodgerblue', edgecolor='None',
                    s=36, zorder=4, linewidths=1.5,
-                   label='Giallongo et al.\ 2015', marker='s')
+                   label='Giallongo et al. 2015', marker='s')
         ax.errorbar(z, e21, ecolor='dodgerblue', capsize=0,
                     fmt='None', elinewidth=1.5,
                     xerr=np.vstack((z_lerr, z_uerr)),
@@ -675,15 +676,15 @@ def bongiorno07(ax, only18=False, only21=False, style=False):
 
 
     if style:
-        ax.plot(z, e912_18*1.0e24, lw=2, color='k', zorder=1, label='Bongiorno et al.\ 2007')
+        ax.plot(z, e912_18*1.0e24, lw=2, color='k', zorder=1, label='Bongiorno et al. 2007')
         return
     
     if only18:
-        ax.plot(z, e912_18*1.0e24, lw=1.5, color='peru', zorder=1, label='Bongiorno et al.\ 2007')
+        ax.plot(z, e912_18*1.0e24, lw=1.5, color='peru', zorder=1, label='Bongiorno et al. 2007')
         return
 
     if only21:
-        ax.plot(z, e912_21*1.0e24, lw=1.5, color='peru', zorder=1, label='Bongiorno et al.\ 2007')
+        ax.plot(z, e912_21*1.0e24, lw=1.5, color='peru', zorder=1, label='Bongiorno et al. 2007')
         return
     
     return
@@ -736,7 +737,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
                 mfc='#ffffff', mec='#404040', zorder=6, mew=1,
                 ms=5)
     ax.scatter(zs, em, c='#ffffff', edgecolor='k',
-               label='This work ($M_\mathrm{1450}<-18$)',
+               label=r'This work ($M_\mathrm{1450}<-18$)',
                s=48, zorder=6, linewidths=1.5)
 
     tabulate = True
@@ -828,7 +829,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
     uzerr = uz-zs
     lzerr = zs-lz 
     ax.scatter(zs, em, c='k', edgecolor='k',
-               label='This work ($M_\mathrm{1450}<-21$)',
+               label=r'This work ($M_\mathrm{1450}<-21$)',
                s=48, zorder=11, linewidths=1.5) 
     ax.errorbar(zs, em, ecolor='k', capsize=0, fmt='None', elinewidth=1.5,
                 yerr=np.vstack((em_low, em_up)),
@@ -904,7 +905,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
                 zorder=3, mew=1)
 
     ax.scatter(zg, eg, c='#ffffff', edgecolor='tomato',
-               label='Giallongo et al.\ 2015 ($M_\mathrm{1450}<-18$)',
+               label=r'Giallongo et al. 2015 ($M_\mathrm{1450}<-18$)',
                s=60, zorder=4, linewidths=1.5)
 
     e_MH15 = emissivity_MH15(z)
@@ -915,7 +916,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
     ax.plot(z, e_HM12, lw=2, c='brown', label='Haardt and Madau 2012', zorder=3, dashes=[7,2])
 
     e_M17 = emissivity_Manti17(z)
-    ax.plot(z, e_M17, lw=2, c='grey', label='Manti et al.\ 2017 ($M_\mathrm{1450}<-19$)', zorder=2, dashes=[7,2])
+    ax.plot(z, e_M17, lw=2, c='grey', label=r'Manti et al. 2017 ($M_\mathrm{1450}<-19$)', zorder=2, dashes=[7,2])
 
     # Emissivity at z = 0 from Schulze et al. 2009 A&A 507 781.  This
     # number is rederived by Gabor.  See his email of 8 March 2018.
@@ -927,7 +928,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
     z_Schulze09 = np.array([0.0])
     e_Schulze09 = np.array([0.0435e24]) # erg/s/Hz/Mpc^3
     ax.scatter(z_Schulze09, e_Schulze09, c='peru', edgecolor='None',
-               label='Schulze et al.\ 2009 ($M_\mathrm{1450}<-21$; open circle $<-18$)', s=64, zorder=9)
+               label=r'Schulze et al. 2009 ($M_\mathrm{1450}<-21$; open circle $<-18$)', s=64, zorder=9)
     
     # Emissivity at z = 5 from McGreer et al. 2018 AJ 155 131.  This
     # number is rederived by Gabor.  See his email of 12 March 2018.
@@ -946,7 +947,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
     z_McGreer18 = np.array([4.9])
     e_McGreer18 = np.array([0.6836e24]) # erg/s/Hz/Mpc^3
     ax.scatter(z_McGreer18, e_McGreer18, c='limegreen', edgecolor='None',
-               label='McGreer et al.\ 2018 ($M_\mathrm{1450}<-21$; open circle $<-18$)', s=64, zorder=10)
+               label=r'McGreer et al. 2018 ($M_\mathrm{1450}<-21$; open circle $<-18$)', s=64, zorder=10)
 
     ax.errorbar(z_McGreer18, e_McGreer18, ecolor='limegreen', capsize=0, fmt='None', elinewidth=1.5,
                 xerr=np.vstack((z_McGreer_lerr, z_McGreer_uerr)),
@@ -967,7 +968,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
     emin_Onoue17 = 0.1118e24
     emax_Onoue17 = 0.1299e24
     de_Onoue17 = emax_Onoue17 - emin_Onoue17
-    rect = mpatches.Rectangle((zmin_Onoue17, emin_Onoue17),  dz_Onoue17, de_Onoue17, ec='None', color='orange', zorder=10, label='Onoue et al.\ 2017 ($M_\mathrm{1450}<-21$; open $<-18$)')
+    rect = mpatches.Rectangle((zmin_Onoue17, emin_Onoue17),  dz_Onoue17, de_Onoue17, ec='None', color='orange', zorder=10, label=r'Onoue et al. 2017 ($M_\mathrm{1450}<-21$; open $<-18$)')
     ax.add_patch(rect)
     
     
@@ -979,7 +980,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
     z_Onoue17 = np.array([6.0])
     e_Onoue17 = np.array([0.1118e24]) # erg/s/Hz/Mpc^3
     # ax.scatter(z_Onoue17, e_Onoue17, c='b', edgecolor='None',
-    #            label='Onoue et al.\ 2017 ($M_\mathrm{1450}<-18$; open circle $<-18$)', s=64, zorder=9)
+    #            label='Onoue et al. 2017 ($M_\mathrm{1450}<-18$; open circle $<-18$)', s=64, zorder=9)
 
     z_Onoue17 = np.array([6.0])
     e_Onoue17 = np.array([0.2051e24]) # erg/s/Hz/Mpc^3
@@ -989,7 +990,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
     z_Onoue17 = np.array([6.0])
     e_Onoue17 = np.array([0.1299e24]) # erg/s/Hz/Mpc^3
     # ax.scatter(z_Onoue17, e_Onoue17, c='b', edgecolor='None',
-    #            label='Onoue et al.\ 2017 (including Parsa et al.\ 2017 source)', s=64, zorder=9, marker='^')
+    #            label='Onoue et al. 2017 (including Parsa et al. 2017 source)', s=64, zorder=9, marker='^')
     
     pd13(ax)
 
@@ -1021,9 +1022,9 @@ def draw_emissivity(all_individuals, composite=None, select=False):
 
     handles, labels = ax.get_legend_handles_labels()
     handles.append((tw18f,tw18))
-    labels.append('This work; fit ($M_\mathrm{1450}<-18$)')
+    labels.append(r'This work; fit ($M_\mathrm{1450}<-18$)')
     handles.append((tw21f,tw21))
-    labels.append('This work; fit ($M_\mathrm{1450}<-21$)')
+    labels.append(r'This work; fit ($M_\mathrm{1450}<-21$)')
     myorder = [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 7, 8, 13, 14]
     handles = [handles[x] for x in myorder]
     labels = [labels[x] for x in myorder]
@@ -1107,7 +1108,7 @@ def draw_emissivity_18(all_individuals, composite=None, select=False):
                 mfc='#ffffff', mec='#404040', zorder=6, mew=1,
                 ms=5)
     ax.scatter(zs, em, c='k', edgecolor='None',
-               label='Kulkarni et al.\ 2019 (this work)',
+               label='Kulkarni et al. 2019 (this work)',
                s=36, zorder=6, linewidths=1.5) 
 
     # npz produced using rhoqso_fit.get_fit_mcmc(). 
@@ -1151,21 +1152,21 @@ def draw_emissivity_18(all_individuals, composite=None, select=False):
     ax.plot(z, e_HM12, lw=2, c='brown', label='Haardt and Madau 2012', zorder=3, dashes=[7,2])
 
     e_M17 = emissivity_Manti17(z)
-    ax.plot(z, e_M17, lw=2, c='grey', label='Manti et al.\ 2017', zorder=2, dashes=[7,2])
+    ax.plot(z, e_M17, lw=2, c='grey', label='Manti et al. 2017', zorder=2, dashes=[7,2])
 
     # Emissivity at z = 0 from Schulze et al. 2009 A&A 507 781.  This
     # number is rederived by Gabor.  See his email of 8 March 2018.
     z_Schulze09 = np.array([0.0])
     e_Schulze09 = np.array([0.2561e24]) # erg/s/Hz/Mpc^3
     ax.scatter(z_Schulze09, e_Schulze09, c='dodgerblue', edgecolor='None', marker='p',
-               s=36, zorder=12, linewidths=2, label='Schulze et al.\ 2009')
+               s=36, zorder=12, linewidths=2, label='Schulze et al. 2009')
 
     # Emissivity at z = 5 from McGreer et al. 2018 AJ 155 131.  This
     # number is rederived by Gabor.  See his email of 12 March 2018.
     z_McGreer18 = np.array([4.9])
     e_McGreer18 = np.array([0.9641e24]) # erg/s/Hz/Mpc^3
     ax.scatter(z_McGreer18, e_McGreer18, c='dodgerblue', edgecolor='None',
-               s=36, zorder=10, linewidths=2, label='McGreer et al.\ 2018')
+               s=36, zorder=10, linewidths=2, label='McGreer et al. 2018')
 
     z_McGreer_lerr = np.array([4.9-4.7])
     z_McGreer_uerr = np.array([5.1-4.9])
@@ -1182,7 +1183,7 @@ def draw_emissivity_18(all_individuals, composite=None, select=False):
     rect = mpatches.Rectangle((zmin_Onoue17, emin_Onoue17),
                               dz_Onoue17, de_Onoue17,
                               ec='dodgerblue', color='None',
-                              lw=2, zorder=10, label='Onoue et al.\ 2017')
+                              lw=2, zorder=10, label='Onoue et al. 2017')
     ax.add_patch(rect)
 
     pd13(ax, only18=True)
@@ -1199,7 +1200,7 @@ def draw_emissivity_18(all_individuals, composite=None, select=False):
 
     handles, labels = ax.get_legend_handles_labels()
     handles.append((tw18f,tw18))
-    labels.append('Kulkarni et al.\ 2019 (this work; fit)')
+    labels.append('Kulkarni et al. 2019 (this work; fit)')
 
     print( len(handles))
     for i, x in enumerate(labels):
@@ -1213,7 +1214,7 @@ def draw_emissivity_18(all_individuals, composite=None, select=False):
                frameon=False, framealpha=0.0, labelspacing=.1, #ncol=2, columnspacing=2,
                handletextpad=0.1, borderpad=0.01, scatterpoints=1, borderaxespad=1, bbox_to_anchor=[0.4,0.25])
 
-    plt.text(0.94, 0.94, '$M_\mathrm{1450}<-18$', horizontalalignment='right',
+    plt.text(0.94, 0.94, r'$M_\mathrm{1450}<-18$', horizontalalignment='right',
              verticalalignment='center', transform=ax.transAxes, fontsize='16')
     
     
@@ -1271,7 +1272,7 @@ def draw_emissivity_18_talk(all_individuals, zlims, composite=None, select=False
                 mfc='#ffffff', mec='#404040', zorder=20, mew=1,
                 ms=5)
     ax.scatter(zs, em, c='k', edgecolor='None',
-               label='Kulkarni et al.\ 2018 ($M_{1450}<-18$)',
+               label='Kulkarni et al. 2018 ($M_{1450}<-18$)',
                s=36, zorder=20, linewidths=1.5) 
 
     # Plot best-fit model for Mlim=-18
@@ -1327,21 +1328,21 @@ def draw_emissivity_18_talk(all_individuals, zlims, composite=None, select=False
     ax.plot(z, e_HM12, lw=2, c='green', label='Haardt and Madau 2012', zorder=3)
 
     # e_M17 = emissivity_Manti17(z)
-    # ax.plot(z, e_M17, lw=2, c='grey', label='Manti et al.\ 2017', zorder=2, dashes=[7,2])
+    # ax.plot(z, e_M17, lw=2, c='grey', label='Manti et al. 2017', zorder=2, dashes=[7,2])
 
     # Emissivity at z = 0 from Schulze et al. 2009 A&A 507 781.  This
     # number is rederived by Gabor.  See his email of 8 March 2018.
     z_Schulze09 = np.array([0.0])
     e_Schulze09 = np.array([0.2561e24]) # erg/s/Hz/Mpc^3
     ax.scatter(z_Schulze09, e_Schulze09, c='dodgerblue', edgecolor='None', marker='p',
-               s=36, zorder=12, linewidths=2, label='Schulze et al.\ 2009')
+               s=36, zorder=12, linewidths=2, label='Schulze et al. 2009')
 
     # Emissivity at z = 5 from McGreer et al. 2018 AJ 155 131.  This
     # number is rederived by Gabor.  See his email of 12 March 2018.
     z_McGreer18 = np.array([4.9])
     e_McGreer18 = np.array([0.9641e24]) # erg/s/Hz/Mpc^3
     ax.scatter(z_McGreer18, e_McGreer18, c='dodgerblue', edgecolor='None',
-               s=36, zorder=10, linewidths=2, label='McGreer et al.\ 2018')
+               s=36, zorder=10, linewidths=2, label='McGreer et al. 2018')
 
     z_McGreer_lerr = np.array([4.9-4.7])
     z_McGreer_uerr = np.array([5.1-4.9])
@@ -1358,7 +1359,7 @@ def draw_emissivity_18_talk(all_individuals, zlims, composite=None, select=False
     rect = mpatches.Rectangle((zmin_Onoue17, emin_Onoue17),
                               dz_Onoue17, de_Onoue17,
                               ec='dodgerblue', color='None',
-                              lw=2, zorder=10, label='Onoue et al.\ 2017')
+                              lw=2, zorder=10, label='Onoue et al. 2017')
     ax.add_patch(rect)
 
     #pd13(ax, only18=True)
@@ -1377,7 +1378,7 @@ def draw_emissivity_18_talk(all_individuals, zlims, composite=None, select=False
     
     handles, labels = ax.get_legend_handles_labels()
     handles.append((tw18f,tw18))
-    labels.append('Kulkarni et al.\ 2018 (fit)')
+    labels.append('Kulkarni et al. 2018 (fit)')
 
     print( len(handles))
     for i, x in enumerate(labels):
@@ -1449,7 +1450,7 @@ def draw_emissivity_21(all_individuals, composite=None, select=False):
                 mfc='#ffffff', mec='#404040', zorder=6, mew=1,
                 ms=5)
     ax.scatter(zs, em, c='k', edgecolor='None',
-               label='Kulkarni et al.\ 2019 (this work)',
+               label='Kulkarni et al. 2019 (this work)',
                s=42, zorder=6, linewidths=1.5) 
 
     # npz produced using rhoqso_fit.get_fit_mcmc().
@@ -1495,7 +1496,7 @@ def draw_emissivity_21(all_individuals, composite=None, select=False):
     #             zorder=3, mew=1)
 
     # ax.scatter(zg, eg, c='dodgerblue', edgecolor='None',
-    #            label='Giallongo et al.\ 2015', marker='s',
+    #            label='Giallongo et al. 2015', marker='s',
     #            s=42, zorder=4, linewidths=1.5)
 
     giallongo15(ax, only21=True)
@@ -1507,14 +1508,14 @@ def draw_emissivity_21(all_individuals, composite=None, select=False):
     ax.plot(z, e_HM12, lw=2, c='brown', label='Haardt and Madau 2012', zorder=3, dashes=[7,2])
 
     e_M17 = emissivity_Manti17(z)
-    ax.plot(z, e_M17, lw=2, c='grey', label='Manti et al.\ 2017', zorder=2, dashes=[7,2])
+    ax.plot(z, e_M17, lw=2, c='grey', label='Manti et al. 2017', zorder=2, dashes=[7,2])
 
     # Emissivity at z = 0 from Schulze et al. 2009 A&A 507 781.  This
     # number is rederived by Gabor.  See his email of 8 March 2018.
     z_Schulze09 = np.array([0.0])
     e_Schulze09 = np.array([0.0435e24]) # erg/s/Hz/Mpc^3
     ax.scatter(z_Schulze09, e_Schulze09, c='dodgerblue', edgecolor='None', marker='p',
-               s=42, zorder=12, linewidths=2, label='Schulze et al.\ 2009')
+               s=42, zorder=12, linewidths=2, label='Schulze et al. 2009')
 
     # Emissivity at z = 5 from McGreer et al. 2018 AJ 155 131.  This
     # number is rederived by Gabor.  See his email of 12 March 2018.
@@ -1523,7 +1524,7 @@ def draw_emissivity_21(all_individuals, composite=None, select=False):
     z_McGreer18 = np.array([4.9])
     e_McGreer18 = np.array([0.6836e24]) # erg/s/Hz/Mpc^3
     ax.scatter(z_McGreer18, e_McGreer18, c='dodgerblue', edgecolor='None',
-               label='McGreer et al.\ 2018', s=42, zorder=10)
+               label='McGreer et al. 2018', s=42, zorder=10)
 
     ax.errorbar(z_McGreer18, e_McGreer18, ecolor='dodgerblue', capsize=0, fmt='None', elinewidth=1.5,
                 xerr=np.vstack((z_McGreer_lerr, z_McGreer_uerr)),
@@ -1539,7 +1540,7 @@ def draw_emissivity_21(all_individuals, composite=None, select=False):
     rect = mpatches.Rectangle((zmin_Onoue17, emin_Onoue17),
                               dz_Onoue17, de_Onoue17,
                               ec='dodgerblue', color='None',
-                              lw=2, zorder=10, label='Onoue et al.\ 2017')
+                              lw=2, zorder=10, label='Onoue et al. 2017')
     ax.add_patch(rect)
 
     pd13(ax, only21=True)
@@ -1558,7 +1559,7 @@ def draw_emissivity_21(all_individuals, composite=None, select=False):
     
     handles, labels = ax.get_legend_handles_labels()
     handles.append((tw18f,tw18))
-    labels.append('Kulkarni et al.\ 2019 (this work; fit)')
+    labels.append('Kulkarni et al. 2019 (this work; fit)')
 
     # myorder = [10, 14, 9, 12, 11, 13, 7, 0, 1, 2, 3, 4, 5, 6, 8, 15]
     myorder = [9, 13, 8, 11, 10, 12, 6, 0, 1, 2, 3, 4, 5, 7, 14]
@@ -1569,7 +1570,7 @@ def draw_emissivity_21(all_individuals, composite=None, select=False):
                frameon=False, framealpha=0.0, labelspacing=.1, #ncol=2, columnspacing=2,
                handletextpad=0.1, borderpad=0.01, scatterpoints=1, borderaxespad=1, bbox_to_anchor=[0.4,0.25])
 
-    plt.text(0.94, 0.94, '$M_\mathrm{1450}<-21$', horizontalalignment='right',
+    plt.text(0.94, 0.94, r'$M_\mathrm{1450}<-21$', horizontalalignment='right',
              verticalalignment='center', transform=ax.transAxes, fontsize='16')
     
     

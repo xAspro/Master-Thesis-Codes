@@ -6,6 +6,7 @@ mpl.rcParams['font.family'] = 'serif'
 mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '22'
 import matplotlib.pyplot as plt
+plt.rcParams['text.usetex'] = True
 import sys
 
 fig = plt.figure(figsize=(7, 7/1.68), dpi=100)
@@ -45,15 +46,15 @@ plt.text(2.0, -1.8, '$m=i$', fontsize=12)
 #-----
 
 z, k = np.loadtxt('Data_new/kcorrz_l15.dat', usecols=(1,2), unpack=True)
-plt.plot(z, k, c='k', lw=2, label='Lusso et al.\ 2015') 
+plt.plot(z, k, c='k', lw=2, label='Lusso et al. 2015') 
 
 z, k = np.loadtxt('Data_new/kcorrz_t02.dat', usecols=(1,2), unpack=True)
-plt.plot(z, k, c='k', lw=1, dashes=[7,2], label='Telfer et al.\ 2002') 
+plt.plot(z, k, c='k', lw=1, dashes=[7,2], label='Telfer et al. 2002') 
 
 z, k = np.loadtxt('Data_new/kcorrz_v01.dat', usecols=(1,2), unpack=True)
-plt.plot(z, k, c='k', lw=1, dashes=[2,2], label='Vanden Berk et al.\ 2001')
+plt.plot(z, k, c='k', lw=1, dashes=[2,2], label='Vanden Berk et al. 2001')
 
-plt.text(4.7, -2.0, '$m=z_\mathrm{AB}$', fontsize=12)
+plt.text(4.7, -2.0, r'$m=z_\mathrm{AB}$', fontsize=12)
 
 plt.ylim(-2.5,-0.5)
 plt.xlim(0,5.5)

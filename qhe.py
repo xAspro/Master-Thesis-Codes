@@ -285,11 +285,11 @@ def puchwein18(ax, minus=False):
 
     if minus:
         ax.plot(1.0/dat[:,0]-1.0, 1-dat[:,8]/7.894736842105262720e-02, lw=2,
-                c='steelblue', label=r'Puchwein et al.\ 2018', zorder=9)
+                c='steelblue', label=r'Puchwein et al. 2018', zorder=9)
         return 
     
     ax.plot(1.0/dat[:,0]-1.0, dat[:,8]/7.894736842105262720e-02, lw=2,
-            c='steelblue', label=r'Puchwein et al.\ 2018', zorder=9)
+            c='steelblue', label=r'Puchwein et al. 2018', zorder=9)
     return
 
 def mcquinn09(ax, minus=False):    
@@ -300,11 +300,11 @@ def mcquinn09(ax, minus=False):
 
     if minus: 
         ax.plot(z, 1-x, lw=2,
-                c='k', label=r'McQuinn et al.\ 2009', zorder=9)
+                c='k', label=r'McQuinn et al. 2009', zorder=9)
         return
     
     ax.plot(z, x, lw=2,
-            c='brown', label=r'McQuinn et al.\ 2009', zorder=9)
+            c='brown', label=r'McQuinn et al. 2009', zorder=9)
     return
 
 def compostella14(ax, minus=False):    
@@ -315,11 +315,11 @@ def compostella14(ax, minus=False):
 
     if minus: 
         ax.plot(z, 1-x, lw=2,
-                c='brown', label=r'Compostella et al.\ 2014', zorder=9)
+                c='brown', label=r'Compostella et al. 2014', zorder=9)
         return
     
     ax.plot(z, x, lw=2,
-            c='g', label=r'Compostella et al.\ 2014', zorder=9)
+            c='g', label=r'Compostella et al. 2014', zorder=9)
 
     return
     
@@ -380,7 +380,7 @@ def plotq():
     qup = np.where(qup<1.0, qup, 1.0)
 
     q18 = ax.fill_between(z, qup.flatten(), y2=qdown.flatten(), color='red', zorder=10, alpha=0.6, edgecolor='None')
-    q18bf, = plt.plot(z, q.flatten(), c='red', lw=2, label=r'Kulkarni et al.\ 2019 (this work; $M_{1450}<-18$)', zorder=10)
+    q18bf, = plt.plot(z, q.flatten(), c='red', lw=2, label=r'Kulkarni et al. 2019 (this work; $M_{1450}<-18$)', zorder=10)
 
     #----------
 
@@ -394,7 +394,7 @@ def plotq():
     qup = np.where(qup<1.0, qup, 1.0)
     
     q21 = ax.fill_between(z, qup.flatten(), y2=qdown.flatten(), color='blue', zorder=10, alpha=0.6, edgecolor='None')
-    q21bf, = plt.plot(z, q.flatten(), c='blue', lw=2, label=r'Kulkarni et al.\ 2019 (this work; $M_{1450}<-21$)', zorder=10)
+    q21bf, = plt.plot(z, q.flatten(), c='blue', lw=2, label=r'Kulkarni et al. 2019 (this work; $M_{1450}<-21$)', zorder=10)
 
     #----------
     

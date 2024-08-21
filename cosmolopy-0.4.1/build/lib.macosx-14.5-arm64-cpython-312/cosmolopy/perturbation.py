@@ -166,7 +166,7 @@ def fgrowth(z, omega_M_0, unnormed=False):
     
         D_1(z) = (1+z_\mathrm{eq}) \mathtt{fgrowth}(z,\Omega_{M0}, 1)
 
-    (see \EH\ equation 1 for z_eq).
+    (see \EH equation 1 for z_eq).
 
     ::
     
