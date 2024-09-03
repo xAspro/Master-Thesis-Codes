@@ -50,8 +50,8 @@ def plot_phi_star(fig, composite, sample=False):
 
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color='k', edgecolor='None', zorder=2)
     ax.errorbar(zmean, c, ecolor='k', capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -116,8 +116,8 @@ def plot_m_star(fig, composite, sample=False):
     
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color='k', edgecolor='None', zorder=2)
     ax.errorbar(zmean, c, ecolor='k', capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -180,8 +180,8 @@ def plot_alpha(fig, composite, sample=False):
     
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color='k', edgecolor='None', zorder=2)
     ax.errorbar(zmean, c, ecolor='k', capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -252,8 +252,8 @@ def plot_beta(fig, composite, sample=False):
     
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color='k', edgecolor='None', zorder=2)
     ax.errorbar(zmean, c, ecolor='k', capsize=0,
                 xerr=np.vstack((left, right)), 

@@ -11,6 +11,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.interpolate import interp2d, bisplrep, bisplev
 from scipy.interpolate import LinearNDInterpolator as linInterp
 import sys
+import os
 
 def plot_selmap(z, m, p, title='', filename='selmap.pdf',
                 show_qsos=False, qso_file='None'):     
@@ -108,6 +109,12 @@ if METHOD == 'linear':
 
 WRITE_SELMAP = True
 if WRITE_SELMAP:
+    # Extract the directory from the file path
+    directory = os.path.dirname(out_map_file)
+
+    # Create the directory if it doesn't exist
+    if directory and not os.path.exists(directory):
+        os.makedirs(directory)
     with open(out_map_file, 'w') as fl:
         for i, x in enumerate(zip(zp.flatten(), mp.flatten(), pnew.flatten())):
             if x[2]==x[2]: 

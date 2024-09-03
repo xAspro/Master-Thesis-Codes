@@ -111,8 +111,8 @@ def ross13_s82(ax, param):
         l = l+mc
         u = u+mc 
 
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     
     ax.errorbar(z, c, ecolor='#ff7f0e', capsize=2,
                 yerr=np.vstack((downerr, uperr)),
@@ -562,8 +562,8 @@ def plot_m_star(fig):
     zmean, zl, zu, u, l, c = getParam(1)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
 
     ax.errorbar(zmean, c, ecolor=colors[1], capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -605,8 +605,8 @@ def plot_alpha(fig):
     zmean, zl, zu, u, l, c = getParam(2)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
 
     ax.errorbar(zmean, c, ecolor=colors[2], capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -655,8 +655,8 @@ def plot_beta(fig):
     zmean, zl, zu, u, l, c = getParam(3)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
