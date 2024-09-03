@@ -64,8 +64,8 @@ def plot_phi_star(fig):
     zmean, zl, zu, u, l, c = getParam(0, dtype='withg')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor='tomato', capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
@@ -97,8 +97,8 @@ def plot_m_star(fig):
     zmean, zl, zu, u, l, c = getParam(1)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color=colors[1], edgecolor='None', zorder=2, s=36)
     ax.errorbar(zmean, c, ecolor=colors[1], capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -108,8 +108,8 @@ def plot_m_star(fig):
     zmean, zl, zu, u, l, c = getParam(1, dtype='withg')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor='tomato', capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
@@ -138,8 +138,8 @@ def plot_alpha(fig):
     zmean, zl, zu, u, l, c = getParam(2)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color=colors[2], edgecolor='None', zorder=2, s=36)
     ax.errorbar(zmean, c, ecolor=colors[2], capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -149,8 +149,8 @@ def plot_alpha(fig):
     zmean, zl, zu, u, l, c = getParam(2, dtype='withg')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor='tomato', capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
@@ -186,8 +186,8 @@ def plot_beta(fig):
     zmean, zl, zu, u, l, c = getParam(3)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color=colors[3], edgecolor='None', zorder=2, s=36)
     ax.errorbar(zmean, c, ecolor=colors[3], capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -197,8 +197,8 @@ def plot_beta(fig):
     zmean, zl, zu, u, l, c = getParam(3, dtype='withg')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor='tomato', capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),

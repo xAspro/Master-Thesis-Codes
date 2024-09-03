@@ -236,8 +236,8 @@ def plot_gamma(composite, individuals=None, zlims=(2.0,6.5), dirname='', fast=Tr
             c = np.array([x.gammapi[2]+12.0 for x in individuals])
             u = np.array([x.gammapi[0]+12.0 for x in individuals])
             l = np.array([x.gammapi[1]+12.0 for x in individuals])
-            uyerr = u-c
-            lyerr = c-l 
+            uyerr = abs(u-c)
+            lyerr = abs(c-l) 
 
             zs = np.array([x.z.mean() for x in individuals])
             uz = np.array([x.z.max() for x in individuals])

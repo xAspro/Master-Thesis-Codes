@@ -229,8 +229,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='new', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -241,8 +241,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='nonUniformTiles', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors2[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -252,8 +252,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='nonUniformTiles', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors2[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -263,8 +263,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='all2SLAQandSDSS', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -274,8 +274,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='all2SLAQandSDSS', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -285,8 +285,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='all2SLAQsomeSDSS', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -296,8 +296,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='all2SLAQsomeSDSS', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -396,8 +396,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='new', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -408,8 +408,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='nonUniformTiles', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors2[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -420,8 +420,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='all2SLAQandSDSS', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -431,8 +431,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='all2SLAQsomeSDSS', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors4[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -464,8 +464,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='new', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -476,8 +476,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='nonUniformTiles', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors2[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -487,8 +487,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='all2SLAQandSDSS', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -498,8 +498,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     zmean, zl, zu, u, l, c = getParam(individuals, 1, which='all2SLAQsomeSDSS', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors4[1], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -581,8 +581,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='new', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -592,8 +592,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='new', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -603,8 +603,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='nonUniformTiles', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors2[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -614,8 +614,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='nonUniformTiles', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors2[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -625,8 +625,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='all2SLAQandSDSS', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -636,8 +636,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='all2SLAQandSDSS', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -647,8 +647,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='all2SLAQsomeSDSS', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors4[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -658,8 +658,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='all2SLAQsomeSDSS', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors4[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -775,8 +775,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='new', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -786,8 +786,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='nonUniformTiles', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors2[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -797,8 +797,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='all2SLAQandSDSS', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -808,8 +808,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='all2SLAQsomeSDSS', dtype='good')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors4[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -855,8 +855,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='new', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -866,8 +866,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='nonUniformTiles', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors2[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -877,8 +877,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='all2SLAQandSDSS', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors3[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
@@ -888,8 +888,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='all2SLAQsomeSDSS', dtype='bad')
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.errorbar(zmean, c, ecolor=colors4[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),

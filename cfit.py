@@ -29,8 +29,8 @@ if case == 0:
     zmean, zl, zu, u, l, c = np.loadtxt('alpha.dat', unpack=True)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color='k', edgecolor='None', zorder=2)
     ax.errorbar(zmean, c, ecolor='k', capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -63,8 +63,8 @@ elif case == 1:
     zmean, zl, zu, u, l, c = np.loadtxt('beta.dat', unpack=True)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color='k', edgecolor='None', zorder=2)
     ax.errorbar(zmean, c, ecolor='k', capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -101,8 +101,8 @@ elif case == 2:
     zmean, zl, zu, u, l, c = np.loadtxt('M_star.dat', unpack=True)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color='k', edgecolor='None', zorder=2)
     ax.errorbar(zmean, c, ecolor='k', capsize=0,
                 xerr=np.vstack((left, right)), 
@@ -135,8 +135,8 @@ elif case == 3:
     zmean, zl, zu, u, l, c = np.loadtxt('phi_star.dat', unpack=True)
     left = zmean-zl
     right = zu-zmean
-    uperr = u-c
-    downerr = c-l
+    uperr = abs(u-c)
+    downerr = abs(c-l)
     ax.scatter(zmean, c, color='k', edgecolor='None', zorder=2)
     ax.errorbar(zmean, c, ecolor='k', capsize=0,
                 xerr=np.vstack((left, right)), 
