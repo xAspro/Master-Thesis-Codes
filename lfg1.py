@@ -26,7 +26,7 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/ukidss_sample.dat',
              'Data_new/banados_sample.dat']
 
-selnfiles = [('Data_new/dr7z2p2_selfunc.dat', 0.1, 0.05, 6248.0, 13),
+selnfiles_original = [('Data_new/dr7z2p2_selfunc.dat', 0.1, 0.05, 6248.0, 13),
              ('Data_new/croom09sgp_selfunc.dat', 0.3, 0.05, 64.2, 15),
              ('Data_new/croom09ngp_selfunc.dat', 0.3, 0.05, 127.7, 15),
              ('Data_new/dr7z3p7_selfunc.dat', 0.1, 0.05, 6248.0, 13),
@@ -44,6 +44,8 @@ selnfiles = [('Data_new/dr7z2p2_selfunc.dat', 0.1, 0.05, 6248.0, 13),
              ('Data_new/giallongo15_sel.dat', 0.0, 0.0, 0.047, 7),
              ('Data_new/ukidss_sel_4.dat', 0.1, 0.1, 3370.0, 19),
              ('Data_new/banados_sel_4.dat', 0.1, 0.1, 2500.0, 20)]
+
+selnfiles = [(A[0],) + A[3:] for A in selnfiles_original]
 
 lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,5])
 

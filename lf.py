@@ -170,7 +170,7 @@ labels = [r'$a_0 [\phi_*]$', r'$a_1 [\phi_*]$', r'$a_2 [\phi_*]$', r'$a_0 [M_*]$
 lfg.corner_plot(labels=labels)
 lfg.chains(labels=labels)
 
-sys.exit() 
+# sys.exit() 
 
 
 # Uncomment if you want full individual calculation 

@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from individual_mockData import lf
 import mosaic
+from composite import lf as lf_1
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/croom09sgp_sample.dat',
@@ -22,7 +23,7 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/kashikawa15_sample.dat',
              'Data_new/giallongo15_sample.dat']
 
-selnfiles = [('Data_new/dr7z2p2_selfunc.dat', 0.1, 0.05, 6248.0, 13, r'SDSS DR7 Richards et al. 2006'),
+selnfiles_original = [('Data_new/dr7z2p2_selfunc.dat', 0.1, 0.05, 6248.0, 13, r'SDSS DR7 Richards et al. 2006'),
              ('Data_new/croom09sgp_selfunc.dat', 0.3, 0.05, 64.2, 15, r'2SLAQ Croom et al. 2009'),
              ('Data_new/croom09ngp_selfunc.dat', 0.3, 0.05, 127.7, 15, r'2SLAQ Croom et al. 2009'),
              ('Data_new/ross13_selfunc2.dat', 0.1, 0.05, 2236.0, 1, r'BOSS DR9 Ross et al. 2013'),
@@ -39,6 +40,8 @@ selnfiles = [('Data_new/dr7z2p2_selfunc.dat', 0.1, 0.05, 6248.0, 13, r'SDSS DR7 
              ('Data_new/willott10_cfhqsvwsel.dat', 0.1, 0.025, 494.0, 10, r'CFHQS Willott et al. 2010'),
              ('Data_new/kashikawa15_sel.dat', 0.05, 0.05, 6.5, 11, r'Subaru Kashikawa et al. 2015'),
              ('Data_new/giallongo15_sel.dat', 0.0, 0.0, 0.047, 7, 'Giallongo et al. 2015')]
+
+selnfiles = [(A[0],) + A[3:-1] for A in selnfiles_original]
 
 method = 'Nelder-Mead'
 
@@ -126,3 +129,5 @@ def bins(composite):
         # mosaic.draw(lfs)
 
     return lfs
+
+lfg1 = lf_1(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,5])

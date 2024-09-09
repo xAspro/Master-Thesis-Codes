@@ -139,11 +139,16 @@ if WRITE_PARAMS:
                   + lfi.M_star + lfi.alpha + lfi.beta)
         f.write(('{:.3f}  '*len(output)).format(*output)) 
         f.write('\n')
+# New bin file is created
 
 lfi.chains()
-lfi.corner_plot()
-drawlf.draw(lfi, show_individual_fit=True)
+#chains is file created
 
+lfi.corner_plot()
+#triangle is file created
+
+drawlf.draw(lfi, show_individual_fit=True)
+#lf_z is file created
 
 end_time = time.time()
 execution_time = end_time - start_time

@@ -223,27 +223,40 @@ class lf:
         if isinstance(self.pnum, int):
             # Evolution of each LF parameter described by 'atz' using same
             # number 'self.pnum' of parameters.
+            # print("In composite.py class-lf getparams if\n\n")
             splitlocs = self.pnum*np.array([1,2,3])
         else:
             # Evolution of each LF parameter described by 'atz' using
             # different number 'self.pnum[i]' of parameters.
+            # print("In composite.py class-lf getparams else\n\n")
             splitlocs = np.cumsum(self.pnum)
-
+        # print("\nself.pnum: ", self.pnum)
+        # print("\n\ntheta: ", theta,"\n\n")
+        # print("\n\nsplitlocs: ", splitlocs,"\n\n")
+        # print("\n\nnp.split(theta,splitlocs): ", np.split(theta,splitlocs),"\n\n")
         return np.split(theta,splitlocs)
 
     def log10phi(self, theta, mag, z):
         # print("In composite.py class-lf log10phi")
+        # print("self: ", self)
+        # print("\ntheta: ", theta,"\n")
 
         params = self.getparams(theta)
+        # print("\nparams: ", params,"\n")
 
         log10phi_star = self.atz(z, params[0])
+        # print("\nlog10phi_star: ", log10phi_star,"\n")
         M_star = self.atz(z, params[1])
+        # print("\nM_star: ", M_star,"\n")
         alpha = self.atz(z, params[2])
+        # print("\nalpha: ", alpha,"\n")
         #beta = self.atz(z, params[3])
         beta = self.atz_beta(z, params[3])
+        # print("\nbeta: ", beta,"\n")
         
         phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(mag-M_star)) +
                                      10.0**(0.4*(beta+1)*(mag-M_star)))
+        # print("\nphi: ", phi,"\n")
         return np.log10(phi)
 
     def lfnorm(self, theta):
