@@ -3,10 +3,14 @@ import numpy as np
 from composite import lf
 from composite import lf_polyb
 from summary_fromFile import summary_plot as sp
+import drawlf
 
 ##add time!!!!
 import time
+from datetime import datetime
 start_time = time.time()
+readable_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
+print("Time right now: ", readable_time)
 
 # Model 1 
 
@@ -78,14 +82,19 @@ print("Model 1 commence run_mcmc")
 lfg1.run_mcmc()
 
 end_time = time.time()
-print("Time taken: ", end_time - start_time)
+print("Time taken: ", end_time - start_time, " seconds")
 print("Model 1 over")
 
+#tried plotting.. but not working
+# drawlf.draw(lfg1, show_individual_fit=True)
+sys.exit()
 #------------------------------------------------------------
 
 # Model 2 
 
 start_time = time.time()
+readable_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
+print("Time right now: ", readable_time)
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/croom09sgp_sample.dat',
@@ -149,13 +158,15 @@ print("Model 2 commence run_mcmc")
 lfg2.run_mcmc()
 
 end_time = time.time()
-print("Time taken: ", end_time - start_time)
+print("Time taken: ", end_time - start_time, " seconds")
 print("Model 2 over")
 
 #------------------------------------------------------------
 
 # Model 3
 start_time = time.time()
+readable_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
+print("Time right now: ", readable_time)
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/croom09sgp_sample.dat',
@@ -219,11 +230,11 @@ print("Model 3 commence run_mcmc")
 lfg3.run_mcmc()
 
 end_time = time.time()
-print("Time taken: ", end_time - start_time)
+print("Time taken: ", end_time - start_time, " seconds")
 print("Model 3 over")
 
 #------------------------------------------------------------
 ###################################################################################################
 ## What this this doing here???
-import bins 
+# import bins 
 ###################################################################################################

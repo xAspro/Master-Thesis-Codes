@@ -32,6 +32,8 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/kashikawa15_sample.dat',
              'Data_new/giallongo15_sample.dat']
 
+#Couldnt run this code for some other file, thats why made this change.
+
 # selnfiles = [('Data_new/dr7z2p2_selfunc.dat', 0.1, 0.05, 6248.0, 13, r'Schneider et al. 2010'),
 #              ('Data_new/croom09sgp_selfunc.dat', 0.3, 0.05, 64.2, 15, r'Croom et al. 2009'),
 #              ('Data_new/croom09ngp_selfunc.dat', 0.3, 0.05, 127.7, 15, r'Croom et al. 2009'),

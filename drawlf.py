@@ -67,10 +67,13 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     mags = np.linspace(*maglims, num=nmags)
     nsample = 1000
     rsample = lf.samples[np.random.randint(len(lf.samples), size=nsample)]
+    print("rsample= ", rsample)
     phi = np.zeros((nsample, nmags))
     
     for i, theta in enumerate(rsample):
+        #Made a change here. from phi[i] = lf.log10phi(theta, mags) to phi[i] = lf.log10phi(lf,theta, mags)
         phi[i] = lf.log10phi(theta, mags)
+        # phi[i] = lf.log10phi(lf, theta, mags)
 
     up = np.percentile(phi, 15.87, axis=0)
     down = np.percentile(phi, 84.13, axis=0)
@@ -606,6 +609,7 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     plt.title(plottitle, size='medium', y=1.01)
 
     plotfile = dirname+'lf_z{0:.3f}.pdf'.format(z_plot)
+    plt.show()
     plt.savefig(plotfile, bbox_inches='tight')
 
     plt.close('all') 

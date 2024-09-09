@@ -45,7 +45,8 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              # ('Selmaps_with_tiles/ukidss_sel_4.dat', 3370.0, 19),
              # ('Selmaps_with_tiles/banados_sel_4.dat', 2500.0, 20)]
 
-case = 13
+# case = 13
+case=0
 
 if case == 0:
 
@@ -67,18 +68,18 @@ if case == 0:
     b = lfg.bestfit(g, method=method)
     print( b)
 
-    #import bins
+    import bins
 
     lfg.run_mcmc()
 
-    # labels = 14*['a']
+    labels = 14*['a']
 
     # lfg.corner_plot(labels=labels)
     # lfg.chains(labels=labels)
 
     # import bins
 
-    # sp(composite=lfg, individuals=bins.lfs, sample=True)
+    sp(composite=lfg, individuals=bins.lfs, sample=True)
     
 elif case == 1:
 
