@@ -30,7 +30,7 @@ selnfiles = []
 #              ('smooth_maps/willott10_cfhqsvwsel_with_tiles.dat', 494.0, 10, r'Willott et al. 2010'),
 #              ('smooth_maps/kashikawa15_sel_with_tiles.dat', 6.5, 11, r'Kashikawa et al. 2015')]
 
-# smoothmaps = [individual.selmap(x) for x in selnfiles]
+smoothmaps = [individual.selmap(x) for x in selnfiles]
 
 def f(loglf, theta, m, z, fit='individual'):
     """Return 10**log10phi.

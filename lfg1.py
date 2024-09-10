@@ -4,6 +4,8 @@ from composite import lf
 from composite import lf_polyb
 from summary_fromFile import summary_plot as sp
 
+##### Checked once.. didnt run
+
 # Model 1 
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',

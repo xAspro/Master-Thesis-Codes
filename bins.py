@@ -7,6 +7,8 @@ from individual import lf
 import mosaic
 import drawlf
 
+# Checked once.. ran and gave fig 3 output.
+
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              #'Data_new/dr3z2p6_sample.dat', # This is DR3 not DR7 
              'Data_new/croom09sgp_sample.dat',
@@ -45,6 +47,8 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards e
              ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11, r'Kashikawa et al. 2015')]
 
 method = 'Nelder-Mead'
+
+# Just for checking reducec zls
 
 # zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
 #        (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),

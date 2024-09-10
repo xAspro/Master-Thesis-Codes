@@ -15,6 +15,8 @@ Histogram of all quasar data used in this study.
 
 """
 
+# Checked once. Runs without error. Produces the output qsos.pdf
+
 def getqlums(lumfile):
     # print("In data.py getqlums")
 

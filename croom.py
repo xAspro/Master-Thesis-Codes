@@ -23,6 +23,9 @@ from individual import lf
 import drawlf
 mpl.rcParams['font.size'] = '16'
 
+# Checked once. Runs without error. Produces croom.pdf as output.
+# Only first case produces output. Other cases are producing error.
+
 case = 'M1450_worseck'
 # case = 'Mgz2_unprocessed'
 # case = 'Mgz2_zsuccess'

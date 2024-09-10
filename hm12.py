@@ -1,3 +1,13 @@
+import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
+mpl.rcParams['text.usetex'] = True
+mpl.rcParams['font.family'] = 'serif'
+mpl.rcParams['font.serif'] = 'cm'
+mpl.rcParams['font.size'] = '16'
+import matplotlib.pyplot as plt
+
+# Didnt have any import statements in the original file. Added them.
 
 def plot_f():
 

@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 from numpy.polynomial.chebyshev import chebfit
 from numpy.polynomial import Chebyshev as T
 
+# Checked once. Didnt run. The code required the input file alpha.dat, beta.dat, M_star.dat, phi_star.dat
+# Searched for the input files and did not find them.
+
 import sys 
 case = int(sys.argv[1])
 

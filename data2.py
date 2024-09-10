@@ -13,7 +13,8 @@ from random import shuffle
 Histogram of all quasar data used in this study.
 
 """
-
+# Checked once. Runs without error. Produces the output qsos2.pdf
+# Changed output name from qsos.pdf to qsos2.pdf to differentiate from the output of data.py
 
 def getqlums(lumfile):
 
@@ -77,7 +78,7 @@ def plot_data(data):
                frameon=False, framealpha=0.0, labelspacing=.1,
                handletextpad=0.4, borderpad=0.2,markerscale=.5)
 
-    plt.savefig('qsos.pdf', bbox_inches='tight')
+    plt.savefig('qsos2.pdf', bbox_inches='tight')
 
     return
 
