@@ -15,6 +15,9 @@ cosmo = {'omega_M_0':0.3,
          'omega_k_0':0.0,
          'h':0.7}
 
+# Checked once. Runs without error.
+# Produces boss.pdf as output.
+
 def volume(z, area, cosmo=cosmo):
 
     omega = (area/41253.0)*4.0*np.pi # str

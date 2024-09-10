@@ -1,5 +1,9 @@
 import numpy as np
 
+# Checked once.. ran
+# But not a code that is required to run for the project
+# It is just reading bins.dat file and printing the values in a tabular format
+
 zmean, zmin, zmax, phil, phiu, phic, ml, mu, mc, al, au, ac, bl, bu, bc = np.loadtxt('bins.dat', unpack=True)
 zbin = (zmin+zmax)/2.0
 

@@ -892,7 +892,7 @@ def draw_emissivity(all_individuals, composite=None, select=False):
     tabulate = False
     if tabulate:
         for i in range(len(em21)):
-            print( r'{:.1f}  {:.3e}  {:.3e}'.format(z[i], em18[i], em21[i]))
+            print( r'{:.1f}  {:.3e}  {:.3e}'.format(z[i], em[i], em21[i]))
             
     zg, eg, zg_lerr, zg_uerr, eg_lerr, eg_uerr = np.loadtxt('Data_new/giallongo15_emissivity.txt', unpack=True)
     

@@ -17,6 +17,8 @@ cosmo = {'omega_M_0':0.3,
 from numpy.polynomial import Chebyshev as T
 from numpy.polynomial.polynomial import polyval
 
+# Checked once. Runs without error. No implementation of this file in this file.
+
 def getselfn(selfile):
     # print("In composite.py getselfn")
 
