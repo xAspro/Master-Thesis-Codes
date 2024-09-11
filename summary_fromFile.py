@@ -471,9 +471,6 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     handles.append((m3f,m3))
     labels.append('Model 3')
 
-    print("handles = ", handles)
-    print("labels = ", labels)
-
     # Print the initial handles and labels
     print("Initial handles:", handles)
     print("Initial labels:", labels)
