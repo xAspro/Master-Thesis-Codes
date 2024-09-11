@@ -1,3 +1,7 @@
+# Checked once. Doesnt run. 
+# FileNotFoundError: [Errno 2] No such file or directory: 'rtg2_data.txt'
+print("In tabulate_emissivities_global.py")
+
 import numpy as np
 
 data = np.loadtxt('rtg2_data.txt')

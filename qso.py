@@ -1,3 +1,6 @@
+# Checked once. Runs without error. Produces the output e_qso.pdf
+print("In qso.py")
+
 import numpy as np 
 import matplotlib as mpl
 mpl.use('Agg') 

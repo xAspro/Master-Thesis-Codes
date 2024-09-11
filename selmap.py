@@ -1,3 +1,6 @@
+# Already run by Run_Selmap_for_all_files_in_Data_new.py
+print("In selmap.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

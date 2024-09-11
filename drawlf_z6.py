@@ -1,3 +1,9 @@
+# Checked once. Runs without error.
+# No implementation of this code directly in here.
+# No implementation of this code in the whole project
+
+print("In drawlf_z6.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -14,7 +20,6 @@ cosmo = {'omega_M_0':0.3,
          'omega_lambda_0':0.7,
          'omega_k_0':0.0,
          'h':0.70}
-
 
 """Makes LF plots at particular redshifts.  Shows data with
 individual and composite models.  This is similar to the draw()

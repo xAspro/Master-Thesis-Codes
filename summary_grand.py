@@ -1,3 +1,8 @@
+# Checked once. didnt run. But no need to focus on this code now. This code is not being used in the project.
+# AttributeError: Line2D.set() got an unexpected keyword argument 'linewidths'
+# Most probably it will provide a similar plot like evolution_g.py?? BUT CHECK LATER!!
+print("In summary_grand.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

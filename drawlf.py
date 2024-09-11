@@ -1,3 +1,6 @@
+# Checked once. No implementation of this code directly in here.
+print("In drawlf.py")
+
 import numpy as np
 import emcee
 import matplotlib as mpl
@@ -15,7 +18,6 @@ cosmo = {'omega_M_0':0.3,
          'omega_lambda_0':0.7,
          'omega_k_0':0.0,
          'h':0.70}
-
 
 """Makes LF plots at particular redshifts.  Shows data with
 individual and composite models.  This is similar to the draw()
@@ -609,7 +611,7 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     plt.title(plottitle, size='medium', y=1.01)
 
     plotfile = dirname+'lf_z{0:.3f}.pdf'.format(z_plot)
-    plt.show()
+
     plt.savefig(plotfile, bbox_inches='tight')
 
     plt.close('all') 

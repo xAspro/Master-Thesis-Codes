@@ -1,3 +1,7 @@
+# Checked once. Runs without error. Produces croom.pdf as output.
+# Only first case produces output. Other cases are producing error.
+print("In croom.py")
+
 """
 Compare 2SLAQ binned LF to Croom et al. 2009.
 
@@ -22,9 +26,6 @@ from drawlf import render
 from individual import lf
 import drawlf
 mpl.rcParams['font.size'] = '16'
-
-# Checked once. Runs without error. Produces croom.pdf as output.
-# Only first case produces output. Other cases are producing error.
 
 case = 'M1450_worseck'
 # case = 'Mgz2_unprocessed'

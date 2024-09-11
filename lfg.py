@@ -1,3 +1,22 @@
+# Checked once. Didnt run.
+
+# OUTPUT:
+# saved the figure in  lf_z5.999.pdf
+# command executed in drawlf.py
+# laying out figure
+# plotting now
+# Traceback (most recent call last):
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/lfg.py", line 82, in <module>
+    
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/summary_fromFile.py", line 641, in summary_plot
+#     plot_alpha(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/summary_fromFile.py", line 459, in plot_alpha
+#     handles.append((m2f,m2))
+#                     ^^^
+# UnboundLocalError: cannot access local variable 'm2f' where it is not associated with a value
+
+print("In lfg.py")
+
 import sys
 import numpy as np 
 from composite import lf

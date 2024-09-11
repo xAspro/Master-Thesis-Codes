@@ -1,3 +1,6 @@
+# Checked once. No implementation of this function in here.
+print("In gammapi.py")
+
 import numpy as np 
 import matplotlib as mpl
 mpl.use('Agg') 

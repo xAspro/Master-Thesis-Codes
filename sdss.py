@@ -1,3 +1,7 @@
+# Checked once. Runs.
+# produces sdss.pdf as output.
+print("In sdss.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

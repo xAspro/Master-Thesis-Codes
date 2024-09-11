@@ -1,3 +1,8 @@
+# Checked once. No implementation of this code in here.
+# No files importing this file.
+# Must have been used for some testing purposes.
+print("In rhoqso_data.py")
+
 import numpy as np
 import emcee
 import matplotlib as mpl

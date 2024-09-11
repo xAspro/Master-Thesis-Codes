@@ -1,3 +1,8 @@
+# Checked once. No implementation of this code in here.
+# Not implemented in the project.
+# Must be used for some testing purposes.
+print("In rhoqso_fit.py")
+
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib as mpl

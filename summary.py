@@ -1,3 +1,6 @@
+# Checked once. runs without error. Produces the output evolution.pdf
+print("In summary.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

@@ -1,3 +1,7 @@
+# Checked once. Ran without error.
+# Produces the output mcgreer.pdf
+print("In mcgreer.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

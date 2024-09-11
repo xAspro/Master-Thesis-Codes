@@ -1,3 +1,8 @@
+# Checked Once. Runs.
+# Produces the output new_bins_26jul17_seln.dat, chains.pdf, triangle.pdf, lf_z<number>.pdf
+# Triangle plot doesnt have y axis for phi_star.
+print("In lfi.py")
+
 import sys
 import numpy as np 
 from individual import lf

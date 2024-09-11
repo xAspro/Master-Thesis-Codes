@@ -1,3 +1,6 @@
+# Checked once. Runs fine. giallongo.pdf is the output.
+print("In giallongo.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -15,6 +18,7 @@ cosmo = {'omega_M_0':0.3,
          'omega_lambda_0':0.7,
          'omega_k_0':0.0,
          'h':0.7}
+
 
 def volume(z, area, cosmo=cosmo):
 

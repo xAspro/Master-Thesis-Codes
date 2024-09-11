@@ -1,10 +1,35 @@
+##### Checked once.. didnt run
+
+# In lfg1.py
+# In composite.py
+# Traceback (most recent call last):
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/lfg1.py", line 53, in <module>
+#     lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,5])
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/composite.py", line 203, in __init__
+#     self.maps = [selmap(*x) for x in selection_maps]
+#                  ^^^^^^^^^^
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/composite.py", line 92, in __init__
+#     self.z, self.m, self.p, self.dz, self.dm  = getselfn(selection_map_file)
+#                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/composite.py", line 29, in getselfn
+#     z, mag, p, dz, dm = np.loadtxt(f, usecols=(1,2,3,4,5), unpack=True)
+#                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/.pyenv/versions/3.12.4/lib/python3.12/site-packages/numpy/lib/_npyio_impl.py", line 1381, in loadtxt
+#     arr = _read(fname, dtype=dtype, comment=comment, delimiter=delimiter,
+#           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/.pyenv/versions/3.12.4/lib/python3.12/site-packages/numpy/lib/_npyio_impl.py", line 1021, in _read
+#     arr = _load_from_filelike(
+#           ^^^^^^^^^^^^^^^^^^^^
+# ValueError: invalid column index 4 at row 1 with 4 columns
+
+print("In lfg1.py")
+
 import sys
 import numpy as np 
 from composite import lf
 from composite import lf_polyb
 from summary_fromFile import summary_plot as sp
-
-##### Checked once.. didnt run
 
 # Model 1 
 

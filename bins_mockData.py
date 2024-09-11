@@ -1,10 +1,11 @@
+##### Checked once.. didnt run
+print("In bins_mockData.py")
+
 import sys 
 import numpy as np
 from individual_mockData import lf
 import mosaic
 from composite import lf as lf_1
-
-##### Checked once.. didnt run
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/croom09sgp_sample.dat',

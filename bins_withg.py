@@ -1,3 +1,8 @@
+##### Checked once.. didnt run
+print("In bins_mockData.py")
+
+# WHY ARE WE IMPORTING INDIVIDUAL SO MANY TIMES HERE? :/
+
 import sys 
 import numpy as np
 print("\n\n\n\n\n\n line 3")
@@ -12,7 +17,6 @@ import mosaic
 print("\n\n\n\n\n\n line 12")
 
 print("\n\n\n\n\n\n")
-##### Checked once.. didnt run
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/croom09sgp_sample.dat',

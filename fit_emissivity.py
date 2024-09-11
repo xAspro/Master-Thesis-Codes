@@ -1,7 +1,11 @@
+# Checked once. No implementation of this code directly in here.
+print("In fit_emissivity.py")
+
 import numpy as np
 import scipy.optimize as op
 import emcee
 import corner
+
 
 def fit(x, y, sigma):
 

@@ -1,3 +1,8 @@
+# Checked once. Doesnt run.
+# This code is supposed to produce fig 11 in the paper.
+# But it is missing 'hm12/q.dat' file.
+print("In qhe.py")
+
 """Calculates Q(z) for hydrogen and helium.
 
 See also: q.py. 
@@ -19,12 +24,12 @@ if __name__ == '__main__':
     mpl.rcParams['font.size'] = '22'
     import matplotlib.pyplot as plt
     import sys
-
+""" 
 data = np.load('e1450_18_21feb.npz')
 z18 = data['z']
 median18 = data['median']*((912.0/1450.0)**0.61)
 up18 = data['up']*((912.0/1450.0)**0.61)
-down18 = data['down']*((912.0/1450.0)**0.61)
+down18 = data['down']*((912.0/1450.0)**0.61) """
     
 # data = np.load('e1450_18_test.npz')
 # z18 = data['z']
@@ -34,12 +39,12 @@ down18 = data['down']*((912.0/1450.0)**0.61)
 # medianfaint18 = data['medianfaint']*((912.0/1450.0)**0.61)
 # downfaint18 = data['downfaint']*((912.0/1450.0)**0.61)
 # upfaint18 = data['upfaint']*((912.0/1450.0)**0.61)
-
+""" 
 data = np.load('e1450_21_21feb.npz')
 z21 = data['z']
 median21 = data['median']*((912.0/1450.0)**0.61)
 up21 = data['up']*((912.0/1450.0)**0.61)
-down21 = data['down']*((912.0/1450.0)**0.61)
+down21 = data['down']*((912.0/1450.0)**0.61) """
 
 # data = np.load('e1450_21_test.npz')
 # z21 = data['z']

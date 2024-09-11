@@ -1,3 +1,6 @@
+# Checked once. No implementation of this code directly in here.
+print("In rtg.py")
+
 import numpy as np
 from scipy.integrate import dblquad
 

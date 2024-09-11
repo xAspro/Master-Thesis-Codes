@@ -1,3 +1,7 @@
+# Checked once, runs without error, but no output.
+# Seems like no other file is importing this file.
+print("In chisq.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -7,9 +11,6 @@ mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '22'
 import matplotlib.pyplot as plt
 from drawlf import get_lf 
-
-# Checked once, runs without error, but no output.
-# Seems like no other file is importing this file.
 
 def chisq(lf, composite=None):
 
