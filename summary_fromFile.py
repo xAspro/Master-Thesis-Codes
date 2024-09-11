@@ -470,7 +470,26 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
 
     handles.append((m3f,m3))
     labels.append('Model 3')
-    
+
+    print("handles = ", handles)
+    print("labels = ", labels)
+
+    # Print the initial handles and labels
+    print("Initial handles:", handles)
+    print("Initial labels:", labels)
+
+    # Filter out (None, None) entries
+    filtered_handles_labels = [(h, l) for h, l in zip(handles, labels) if h != (None, None)]
+    handles, labels = zip(*filtered_handles_labels) if filtered_handles_labels else ([], [])
+
+    # Convert single-element tuples to lists
+    handles = list(handles)
+    labels = list(labels)
+
+    # Print the filtered handles and labels
+    print("\nFiltered handles:", handles)
+    print("Filtered labels:", labels)
+
     plt.legend(handles, labels, loc='upper right', fontsize=10,
                handlelength=3, frameon=False, framealpha=0.0,
                labelspacing=.1, handletextpad=0.3, borderpad=0.1,
@@ -623,7 +642,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
     return 
 
-def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, lfg_break=None, lfg_polyb=None):
+# Changing just for checking!!!!!!!
+def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, lfg_break=None, lfg_polyb=None, output_file_name='evolution2.pdf'):
 
     mpl.rcParams['font.size'] = '14'
     
@@ -651,7 +671,8 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, l
     plot_beta(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
 
     print("\n\n Saved result in evolution2.pdf\n\n")
-    plt.savefig('evolution2.pdf',bbox_inches='tight')
+    # plt.savefig('evolution2.pdf',bbox_inches='tight')
+    plt.savefig(output_file_name,bbox_inches='tight')
 
     mpl.rcParams['font.size'] = '22'
     
