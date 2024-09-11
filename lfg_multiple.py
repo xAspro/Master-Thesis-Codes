@@ -45,6 +45,79 @@
 # Error in draw: lf.log10phi() missing 1 required positional argument: 'z'
 # Time right now:  2024-09-11 20:46:46
 
+
+
+
+
+
+
+
+
+
+
+
+
+# Time taken:  661.9450161457062  seconds
+# Model 1 over
+# laying out figure
+# plotting now
+# Error in summary_plot: 'NoneType' object has no attribute 'create_artists'
+# Traceback (most recent call last):
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/lfg_multiple.py", line 143, in <module>
+#     sp(composite=lfg1, individuals=bins.lfs, sample=True)  # calling the function
+#     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/summary_fromFile.py", line 650, in summary_plot
+#     plot_alpha(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/summary_fromFile.py", line 474, in plot_alpha
+#     plt.legend(handles, labels, loc='upper right', fontsize=10,
+#   File "/Users/xr/.pyenv/versions/3.12.4/lib/python3.12/site-packages/matplotlib/pyplot.py", line 3588, in legend
+#     return gca().legend(*args, **kwargs)
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/.pyenv/versions/3.12.4/lib/python3.12/site-packages/matplotlib/axes/_axes.py", line 342, in legend
+#     self.legend_ = mlegend.Legend(self, handles, labels, **kwargs)
+#                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/.pyenv/versions/3.12.4/lib/python3.12/site-packages/matplotlib/legend.py", line 563, in __init__
+#     self._init_legend_box(handles, labels, markerfirst)
+#   File "/Users/xr/.pyenv/versions/3.12.4/lib/python3.12/site-packages/matplotlib/legend.py", line 910, in _init_legend_box
+#     handle_list.append(handler.legend_artist(self, orig_handle,
+#                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/.pyenv/versions/3.12.4/lib/python3.12/site-packages/matplotlib/legend_handler.py", line 129, in legend_artist
+#     artists = self.create_artists(legend, orig_handle,
+#               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/.pyenv/versions/3.12.4/lib/python3.12/site-packages/matplotlib/legend_handler.py", line 764, in create_artists
+#     _a_list = handler.create_artists(
+#               ^^^^^^^^^^^^^^^^^^^^^^
+# AttributeError: 'NoneType' object has no attribute 'create_artists'
+
+# Error in draw: lf.log10phi() missing 1 required positional argument: 'z'
+# Traceback (most recent call last):
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/lfg_multiple.py", line 150, in <module>
+#     drawlf.draw(lfg1, show_individual_fit=True)  # calling the function
+#     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/drawlf.py", line 594, in draw
+#     render(ax, lf, composite=composite, showMockSample=showMockSample,
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/drawlf.py", line 417, in render
+#     indf = plot_posterior_sample_lfs(lf, ax, (-32.0, -16.0), lw=1,
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/Users/xr/Desktop/Old Laptop/Desktop/TIFR College/Semesters/Master's Thesis/Master's Thesis Codes/QLF/drawlf.py", line 77, in plot_posterior_sample_lfs
+#     phi[i] = lf.log10phi(theta, mags)
+#              ^^^^^^^^^^^^^^^^^^^^^^^^
+# TypeError: lf.log10phi() missing 1 required positional argument: 'z'
+# Time right now:  2024-09-11 21:46:18
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 print("In lfg_multiple.py")
 
 import sys
@@ -55,6 +128,8 @@ from summary_fromFile import summary_plot as sp
 import drawlf
 import bins
 import traceback
+import sounddevice as sd
+
 
 ##add time!!!!
 import time
@@ -140,21 +215,25 @@ print("Time taken: ", end_time - start_time, " seconds")
 print("Model 1 over")
 
 try:
-    sp(composite=lfg1, individuals=bins.lfs, sample=True)  # Try calling the function
+    sp(composite=lfg1, individuals=bins.lfs, sample=True)  # calling the function
 
 except Exception as e:
     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
     traceback.print_exc()
 
-try:
-    drawlf.draw(lfg1, show_individual_fit=True)  # Try calling the function
+duration = 3  # seconds
+frequency = 440  # Hz, the frequency of the beep sound (440Hz is standard A note)
 
-except Exception as e:
-    print(f"Error in {drawlf.draw.__name__}: {e}")  # Catch and report the error, but continue to the next function
-    traceback.print_exc()
+# Generate sound wave (440Hz sine wave)
+sample_rate = 44100  # samples per second
+t = np.linspace(0, duration, int(sample_rate * duration), False)
+wave = 0.5 * np.sin(2 * np.pi * frequency * t)
 
-#tried plotting.. but not working
-# drawlf.draw(lfg1, show_individual_fit=True)
+# Play the generated sound wave
+sd.play(wave, samplerate=sample_rate)
+# sd.wait()  # Wait until the sound is finished playing
+
+
 # sys.exit()
 #------------------------------------------------------------
 
@@ -229,6 +308,25 @@ end_time = time.time()
 print("Time taken: ", end_time - start_time, " seconds")
 print("Model 2 over")
 
+
+try:
+    sp(composite=lfg2, individuals=bins.lfs, sample=True, output_file_name='evolution3.pdf')  # calling the function
+
+except Exception as e:
+    print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
+    traceback.print_exc()
+# Play the generated sound wave
+sd.play(wave, samplerate=sample_rate)
+
+try:
+    sp(composite=(lfg1,lfg2), individuals=bins.lfs, sample=True, output_file_name='evolution4.pdf')  # calling the function
+
+except Exception as e:
+    print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
+    traceback.print_exc()
+
+# Play the generated sound wave
+sd.play(wave, samplerate=sample_rate)
 #------------------------------------------------------------
 
 # Model 3
@@ -301,19 +399,31 @@ end_time = time.time()
 print("Time taken: ", end_time - start_time, " seconds")
 print("Model 3 over")
 
+try:
+    sp(composite=lfg3, individuals=bins.lfs, sample=True, output_file_name='evolution5.pdf')  # calling the function
+
+except Exception as e:
+    print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
+    traceback.print_exc()
+# Play the generated sound wave
+sd.play(wave, samplerate=sample_rate)
+
+try:
+    sp(composite=(lfg1,lfg2,lfg3), individuals=bins.lfs, sample=True, output_file_name='evolution6.pdf')  # calling the function
+
+except Exception as e:
+    print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
+    traceback.print_exc()
+
 #------------------------------------------------------------
 ###################################################################################################
 ## What this this doing here???
 # import bins 
 ###################################################################################################
-try:
-    sp(composite=lfg1, individuals=bins.lfs, sample=True)  # Try calling the function
 
-except Exception as e:
-    print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
+# try:
+#     sp(composite=lfg1, individuals=bins.lfs, sample=True)  # calling the function
 
-try:
-    drawlf.draw(lfg1, show_individual_fit=True)  # Try calling the function
+# except Exception as e:
+#     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
 
-except Exception as e:
-    print(f"Error in {drawlf.draw.__name__}: {e}")  # Catch and report the error, but continue to the next function
