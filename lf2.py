@@ -1,3 +1,6 @@
+# Checked once. Didnt run. Misses label in selnfiles.
+print("In lf2.py")
+
 import sys
 import numpy as np 
 from individual import lf 

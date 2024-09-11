@@ -1,3 +1,10 @@
+# Checked Once. Ran without error.
+# No output. No implementtion of this code in any files.
+# This code is just for checking.
+# But need to see what is lfg, zmin, zmax in here and use them.
+# Tried something in the bottom of the code. need to check this once more.
+print("In lfi_mockData.py")
+
 import sys
 import numpy as np 
 from individual_mockData import lf
@@ -73,3 +80,9 @@ def lmd(lfg, zmin, zmax):
 
     return lfi 
 
+""" zmin = float(sys.argv[1])
+zmax = float(sys.argv[2])
+
+zl = (zmin, zmax) 
+lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
+lmd(lfi, zmin, zmax) """

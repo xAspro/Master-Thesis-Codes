@@ -1,3 +1,6 @@
+# Checked once. didnt run.
+# FileNotFoundError: emissivity.txt not found.
+
 import numpy as np
 
 data = np.loadtxt('emissivity.txt')

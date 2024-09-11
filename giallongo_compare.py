@@ -1,3 +1,6 @@
+# Checked once. No implementation of this code directly in here.
+print("In giallongo_compare.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

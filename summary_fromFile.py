@@ -1,3 +1,11 @@
+# Checked once. Doesnt run/no implementation in here. If we try to implement, we have error. should check how is lfgs using this file.
+# File: summary_fromFile.py
+#   Imported by:
+#     - lfg.py
+#     - lfg1.py
+#     - lfg_multiple.py
+print("In summary_fromFile.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -14,8 +22,8 @@ from scipy.interpolate import UnivariateSpline
 # These redshift bins are labelled "bad" and are plotted differently.
 reject = [0, 1, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-# colors = ['tomato', 'forestgreen', 'goldenrod', 'saddlebrown']
-colors = ['k', 'k', 'k', 'k'] 
+colors = ['tomato', 'forestgreen', 'goldenrod', 'saddlebrown']
+# colors = ['k', 'k', 'k', 'k'] 
 nplots_x = 2
 nplots_y = 2
 nplots = 4
@@ -366,6 +374,7 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     ax.set_ylim(-7, -1)
     ax.set_yticks(np.arange(-7, -0.9, 1))
 
+    m1f, m1, m2f, m2, m3f, m3= None, None, None, None, None, None
 
     if compOpt is not None: 
         alpha = compOpt.atz(z, compOpt.getparams(compOpt.bf.x)[2])
@@ -641,11 +650,12 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, l
     plot_alpha(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
     plot_beta(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
 
-    plt.savefig('evolution.pdf',bbox_inches='tight')
+    print("\n\n Saved result in evolution2.pdf\n\n")
+    plt.savefig('evolution2.pdf',bbox_inches='tight')
 
     mpl.rcParams['font.size'] = '22'
     
     return
 
-#summary_plot#()
+# summary_plot()
 

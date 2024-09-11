@@ -1,3 +1,6 @@
+# Checked the code and it is working fine. It produces the output qsos_NotIncluded.pdf
+print("In baddata.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -6,8 +9,6 @@ mpl.rcParams['font.family'] = 'serif'
 mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '22'
 import matplotlib.pyplot as plt
-
-# Checked the code and it is working fine. It produces the output qsos_NotIncluded.pdf
 
 def getqlums(lumfile):
 

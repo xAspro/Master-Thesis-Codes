@@ -1,6 +1,8 @@
-import numpy as np
 # Checked once.. Seems like no file is importing this file
 # Warning: This file is not run in the project
+print("In bootstrap.py")
+
+import numpy as np
 
 def bootstrap(data, nsamples, statistic, alpha):
 

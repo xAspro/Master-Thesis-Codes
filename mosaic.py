@@ -1,3 +1,10 @@
+# Checked once. No implementation of this code in here.
+#   Imported by:
+#     - bins.py
+#     - bins_mockData.py
+#     - bins_withg.py
+print("In mosaic.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

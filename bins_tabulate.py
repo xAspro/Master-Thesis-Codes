@@ -1,8 +1,10 @@
-import numpy as np
-
 # Checked once.. ran
 # But not a code that is required to run for the project
 # It is just reading bins.dat file and printing the values in a tabular format
+# Helps in latex for writing paper!
+print("In bins_tabulate.py")
+
+import numpy as np
 
 zmean, zmin, zmax, phil, phiu, phic, ml, mu, mc, al, au, ac, bl, bu, bc = np.loadtxt('bins.dat', unpack=True)
 zbin = (zmin+zmax)/2.0

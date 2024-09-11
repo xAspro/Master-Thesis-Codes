@@ -1,3 +1,6 @@
+# Checked once. Runs without error. Produces the output qsos.pdf
+print("In data.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -14,8 +17,6 @@ import sys
 Histogram of all quasar data used in this study.
 
 """
-
-# Checked once. Runs without error. Produces the output qsos.pdf
 
 def getqlums(lumfile):
     # print("In data.py getqlums")

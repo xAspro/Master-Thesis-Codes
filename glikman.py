@@ -1,3 +1,6 @@
+# Checked once. Runs without error. Produces the output glikman.pdf
+print("In glikman.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

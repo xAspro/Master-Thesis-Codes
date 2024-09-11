@@ -1,3 +1,7 @@
+# Checked once. Didnt run. 
+# Missing Sample ID in selnfiles.
+print("In lf.py")
+
 from composite import lf
 import sys
 import time
@@ -16,6 +20,7 @@ if case == 1:
     
     qlumfiles = ['Data/bossdr9color.dat']
 
+    #Missing Sample ID
     selnfiles = [('Data/ross13_selfunc2.dat',2236.0)]
 
 elif case == 2:
@@ -23,6 +28,7 @@ elif case == 2:
     qlumfiles = ['Data/bossdr9color.dat',
                  'Data/dr7z3p7.dat']
 
+    #Missing Sample ID
     selnfiles = [('Data/ross13_selfunc2.dat',2236.0),
                  ('Data/sdss_selfunc2.dat',6248.0)]
 
@@ -32,6 +38,7 @@ elif case == 3:
                  'Data/dr7z3p7.dat',
                  'Data/glikman11qso.dat']
     
+    #Missing Sample ID
     selnfiles = [('Data/ross13_selfunc2.dat',2236.0),
                  ('Data/sdss_selfunc2.dat',6248.0),
                  ('Data/glikman11_selfunc_dls.dat',1.71),
@@ -46,6 +53,7 @@ elif case == 4:
                  'Data/mcgreer13_dr7sample.dat',
                  'Data/mcgreer13_s82extend.dat']
     
+    #Missing Sample ID
     selnfiles = [('Data/ross13_selfunc2.dat',2236.0),
                  ('Data/sdss_selfunchigh.dat',6248.0),
                  ('Data/glikman11_selfunc_dls.dat',1.71),
@@ -68,6 +76,7 @@ elif case == 5:
                  'Data/willott10_cfhqsvwsample.dat',
                  'Data/kashikawa15_sample.dat']
     
+    #Missing Sample ID
     selnfiles = [('Data/ross13_selfunc2.dat',2236.0),
                  ('Data/sdss_selfunchigh.dat',6248.0),
                  ('Data/glikman11_selfunc_dls.dat',1.71),
@@ -97,6 +106,7 @@ elif case == 6:
                  'Data/kashikawa15_sample.dat',
                  'Data/dr7z2p2.dat']
     
+    #Missing Sample ID
     selnfiles = [('Data/ross13_selfunc2.dat',2236.0),
                  ('Data/sdss_selfunchigh.dat',6248.0),
                  ('Data/glikman11_selfunc_dls.dat',1.71),
@@ -129,6 +139,7 @@ elif case == 7:
                  'Data/kashikawa15_sample.dat',
                  'Data/giallongo15_sample.dat']
     
+    #Missing Sample ID
     selnfiles = [('Data/ross13_selfunc2.dat',2236.0),
                  ('Data/sdss_selfunchigh.dat',6248.0),
                  ('Data/glikman11_selfunc_dls.dat',1.71),

@@ -1,3 +1,8 @@
+# Checked once. No implementation of this code in here.
+# No files importing this file.
+# But seems like this could be used somehow to just check.
+print("In paramz.py")
+
 import numpy as np 
 
 def parameter_atz(lf, z, param_number):

@@ -1,3 +1,7 @@
+# Checked once. didnt run
+# FileNotFoundError: bins_noExclusion2SLAQSDSS.dat not found.
+print("In summary_nonUniformTiles.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

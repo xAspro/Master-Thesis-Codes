@@ -1,3 +1,9 @@
+# Didnt have any import statements in the original file. Added them.
+# Dont have any other file to implement this file. This file is never run!
+# But except for one function, all of the functions here take no arguments.
+# The code is also supposed to produce a plot named 'e_1ry_evol.pdf'
+print("In hm12.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
@@ -6,8 +12,7 @@ mpl.rcParams['font.family'] = 'serif'
 mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '16'
 import matplotlib.pyplot as plt
-
-# Didnt have any import statements in the original file. Added them.
+from rtg2 import vf_HM12, sigma_HI, c_mpcPerYr, cmbympc, dtdz, hplanck, c_angPerSec, qso_emissivity_hm12, emissivity_HM12, bkgintens_HM12, tau_eff
 
 def plot_f():
 

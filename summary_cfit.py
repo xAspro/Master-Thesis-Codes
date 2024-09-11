@@ -1,3 +1,7 @@
+# Checked once. Error
+# FileNotFoundError: [Errno 2] No such file or directory: 'phi_star.dat'
+print("In summary_cfit.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

@@ -1,3 +1,13 @@
+# Checked once. Didnt run.
+# FileNotFoundError: ../21cm/hm12/emissivity.dat not found.
+# 
+# 
+# AM I MISSING A FULL FOLDER?? "data = np.loadtxt('../21cm/hm12/emissivity.dat')"
+# Check this!!
+# 
+# 
+print("In rt.py")
+
 import numpy as np
 from scipy.integrate import dblquad, quad 
 import matplotlib as mpl

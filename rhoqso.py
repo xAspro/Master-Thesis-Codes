@@ -1,3 +1,8 @@
+# Checked once. No implementation of this code in here. No implementation of this code in project.
+# Have multiple savefigs. need to just call the functions.
+# All rhoqso files are for fig 7 and more.
+print("In rhoqso.py")
+
 import numpy as np 
 import matplotlib as mpl
 mpl.use('Agg') 

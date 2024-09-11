@@ -1,3 +1,7 @@
+# Checked once. Again just for tabulating the values in a latex format.
+# Useful for writing paper
+print("In global_tabulate.py")
+
 import numpy as np 
 
 def write(lfg1, lfg2, lfg3):

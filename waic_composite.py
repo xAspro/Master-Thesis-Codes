@@ -1,3 +1,6 @@
+# Checked once. well written comments. Doesnt execute here.
+print("In waic_composite.py")
+
 import numpy as np 
 
 def ppost(lf, mag, z, thetas, norms):

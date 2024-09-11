@@ -1,3 +1,5 @@
+# checked once. Its for writing paper in latex.
+
 import numpy as np
 
 def ukidss_sel():

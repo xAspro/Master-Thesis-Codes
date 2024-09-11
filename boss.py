@@ -1,3 +1,7 @@
+# Checked once. Runs without error.
+# Produces boss.pdf as output.
+print("In boss.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -14,9 +18,6 @@ cosmo = {'omega_M_0':0.3,
          'omega_lambda_0':0.7,
          'omega_k_0':0.0,
          'h':0.7}
-
-# Checked once. Runs without error.
-# Produces boss.pdf as output.
 
 def volume(z, area, cosmo=cosmo):
 

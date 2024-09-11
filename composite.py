@@ -1,3 +1,6 @@
+# Checked once. Runs without error. No implementation of this file in this file.
+print("In composite.py")
+
 import numpy as np
 import scipy.optimize as op
 import emcee
@@ -16,8 +19,6 @@ cosmo = {'omega_M_0':0.3,
          'h':0.70}
 from numpy.polynomial import Chebyshev as T
 from numpy.polynomial.polynomial import polyval
-
-# Checked once. Runs without error. No implementation of this file in this file.
 
 def getselfn(selfile):
     # print("In composite.py getselfn")

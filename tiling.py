@@ -1,3 +1,5 @@
+# Ran using Run_tiling_For_All_Files_in_smooth_maps.py
+
 """Assign sizes to completeness "tiles".
 
 You only need to set data, z_tolerance, and mag_tolerance.

@@ -1,3 +1,7 @@
+# Checked once. Doesnt run.
+# FileNotFoundError: [Errno 2] No such file or directory: 'e1450_18_21feb.npz'
+print("In rtg2.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

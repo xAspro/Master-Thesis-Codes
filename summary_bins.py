@@ -1,3 +1,7 @@
+# Checked once. produces evolution_individual.pdf as output.
+# No other file is importing this file.
+print("In summary_bins.py")
+
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -508,5 +512,5 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False):
     
     return
 
-# summary_plot()
+summary_plot()
 
