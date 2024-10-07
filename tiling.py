@@ -1,4 +1,9 @@
 # Ran using Run_tiling_For_All_Files_in_smooth_maps.py
+# 
+# Error in next_mag and prev_mag? Not sure, need to understand this code in more detail
+# And why are we looking at everything even if p is 0? for example jiang09 has 
+# 2.5lakh data points and roughly just 10% of it has non 0 probablity. 
+# Then why are we going for tiling based on the other points too?
 
 """Assign sizes to completeness "tiles".
 
@@ -27,6 +32,18 @@ mag_tolerance = 0.00001
 fl.write('# Using z_tolerance = {:.4f} and mag_tolerance = {:.4f}\n'.format(z_tolerance, mag_tolerance))
 
 def is_same_z(z1, z2):
+    """
+    Compares if two redshift values are within the z_tolerance value. Returns True if same or else False.
+
+    Parameters
+    ----------
+    z1 : numerical value
+        The first redshift value to be compared.
+
+    z2 : numerical value
+        The second redshift value to be compared.
+        
+    """
 
     if np.abs(z1-z2) < z_tolerance:
         return True
@@ -34,6 +51,18 @@ def is_same_z(z1, z2):
     return False 
 
 def is_same_mag(m1, m2):
+    """
+    Compares if two magnitude values are within the mag_tolerance value. Returns True if same or else False.
+
+    Parameters
+    ----------
+    m1 : numerical value
+        The first magnitude value to be compared.
+
+    m2 : numerical value
+        The second magnitude value to be compared.
+        
+    """
 
     if np.abs(m1-m2) < mag_tolerance:
         return True
@@ -41,6 +70,18 @@ def is_same_mag(m1, m2):
     return False 
 
 def next_z(i, data):
+    """
+    Finds the next z value which is not within the z_tolerance value. Returns the next z value.
+
+    Parameters
+    ----------
+    i : int
+        The index of the current quasar.
+
+    data : numerical value
+        The list of data with index, redshift, magnitude and probability
+        
+    """
 
     current_z = data[i, 1]
 
@@ -56,6 +97,19 @@ def next_z(i, data):
 
 
 def next_mag(i, data):
+    """
+    Error!!! Need to see if this code is correct or should implement the change in this segment.
+    Feels like there is an error and the magnoitude is not tiled properly. will check later.
+
+    Parameters
+    ----------
+    i : int
+        The index of the current quasar.
+
+    data : numerical value
+        The list of data with index, redshift, magnitude and probability
+        
+    """
 
     current_mag = data[i, 2]
 
@@ -72,6 +126,19 @@ def next_mag(i, data):
 
 
 def prev_mag(i, data):
+    """
+    Error!!! Need to see if this code is correct or should implement the change in this segment.
+    Feels like there is an error and the magnoitude is not tiled properly. will check later.
+
+    Parameters
+    ----------
+    i : int
+        The index of the current quasar.
+
+    data : numerical value
+        The list of data with index, redshift, magnitude and probability
+        
+    """
 
     current_mag = data[i, 2]
 
@@ -88,6 +155,18 @@ def prev_mag(i, data):
 
 
 def prev_z(i, data):
+    """
+    Finds the previous z value which is not within the z_tolerance value. Returns the previous z value.
+
+    Parameters
+    ----------
+    i : int
+        The index of the current quasar.
+
+    data : numerical value
+        The list of data with index, redshift, magnitude and probability
+        
+    """
 
     current_z = data[i, 1]
 

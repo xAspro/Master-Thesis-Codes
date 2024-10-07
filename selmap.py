@@ -1,4 +1,7 @@
 # Already run by Run_Selmap_for_all_files_in_Data_new.py
+# 
+# Need to understand what is the bottom code doing? What is compare.pdf
+
 print("In selmap.py")
 
 import numpy as np
@@ -17,7 +20,7 @@ import sys
 import os
 
 def plot_selmap(z, m, p, title='', filename='selmap.pdf',
-                show_qsos=False, qso_file='None'):     
+                show_qsos=True, qso_file='None'):     
 
     fig = plt.figure(figsize=(7, 7), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
@@ -35,7 +38,7 @@ def plot_selmap(z, m, p, title='', filename='selmap.pdf',
 
     plt.xlabel('$z$')
     plt.ylabel('$M_{1450}$')
-    plt.title(title, y='1.01')
+    plt.title(title, y=1.01)
 
     plt.xlim(0.0, 2.5) 
     plt.ylim(-28, -14)
@@ -46,12 +49,13 @@ def plot_selmap(z, m, p, title='', filename='selmap.pdf',
     cb.set_label(r'selection probability', labelpad=20)
     cb.solids.set_edgecolor("face")
 
+    print("Saving fig in filename: ", filename)
     plt.savefig(filename, bbox_inches='tight')
 
 
-# map_file = 'Data_new/croom09ngp_selfunc.dat'
-# qso_file = 'Data_new/croom09ngp_sample.dat'
-# out_map_file = 'croom09ngp_selfunc_interpolated_linear.dat'
+map_file = 'Data_new/croom09ngp_selfunc.dat'
+qso_file = 'Data_new/croom09ngp_sample.dat'
+out_map_file = 'croom09ngp_selfunc_interpolated_linear.dat'
 
 METHOD = 'linear'
 map_file = 'Data_new/' + sys.argv[1]
@@ -78,8 +82,8 @@ Mfaint = -32
 print( 'Using zmin = {:g} and zmax = {:g}'.format(zmin, zmax))
 print( 'Using Mbright = {:g} and Mfaint = {:g}'.format(Mbright, Mfaint) )
 
-# plot_selmap(z, m, p, title='2SLAQ NGP', filename='selmap_ngp.pdf',
-#             show_qsos=False, qso_file=qso_file)
+plot_selmap(z, m, p, title='2SLAQ NGP', filename='selmap_ngp.pdf',
+            show_qsos=True, qso_file=qso_file)
 
 if METHOD == 'spline': 
     tck = bisplrep(z, m, p)
@@ -106,9 +110,9 @@ if METHOD == 'linear':
     points_new = np.vstack((zp.flatten(), mp.flatten())).T
     pnew = f(points_new)
 
-# plot_selmap(zp, mp, pnew, title='2SLAQ NGP (interpolated)',
-#             filename='selmap_ngp_interpolated.pdf',
-#             show_qsos=False, qso_file=qso_file)
+plot_selmap(zp, mp, pnew, title='2SLAQ NGP (interpolated)',
+            filename='selmap_ngp_interpolated.pdf',
+            show_qsos=True, qso_file=qso_file)
 
 WRITE_SELMAP = True
 if WRITE_SELMAP:
