@@ -15,12 +15,12 @@ CEERS_02782 ^a	14:19:17.63	+52:49:49.0	5.241	$-{19.50}_{-0.00}^{+0.12}$	${7.51}_
 CEERS_00397	14:19:20.69	+52:52:57.7	6.000	$-{21.23}_{-0.24}^{+0.17}$	${7.87}_{-0.14}^{+0.14}$	0.19	6.2	51.2	
 CEERS_00717	14:20:19.54	+52:58:19.9	6.936	$-{21.49}_{-0.12}^{+0.12}$	${7.87}_{-0.18}^{+0.17}$	0.00	6.1	23.9	
 CEERS_01236	14:20:34.87	+52:58:02.2	4.484	$-{19.61}_{-0.23}^{+0.27}$	${7.55}_{-0.28}^{+0.29}$	0.00	5.9	23.3	
-
-
-Other Possible Candidates with S/N_broad < 5									
-CEERS_01465	14:19:33.12	+52:53:17.7	5.274	$-{19.72}_{-0.45}^{+1.81}$	${8.25}_{-0.22}^{+0.23}$	0.00	4.4	cdots	
-CEERS_01019*	14:20:08.49	+52:53:26.4	8.681	$-{22.44}_{-0.17}^{+0.45}$	${8.04}_{-0.17}^{+0.17}$	0.00	3.1(Hbeta) ^b	cdots	
-Notes. The name, spectroscopic redshift (z _spec), UV magnitude (M _UV), metallicity ($12+\mathrm{log}({\rm{O}}/{\rm{H}})$), and extinction (E(B - V)) are taken from Nakajima et al. (2023).
-^a CEERS_00746 and CEERS_02782 are reported as CEERS 3210 and CEERS 1670, respectively, in Kocevski et al. (2023).
-^b CEERS_01019 is reported as CEERS_1019 in Larson et al. (2023). The S/N of the broad Hbeta line instead of Halpha is presented.
-^c Difference between AIC values for the fittings without the broad component and with the broad component.
+#
+#
+# Other Possible Candidates with S/N_broad < 5									
+# CEERS_01465	14:19:33.12	+52:53:17.7	5.274	$-{19.72}_{-0.45}^{+1.81}$	${8.25}_{-0.22}^{+0.23}$	0.00	4.4	cdots	
+# CEERS_01019*	14:20:08.49	+52:53:26.4	8.681	$-{22.44}_{-0.17}^{+0.45}$	${8.04}_{-0.17}^{+0.17}$	0.00	3.1(Hbeta) ^b	cdots	
+# Notes. The name, spectroscopic redshift (z _spec), UV magnitude (M _UV), metallicity ($12+\mathrm{log}({\rm{O}}/{\rm{H}})$), and extinction (E(B - V)) are taken from Nakajima et al. (2023).
+# ^a CEERS_00746 and CEERS_02782 are reported as CEERS 3210 and CEERS 1670, respectively, in Kocevski et al. (2023).
+# ^b CEERS_01019 is reported as CEERS_1019 in Larson et al. (2023). The S/N of the broad Hbeta line instead of Halpha is presented.
+# ^c Difference between AIC values for the fittings without the broad component and with the broad component.

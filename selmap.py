@@ -59,8 +59,14 @@ out_map_file = 'croom09ngp_selfunc_interpolated_linear.dat'
 # qso_file = 'None'
 
 METHOD = 'linear'
-map_file = 'Data_new/' + sys.argv[1]
-out_map_file = 'smooth_maps/' + sys.argv[1]
+if sys.argv[1] == 0:
+    # For old data
+    map_file = 'Data_new/' + sys.argv[2]
+else:
+    # For new data
+    map_file = 'Data_2019+/' + sys.argv[2]
+
+out_map_file = 'smooth_maps/' + sys.argv[2]
 # zmin = np.float(sys.argv[2])
 # zmax = np.float(sys.argv[3])
 # Mbright = np.float(sys.argv[4])

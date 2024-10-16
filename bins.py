@@ -33,7 +33,10 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
             'Data_new/willott10_cfhqsdeepsample.dat',
             'Data_new/willott10_cfhqsvwsample.dat',
             'Data_new/kashikawa15_sample.dat',
-            'Data_new/mock.dat',]
+            'Data_new/mock.dat',
+            'Data_2019+/DESI_SV1.txt',
+            'Data_2019+/DESI_main_selection.txt',
+            'Data_2019+/CEERS_Kocevski.txt']
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards et al. 2006'),
             #('Selmaps_with_tiles/dr3z2p6_selfunc.dat', 1622.0, 13, r'Richards et al. 2006'), # This is DR3 not DR7! 

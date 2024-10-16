@@ -1,13 +1,21 @@
 # CEERS data 
-# Area is not mentioend in the Kocevski et al. (2023) paper. Total Area of CERES is 0.027778 deg sq.
-# K-corr is not mentioned in the paper, will be taking it as 3.5.
+# Area is not mentioend in the Kocevski et al. (2023) paper. Total Area of CERES is 0.027778 deg sq - 100 arc min sq(full area).
+# But the paper says in Section 6.5 they are taking just 34.5 arc min sq, which is 0.009583 deg sq
+# K-corr is not mentioned in the paper. And K-corr formula isnt matching with the M1450 given. Need negative 2ish K corr.
 #
+# Skipping this and just taking the first quasar alone.
 #
 #
 # NEED TO GET K-corr from SED model it seems. Read about this!!!!
 #
 #
 #
-# Name      z     m_{F356W}
-CEERS 1670  5.242 25.8 ± 0.01
-CEERS 3210  5.624 26.9 ± 0.04
+# Table 1 
+# AGN Sample
+#
+#
+# Source Name	R.A.	Decl.	z	m _F356W	                m _1450
+#	(deg)	(deg)		(mag)	
+CEERS 2782	214.823453	52.830281	5.242	25.8 +or- 0.01	    -19.4 +or- 0.05
+CEERS 746 	214.809142	52.868484	5.624	26.9 +or- 0.04	    
+# Note. CEERS 2782 is the same source as CEERS-AGN-z5-1 in O23.

@@ -3,5 +3,4 @@
 # Considering Area to be total area 14000
 # Taking probability from paper Kocevski et al. (2023)
 # counter  z     M1450  p       area    sample
-        1  5.242 -25.16 1.00000     0.03  26
-        2  5.624 -24.24 1.00000     0.03  26
+        1  5.242 -19.40 1.00000     0.01  26
