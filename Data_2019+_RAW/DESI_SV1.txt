@@ -1,30 +1,30 @@
-% Title: Desi z >= 5 Quasar Survey. I. A First Sample of 400 New Quasars 
-%        at z ~ 4.7 - 6.6
-% Authors: Yang J., Fan X., Gupta A., Myers A.D., Palanque-Delabrouille N., 
-%          Wang F., Yeche C., Aguilar J.N., Ahlen S., Alexander D.M., 
-%          Brooks D., Dawson K., de la Macorra A., Dey A., Dhungana G., 
-% 	 Fanning K., Font-Ribera A., Gontcho S., Guy J., Honscheid K., 
-% 	 Juneau S., Kisner T., Kremin A., Le Guillou L., Levi M., 
-% 	 Magneville C., Martini P., Meisner A., Miquel R., Moustakas J., 
-% 	 Nie J., Percival W., Poppett C., Prada F., Schlafly E., Tarle G., 
-% 	 Magana M.V., Weaver B.A., Wechsler R., Zhou R., Zhou Z., Zou H. 
-% Table: The 38 New Quasars from the Selection in SV1
-% ================================================================================
-% Byte-by-byte Description of file: apjsacf99bt2_mrt.txt
-% --------------------------------------------------------------------------------
-%    Bytes Format Units   Label  Explanations
-% --------------------------------------------------------------------------------
-%    1- 24 A24    ---     Name   Quasar name
-%   26- 34 F9.5   deg     RAdeg  Right Ascension in decimal degrees (J2000)
-%   36- 44 F9.5   deg     DEdeg  Declination in decimal degrees (J2000)
-%   46- 49 F4.2   ---     z      Redshift (1)
-%   51- 55 F5.2   mag     Zmag   Apparent z-band magnitude from Legacy Surveys
-%   57- 61 F5.3   mag   e_Zmag   Uncertainty on Zmag
-% --------------------------------------------------------------------------------
-% Note (1): Redshift from visual fitting using quasar template with a typical 
-%           uncertainty of 0.03. For strong BAL quasars and WL quasars, the 
-% 	  uncertainty could be ~0.05 - 0.1.
-% --------------------------------------------------------------------------------
+# Title: Desi z >= 5 Quasar Survey. I. A First Sample of 400 New Quasars 
+#        at z ~ 4.7 - 6.6
+# Authors: Yang J., Fan X., Gupta A., Myers A.D., Palanque-Delabrouille N., 
+#          Wang F., Yeche C., Aguilar J.N., Ahlen S., Alexander D.M., 
+#          Brooks D., Dawson K., de la Macorra A., Dey A., Dhungana G., 
+# 	 Fanning K., Font-Ribera A., Gontcho S., Guy J., Honscheid K., 
+# 	 Juneau S., Kisner T., Kremin A., Le Guillou L., Levi M., 
+# 	 Magneville C., Martini P., Meisner A., Miquel R., Moustakas J., 
+# 	 Nie J., Percival W., Poppett C., Prada F., Schlafly E., Tarle G., 
+# 	 Magana M.V., Weaver B.A., Wechsler R., Zhou R., Zhou Z., Zou H. 
+# Table: The 38 New Quasars from the Selection in SV1
+# ================================================================================
+# Byte-by-byte Description of file: apjsacf99bt2_mrt.txt
+# --------------------------------------------------------------------------------
+#    Bytes Format Units   Label  Explanations
+# --------------------------------------------------------------------------------
+#    1- 24 A24    ---     Name   Quasar name
+#   26- 34 F9.5   deg     RAdeg  Right Ascension in decimal degrees (J2000)
+#   36- 44 F9.5   deg     DEdeg  Declination in decimal degrees (J2000)
+#   46- 49 F4.2   ---     z      Redshift (1)
+#   51- 55 F5.2   mag     Zmag   Apparent z-band magnitude from Legacy Surveys
+#   57- 61 F5.3   mag   e_Zmag   Uncertainty on Zmag
+# --------------------------------------------------------------------------------
+# Note (1): Redshift from visual fitting using quasar template with a typical 
+#           uncertainty of 0.03. For strong BAL quasars and WL quasars, the 
+# 	  uncertainty could be ~0.05 - 0.1.
+# --------------------------------------------------------------------------------
 DESI J054840.05-223313.8  87.16687 -22.55383 4.63 20.38 0.01
 DESI J055103.87-233959.8  87.76612 -23.66664 3.91 20.72 0.01
 DESI J062712.07+481919.1  96.80030  48.32199 4.43 19.25 0.01

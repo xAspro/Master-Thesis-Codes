@@ -50,7 +50,7 @@ class sample:
 
         return 
 
-def plot_data(data):
+def plot_data(data, plotname):
     # Command to let user know that the output will be stored in qsos.pdf
     # print("In data.py plot_data\nOutput will be stored in qsos.pdf")
     fig = plt.figure(figsize=(14, 7), dpi=100)
@@ -70,7 +70,10 @@ def plot_data(data):
     # colorbrewer2.org.
     cs = [u'#1f77b4', u'#ff7f0e', u'#2ca02c', u'#d62728', u'#9467bd',
           u'#8c564b', u'#e377c2', u'#7f7f7f', u'#bcbd22', u'#17becf',
-          u'#77ab31']
+          u'#77ab31', u'#f77f00', u'#ffba08', u'#f4d35e', u'#95d5b2', 
+          u'#028090', u'#05668d', u'#4d194d', u'#6a0572', u'#ff6f61', 
+          u'#d72638']
+    cs = cs[:len(data)]
 
     d = [x.z for x in data]
     l = [x.label for x in data]
@@ -112,7 +115,8 @@ def plot_data(data):
                frameon=False, framealpha=0.0, labelspacing=.1,
                handletextpad=0.4, borderpad=0.2,markerscale=.5)
     
-    plt.savefig('qsos.pdf', bbox_inches='tight')
+    print("Saved figure in: ", plotname)
+    plt.savefig(plotname, bbox_inches='tight')
 
     return
 
@@ -184,11 +188,37 @@ l = r'Subaru High-$z$ Quasar Survey Kashikawa et al. (2010)'
 s = sample(f, label=l)
 data.append(s)
 
+if int(sys.argv[1]) == 0:
+    print("Old Data")
+    plot_data(data, 'qso.pdf')
+
+    sum = 0
+    for x in data: 
+        sum += x.z.size
+    print( 'Total number of AGN:', sum+3) # 3 qsos added by hand above.
+    sys.exit()
+
+#############################################################################################################
+#                                      Adding new quasars                                                   #
+#############################################################################################################
+print("New data")
+f = ['Data_2019+/DESI_SV1.txt','Data_2019+/DESI_main_selection.txt']
+l = r'DESI Yang et al. (2024)'
+s = sample(f, label=l)
+data.append(s)
+
+
+f = ['Data_2019+/CEERS_Kocevski.txt']
+l = r'CEERS Kocevski et al. (2023)'
+s = sample(f, label=l)
+data.append(s)
+    
+# print(data)
+plot_data(data, 'qso2.pdf')
+
+
 sum = 0
 for x in data: 
     sum += x.z.size
 print( 'Total number of AGN:', sum+3) # 3 qsos added by hand above.
-    
-# print(data)
-plot_data(data)
 

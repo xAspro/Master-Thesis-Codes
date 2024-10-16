@@ -1,6 +1,6 @@
 # Already run by Run_Selmap_for_all_files_in_Data_new.py
 # 
-# Need to understand what is the bottom code doing? What is compare.pdf
+# Need to understand what is the bottom code doing? What is compare.pdf?
 
 print("In selmap.py")
 
@@ -20,7 +20,7 @@ import sys
 import os
 
 def plot_selmap(z, m, p, title='', filename='selmap.pdf',
-                show_qsos=True, qso_file='None'):     
+                show_qsos=False, qso_file='None'):     
 
     fig = plt.figure(figsize=(7, 7), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
@@ -56,6 +56,7 @@ def plot_selmap(z, m, p, title='', filename='selmap.pdf',
 map_file = 'Data_new/croom09ngp_selfunc.dat'
 qso_file = 'Data_new/croom09ngp_sample.dat'
 out_map_file = 'croom09ngp_selfunc_interpolated_linear.dat'
+# qso_file = 'None'
 
 METHOD = 'linear'
 map_file = 'Data_new/' + sys.argv[1]

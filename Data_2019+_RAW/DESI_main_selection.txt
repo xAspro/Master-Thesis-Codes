@@ -1,45 +1,50 @@
-% 
-% 
-% From here, we can calculate M1450 using
-% M = m − 5 log(D_L) + 5 - K(z) 
-% Need one more code to do this and get the value.
-% For K correction, for now take it as 2.5, but later check if i can find a better value for that particular range. 
-% ie. Check other papers and see. Whether I am getting a better value or not, I need to remember to cite or mention theassumption on the K corr
-% 
-% 
-% 
-% Title: Desi z >= 5 Quasar Survey. I. A First Sample of 400 New Quasars 
-%        at z ~ 4.7 - 6.6
-% Authors: Yang J., Fan X., Gupta A., Myers A.D., Palanque-Delabrouille N., 
-%          Wang F., Yeche C., Aguilar J.N., Ahlen S., Alexander D.M., 
-%          Brooks D., Dawson K., de la Macorra A., Dey A., Dhungana G., 
-% 	 Fanning K., Font-Ribera A., Gontcho S., Guy J., Honscheid K., 
-% 	 Juneau S., Kisner T., Kremin A., Le Guillou L., Levi M., 
-% 	 Magneville C., Martini P., Meisner A., Miquel R., Moustakas J., 
-% 	 Nie J., Percival W., Poppett C., Prada F., Schlafly E., Tarle G., 
-% 	 Magana M.V., Weaver B.A., Wechsler R., Zhou R., Zhou Z., Zou H. 
-% Table: The 412 New Quasars from Our Main Selection
-% ================================================================================
-% Byte-by-byte Description of file: apjsacf99bt1_mrt.txt
-% --------------------------------------------------------------------------------
-%    Bytes Format Units   Label  Explanations
-% --------------------------------------------------------------------------------
-%    1- 24 A24    ---     Name   Quasar name
-%   26- 26 A1     ---   f_Name   [bc ] Flag on Name (1)
-%   28- 36 F9.5   deg     RAdeg  Right Acsension in decimal degrees (J2000)
-%   38- 46 F9.5   deg     DEdeg  Declination in decimal degrees (J2000)
-%   48- 51 F4.2   ---     z      Redshift (2)
-%   53- 57 F5.2   mag     Zmag   Apparent z-band magnitude from Legacy Surveys
-%   59- 63 F5.3   mag   e_Zmag   Uncertainty on Zmag
-% --------------------------------------------------------------------------------
-% Note (1):
-%     b = Quasars that have also been independently discovered in Matsuoka et al. (2022)
-%     c = Quasars that have also been independently discovered in Banados et al. (2023)
-% Note (2): Redshift from visual fitting using quasar template with a typical 
-%           uncertainty of 0.03. For strong BAL quasars and WL quasars, the 
-% 	  uncertainty could be ~0.05 - 0.1
-% --------------------------------------------------------------------------------
-% 
+# From here, we can calculate M1450 using
+# M = m − 5 log(D_L) + 5 - K(z) 
+# Need one more code to do this and get the value.
+# For K correction, for now take it as 2.5, but later check if i can find a 
+# better value for that particular range. 
+# ie. Check other papers and see. Whether I am getting a better value or not, 
+# I need to remember to cite or mention theassumption on the K corr
+# 
+# We will also have to manually take p from the paper. I am not fully sure if 
+# that is right. Need to check. For now taking p from paper.
+# 
+# ================================================================================
+# ================================================================================
+# 
+# 
+# Title: Desi z >= 5 Quasar Survey. I. A First Sample of 400 New Quasars 
+#        at z ~ 4.7 - 6.6
+# Authors: Yang J., Fan X., Gupta A., Myers A.D., Palanque-Delabrouille N., 
+#          Wang F., Yeche C., Aguilar J.N., Ahlen S., Alexander D.M., 
+#          Brooks D., Dawson K., de la Macorra A., Dey A., Dhungana G., 
+# 	 Fanning K., Font-Ribera A., Gontcho S., Guy J., Honscheid K., 
+# 	 Juneau S., Kisner T., Kremin A., Le Guillou L., Levi M., 
+# 	 Magneville C., Martini P., Meisner A., Miquel R., Moustakas J., 
+# 	 Nie J., Percival W., Poppett C., Prada F., Schlafly E., Tarle G., 
+# 	 Magana M.V., Weaver B.A., Wechsler R., Zhou R., Zhou Z., Zou H. 
+# Table: The 412 New Quasars from Our Main Selection
+# ================================================================================
+# Byte-by-byte Description of file: apjsacf99bt1_mrt.txt
+# --------------------------------------------------------------------------------
+#    Bytes Format Units   Label  Explanations
+# --------------------------------------------------------------------------------
+#    1- 24 A24    ---     Name   Quasar name
+#   26- 26 A1     ---   f_Name   [bc ] Flag on Name (1)
+#   28- 36 F9.5   deg     RAdeg  Right Acsension in decimal degrees (J2000)
+#   38- 46 F9.5   deg     DEdeg  Declination in decimal degrees (J2000)
+#   48- 51 F4.2   ---     z      Redshift (2)
+#   53- 57 F5.2   mag     Zmag   Apparent z-band magnitude from Legacy Surveys
+#   59- 63 F5.3   mag   e_Zmag   Uncertainty on Zmag
+# --------------------------------------------------------------------------------
+# Note (1):
+#     b = Quasars that have also been independently discovered in Matsuoka et al. (2022)
+#     c = Quasars that have also been independently discovered in Banados et al. (2023)
+# Note (2): Redshift from visual fitting using quasar template with a typical 
+#           uncertainty of 0.03. For strong BAL quasars and WL quasars, the 
+# 	  uncertainty could be ~0.05 - 0.1
+# --------------------------------------------------------------------------------
+# 
 DESI J000147.64-035247.4     0.44850  -3.87986 5.27 20.79 0.01  
 DESI J000232.92+131433.7     0.63716  13.24270 5.82 21.30 0.04  
 DESI J000233.24+212725.0     0.63850  21.45695 6.19 21.47 0.04  

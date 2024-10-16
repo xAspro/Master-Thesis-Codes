@@ -1,0 +1,13 @@
+# CEERS data 
+# Area is not mentioend in the Kocevski et al. (2023) paper. Total Area of CERES is 0.027778 deg sq.
+# K-corr is not mentioned in the paper, will be taking it as 3.5.
+#
+#
+#
+# NEED TO GET K-corr from SED model it seems. Read about this!!!!
+#
+#
+#
+# Name      z     m_{F356W}
+CEERS 1670  5.242 25.8 ± 0.01
+CEERS 3210  5.624 26.9 ± 0.04

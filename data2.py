@@ -11,6 +11,7 @@ mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '22'
 import matplotlib.pyplot as plt
 from random import shuffle
+import sys
 
 """
 
@@ -43,7 +44,7 @@ class sample:
 
         return 
     
-def plot_data(data):
+def plot_data(data, plotname):
 
     fig = plt.figure(figsize=(14, 7), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
@@ -80,7 +81,8 @@ def plot_data(data):
                frameon=False, framealpha=0.0, labelspacing=.1,
                handletextpad=0.4, borderpad=0.2,markerscale=.5)
 
-    plt.savefig('qsos2.pdf', bbox_inches='tight')
+    print("Saved figure in: ", plotname)
+    plt.savefig(plotname, bbox_inches='tight')
 
     return
 
@@ -89,6 +91,8 @@ cs = [u'#f77189', u'#f7754f', u'#dc8932', u'#c39532', u'#ae9d31', u'#97a431',
       u'#77ab31', u'#31b33e', u'#33b07a', u'#35ae93', u'#36ada4', u'#37abb4',
       u'#38a9c5', u'#3aa5df', u'#6e9bf4', u'#a48cf4', u'#cc7af4', u'#f45cf2',
       u'#f565cc', u'#f66bad']
+
+# New colours to add u'#f77f00', u'#ffba08', u'#f4d35e', u'#95d5b2', u'#028090', u'#05668d', u'#4d194d', u'#6a0572', u'#ff6f61', u'#d72638'
 
 shuffle(cs)
 
@@ -197,5 +201,24 @@ l = r'Subaru High-$z$ Quasar Survey Kashikawa et al. (2010)'
 s = sample(f, color=cs[17], label=l)
 data.append(s)
 
-plot_data(data)
+if int(sys.argv[1]) == 0:
+    print("Old Data")
+    plot_data(data, 'qso3.pdf')
+    sys.exit()
+
+#############################################################################################################
+#                                      Adding new quasars                                                   #
+#############################################################################################################
+print("New data")
+f = ['Data_2019+/DESI_SV1.txt','Data_2019+/DESI_main_selection.txt']
+l = r'DESI Yang et al. (2024)'
+s = sample(f, color= u'#f77f00', label=l)
+data.append(s)
+
+f = ['Data_2019+/CEERS_Kocevski.txt']
+l = r'CEERS Kocevski et al. (2023)'
+s = sample(f, color= u'#ffba08', label=l)
+data.append(s)
+
+plot_data(data, 'qso4.pdf')
 
