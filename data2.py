@@ -203,7 +203,7 @@ data.append(s)
 
 if int(sys.argv[1]) == 0:
     print("Old Data")
-    plot_data(data, 'qso3.pdf')
+    plot_data(data, 'qsos3.pdf')
     sys.exit()
 
 #############################################################################################################
@@ -220,5 +220,5 @@ l = r'CEERS Kocevski et al. (2023)'
 s = sample(f, color= u'#ffba08', label=l)
 data.append(s)
 
-plot_data(data, 'qso4.pdf')
+plot_data(data, 'qsos4.pdf')
 

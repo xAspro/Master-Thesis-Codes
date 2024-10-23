@@ -3,34 +3,13 @@ from astropy.cosmology import FlatLambdaCDM
 import sys
 import os
 
-filename = 'DESI_main_selection.txt'
-output_filename = '../Data_2019+/DESI_main_selection.txt'
-K_corr = 2.5  # Assuming K-correction of 2.5
-area = 14000
-sample_number = 25         # Coulding find samples more than 14, so instead of 15, going for 25. Just in case, dont want to overwrite anything.
-zmin, zmax = 47, 51
-Zmagmin, Zmagmax = 52, 57
-def pcondition(z):
-    if z > 6.4:
-        p = 0.05
-    elif z > 5.7:
-        p = 0.08
-    elif 4.8 < z < 5.4:
-        p = 0.39
-    else:
-        p = 0.23    #I dont know why, but there is a missing gap. I will take the average in that case.
-    return p
-header = '# Data from DESI_main_selection\n# Assumed K-correction to be 2.5\n# Considering Area to be total area 14000\n# Taking probability from paper\n# counter  z     M1450  p       area    sample'
-
-
-
-# filename = 'DESI_SV1.txt'
-# output_filename = '../Data_2019+/DESI_SV1.txt'
+# filename = 'DESI_main_selection.txt'
+# output_filename = '../Data_2019+/DESI_main_selection_selfunc.dat'
 # K_corr = 2.5  # Assuming K-correction of 2.5
 # area = 14000
 # sample_number = 25         # Coulding find samples more than 14, so instead of 15, going for 25. Just in case, dont want to overwrite anything.
-# zmin, zmax = 45, 49
-# Zmagmin, Zmagmax = 50, 55
+# zmin, zmax = 47, 51
+# Zmagmin, Zmagmax = 52, 57
 # def pcondition(z):
 #     if z > 6.4:
 #         p = 0.05
@@ -41,7 +20,28 @@ header = '# Data from DESI_main_selection\n# Assumed K-correction to be 2.5\n# C
 #     else:
 #         p = 0.23    #I dont know why, but there is a missing gap. I will take the average in that case.
 #     return p
-# header = '# Data from DESI_SV1\n# Assumed K-correction to be 2.5\n# Considering Area to be total area 14000\n# Taking probability from paper\n# counter  z     M1450  p       area    sample'
+# header = '# Data from DESI_main_selection\n# Assumed K-correction to be 2.5\n# Considering Area to be total area 14000\n# Taking probability from paper\n# counter  z     M1450  p       area    sample'
+
+
+
+filename = 'DESI_SV1.txt'
+output_filename = '../Data_2019+/DESI_SV1_selfunc.dat'
+K_corr = 2.5  # Assuming K-correction of 2.5
+area = 14000
+sample_number = 25         # Coulding find samples more than 14, so instead of 15, going for 25. Just in case, dont want to overwrite anything.
+zmin, zmax = 45, 49
+Zmagmin, Zmagmax = 50, 55
+def pcondition(z):
+    if z > 6.4:
+        p = 0.05
+    elif z > 5.7:
+        p = 0.08
+    elif 4.8 < z < 5.4:
+        p = 0.39
+    else:
+        p = 0.23    #I dont know why, but there is a missing gap. I will take the average in that case.
+    return p
+header = '# Data from DESI_SV1\n# Assumed K-correction to be 2.5\n# Considering Area to be total area 14000\n# Taking probability from paper\n# counter  z     M1450  p       area    sample'
 
 
 data=[]

@@ -190,7 +190,7 @@ data.append(s)
 
 if int(sys.argv[1]) == 0:
     print("Old Data")
-    plot_data(data, 'qso.pdf')
+    plot_data(data, 'qsos.pdf')
 
     sum = 0
     for x in data: 
@@ -214,7 +214,7 @@ s = sample(f, label=l)
 data.append(s)
     
 # print(data)
-plot_data(data, 'qso2.pdf')
+plot_data(data, 'qsos2.pdf')
 
 
 sum = 0

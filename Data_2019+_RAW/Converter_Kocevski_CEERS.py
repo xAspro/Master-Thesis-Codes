@@ -4,7 +4,7 @@ import sys
 import os
 
 filename = 'CEERS_Kocevski.txt'
-output_filename = '../Data_2019+/CEERS_Kocevski.txt'
+output_filename = '../Data_2019+/CEERS_Kocevski_selfunc.dat'
 area = 0.009583
 sample_number = 26         # Coulding find samples more than 14, so instead of 15, going for 25. Just in case, dont want to overwrite anything.
 zmin, zmax = 32, 37
@@ -13,7 +13,7 @@ def pcondition(z):
     return 1
 max_entry_flag = True
 max_entry = 1
-header = '# Data from CEERS\n# Assumed K-correction to be 3.5\n# Considering Area to be total area 14000\n# Taking probability from paper Kocevski et al. (2023)\n# counter  z     M1450  p       area    sample'
+header = '# Data from CEERS\n# K-corr is not mentioned in the paper. And K-corr formula isnt matching with the M1450 given. Need negative 2ish K corr.\n# But why wouldnt they directly give the K-corr if its from same survey? Can I take K_corr such that it works for 1?\n# Considering Area to be total area 14000\n# Taking probability from paper Kocevski et al. (2023)\n# counter  z     M1450  p       area    sample'
 
 
 

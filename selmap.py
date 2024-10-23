@@ -1,6 +1,9 @@
 # Already run by Run_Selmap_for_all_files_in_Data_new.py
 # 
 # Need to understand what is the bottom code doing? What is compare.pdf?
+# compare.pdf is just a comparison of p and p found after interpolation
+#
+# Dont change this code. work with selmap2.py
 
 print("In selmap.py")
 
@@ -19,7 +22,7 @@ from scipy.interpolate import LinearNDInterpolator as linInterp
 import sys
 import os
 
-def plot_selmap(z, m, p, title='', filename='selmap.pdf',
+def plot_selmap(z, m, p, title='', filename='Selmap_Plots/selmap.pdf',
                 show_qsos=False, qso_file='None'):     
 
     fig = plt.figure(figsize=(7, 7), dpi=100)
@@ -32,9 +35,9 @@ def plot_selmap(z, m, p, title='', filename='selmap.pdf',
                     edgecolor='none', marker='s',
                     rasterized=True, cmap=cm.jet)
 
-    if show_qsos:
-        zq, mq = np.loadtxt(qso_file, usecols=(1,2), unpack=True)
-        plt.scatter(zq, mq, s=10, c='#ffffff', edgecolor='k')
+    # if show_qsos:
+    #     zq, mq = np.loadtxt(qso_file, usecols=(1,2), unpack=True)
+    #     plt.scatter(zq, mq, s=10, c='#ffffff', edgecolor='k')
 
     plt.xlabel('$z$')
     plt.ylabel('$M_{1450}$')
@@ -52,6 +55,16 @@ def plot_selmap(z, m, p, title='', filename='selmap.pdf',
     print("Saving fig in filename: ", filename)
     plt.savefig(filename, bbox_inches='tight')
 
+##############################################################################################################
+##                                                                                                          ##
+##                                                                                                          ##
+##   qso_file and map_file seems consistent if we swap them in the context of this code(not logically)      ##
+##   croom_selfunc is different from sample. selfunc has 976 entries in total(for both ngp and sgp),        ##
+##   and 640 of them are read.                                                                              ##
+##   sample has 7k+(NGP) and 2k+(SGP) entries in total.                                                     ##
+##                                                                                                          ##
+##                                                                                                          ##
+##############################################################################################################
 
 map_file = 'Data_new/croom09ngp_selfunc.dat'
 qso_file = 'Data_new/croom09ngp_sample.dat'
@@ -59,14 +72,14 @@ out_map_file = 'croom09ngp_selfunc_interpolated_linear.dat'
 # qso_file = 'None'
 
 METHOD = 'linear'
-if sys.argv[1] == 0:
-    # For old data
-    map_file = 'Data_new/' + sys.argv[2]
-else:
-    # For new data
-    map_file = 'Data_2019+/' + sys.argv[2]
+# METHOD = 'spline'
+map_file = 'Data_new/' + sys.argv[1]
+qso_file = 'Data_new/' + sys.argv[1][:-11] + '_sample.dat'
+out_map_file = 'smooth_maps/' + sys.argv[1]
 
-out_map_file = 'smooth_maps/' + sys.argv[2]
+print("Reading " + map_file)
+print("Writing to " + out_map_file)
+print("Using " + qso_file)
 # zmin = np.float(sys.argv[2])
 # zmax = np.float(sys.argv[3])
 # Mbright = np.float(sys.argv[4])
@@ -89,10 +102,14 @@ Mfaint = -32
 print( 'Using zmin = {:g} and zmax = {:g}'.format(zmin, zmax))
 print( 'Using Mbright = {:g} and Mfaint = {:g}'.format(Mbright, Mfaint) )
 
-plot_selmap(z, m, p, title='2SLAQ NGP', filename='selmap_ngp.pdf',
+plot_selmap(z, m, p, title='2SLAQ NGP', filename='Selmap_Plots/selmap_ngp3.pdf',
             show_qsos=True, qso_file=qso_file)
 
 if METHOD == 'spline': 
+    #
+    # This part of the code is not working
+    #
+
     tck = bisplrep(z, m, p)
     # znew = np.linspace(0, 3.5, num=500)
     # mnew = np.linspace(-30, -16, num=500)
@@ -118,9 +135,11 @@ if METHOD == 'linear':
     pnew = f(points_new)
 
 plot_selmap(zp, mp, pnew, title='2SLAQ NGP (interpolated)',
-            filename='selmap_ngp_interpolated.pdf',
+            filename='Selmap_Plots/selmap_ngp_interpolated2.pdf',
             show_qsos=True, qso_file=qso_file)
 
+# Saves the mesh points and the interpolated values to a file
+# Colour values is given as 6 significant figures in the file
 WRITE_SELMAP = True
 if WRITE_SELMAP:
     # Extract the directory from the file path
