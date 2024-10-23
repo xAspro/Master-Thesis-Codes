@@ -62,6 +62,8 @@ def plot_selmap(z, m, p, title='', filename='Selmap_Plots/selmap.pdf',
 ##   croom_selfunc is different from sample. selfunc has 976 entries in total(for both ngp and sgp),        ##
 ##   and 640 of them are read.                                                                              ##
 ##   sample has 7k+(NGP) and 2k+(SGP) entries in total.                                                     ##
+##   Selfunc is just a map with mesh points with probability values.                                        ##
+##   Sample is a list of quasars with their redshifts and magnitudes.                                       ##
 ##                                                                                                          ##
 ##                                                                                                          ##
 ##############################################################################################################

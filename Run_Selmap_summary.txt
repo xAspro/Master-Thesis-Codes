@@ -4,7 +4,7 @@ croom09sgp_sample.dat		croom09sgp_selfunc.dat
 dr3z2p6_sample.dat		dr3z2p6_selfunc.dat
 dr7z2p2_sample.dat		dr7z2p2_selfunc.dat
 dr7z3p7_sample.dat		dr7z3p7_selfunc.dat
-jiang16main_sample.dat		jiang16main_selfunc.dat
+s_sample.dat		jiang16main_selfunc.dat
 jiang16overlap_sample.dat		jiang16overlap_selfunc.dat
 jiang16s82_sample.dat		jiang16s82_selfunc.dat
 mcgreer13_dr7sample.dat		mcgreer13_dr7selfunc.dat
