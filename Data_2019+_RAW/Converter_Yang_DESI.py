@@ -4,7 +4,7 @@ import sys
 import os
 
 # filename = 'DESI_main_selection.txt'
-# output_filename = '../Data_2019+/DESI_main_selection_selfunc.dat'
+# output_filename = '../Data_2019+/DESI_main_selection_sample.dat'
 # K_corr = 2.5  # Assuming K-correction of 2.5
 # area = 14000
 # sample_number = 25         # Coulding find samples more than 14, so instead of 15, going for 25. Just in case, dont want to overwrite anything.
@@ -25,7 +25,7 @@ import os
 
 
 filename = 'DESI_SV1.txt'
-output_filename = '../Data_2019+/DESI_SV1_selfunc.dat'
+output_filename = '../Data_2019+/DESI_SV1_sample.dat'
 K_corr = 2.5  # Assuming K-correction of 2.5
 area = 14000
 sample_number = 25         # Coulding find samples more than 14, so instead of 15, going for 25. Just in case, dont want to overwrite anything.

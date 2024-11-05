@@ -33,10 +33,9 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
             'Data_new/willott10_cfhqsdeepsample.dat',
             'Data_new/willott10_cfhqsvwsample.dat',
             'Data_new/kashikawa15_sample.dat',
-            'Data_new/mock.dat',
-            'Data_2019+/DESI_SV1.txt',
-            'Data_2019+/DESI_main_selection.txt',
-            'Data_2019+/CEERS_Kocevski.txt']
+            'Data_2019+/DESI_SV1_sample.dat',
+            'Data_2019+/DESI_main_selection_sample.dat',
+            'Data_2019+/CEERS_Kocevski_sample.dat']
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards et al. 2006'),
             #('Selmaps_with_tiles/dr3z2p6_selfunc.dat', 1622.0, 13, r'Richards et al. 2006'), # This is DR3 not DR7! 
@@ -67,6 +66,8 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
 
 # Just for checking reduced zls
 # zls = [(0.1,0.4), (0.4, 0.6), (0.6, 0.8)]
+
+# zls = [(4.74, 5.74)] # Trying to reproduce Kocevski
 
 lfs = [] 
 

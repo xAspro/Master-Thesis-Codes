@@ -36,10 +36,12 @@ def binvol(m, zrange, bins, msel, psel, vsel, zsel, totv):
     
     total_vol = 0.0
 
-    idx = -1 
-    for i in range(len(bins)):
-        if (m > bins[i]) and (m < bins[i+1]):
-            idx = i 
+    # Sooryabalan has commented this code as this is redundant.
+
+    # idx = -1 
+    # for i in range(len(bins)):
+    #     if (m > bins[i]) and (m < bins[i+1]):
+    #         idx = i 
     
     idx = np.searchsorted(bins, m)
     

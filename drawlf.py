@@ -501,6 +501,35 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
            17 : '#bcbd22', # "yellow"
            18 : '#e377c2' # "pink"
     }
+
+    cs = { 
+        1: '#1f77b4',  # blue
+        2: '#ff7f0e',  # orange
+        3: '#2ca02c',  # green
+        4: '#d62728',  # red
+        5: '#9467bd',  # purple
+        6: '#8c564b',  # brown
+        7: '#e377c2',  # pink
+        8: '#7f7f7f',  # grey
+        9: '#bcbd22',  # yellow
+        10: '#17becf', # cyan
+        11: '#aec7e8', # light blue
+        12: '#ffbb78', # light orange
+        13: '#98df8a', # light green
+        14: '#ff9896', # light red
+        15: '#c5b0d5', # light purple
+        16: '#c49c94', # light brown
+        17: '#f7b6d2', # light pink
+        18: '#c7c7c7', # light grey
+        19: '#dbdb8d', # light yellow
+        20: '#9edae5', # light cyan
+        21: '#393b79', # dark blue
+        22: '#637939', # dark green
+        23: '#8c6d31', # dark brown
+        24: '#843c39', # dark red
+        25: '#7b4173', # dark purple
+        26: '#5254a3'  # dark blue
+    }
     
     def dsl(i):
         for x in lf.maps:
