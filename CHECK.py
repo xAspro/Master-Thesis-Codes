@@ -14,17 +14,18 @@ dm = 0.5
 
 import cosmolopy.distance as cd
 import astropy.stats
-cosmo = {'omega_M_0':0.3,
-         'omega_lambda_0':0.7,
-         'omega_k_0':0,
-         'h':0.7}
+
+cosmo = {'omega_M_0': 0.3,
+         'omega_lambda_0': 0.7,
+         'omega_k_0': 0,
+         'h': 0.7}
 
 A= 0.009583 # in deg^2, but in arcmin^2 it is 34.5 arcmin^2
 def volume(z, area, cosmo=cosmo):
 
     omega = (area/41253.0)*4.0*np.pi # str
     volperstr = cd.diff_comoving_volume(z,**cosmo) # cMpc^3 str^-1 dz^-1
-    print("volperstr at z = ", z, " is ", volperstr)
+    # print("volperstr at z = ", z, " is ", volperstr)
 
     return omega*volperstr # cMpc^3 dz^-1
 
@@ -32,7 +33,14 @@ def volume(z, area, cosmo=cosmo):
 dVdz = volume(z, A, cosmo)
 
 phi_val = phi(1, Vbin(dVdz, dz, dm))
+print()
 print("phi is ", phi_val)
+print("ratio between phi is ", phi_val[1]/phi_val[0])
+print("ratio between required phi is ", 1.075/1.025, " to ", 1.065/1.035)
+print()
+
+import sys
+sys.exit()
 
 bins = np.array([-30.9, -30.3, -29.7, -29.1, -28.5, -27.9, -27.3, -26.7, -26.1, -25.5, -24.9, -24.3, -23.7, -23.1, -22.5, -21.9, -21.3, -20.7, -20.1, -19.5, -18.9, -18.3, -17.7])
 print("bins are ", bins)
