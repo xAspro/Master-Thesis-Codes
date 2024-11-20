@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 
 """
 Checks for the discrepancy in the phi values from Kocevski (2023) and Onoue (2023)
@@ -22,6 +23,7 @@ dm = 0.5
 
 import cosmolopy.distance as cd
 import astropy.stats
+import scipy.integrate
 x = 0.3
 cosmo = {'omega_M_0':x,
          'omega_lambda_0':1-x,
@@ -41,6 +43,64 @@ def volume(z, area, cosmo=cosmo):
 dVdz = volume(z, A, cosmo)
 
 phi_val = phi(1, Vbin(dVdz, dz, dm))
+
+###### CHECK FOR VOLUME CALCULATION DONE PREVIOUSLY ######
+###### HOW DID I GET IT WRONG? WAIT! DID I GET IT WRONG? ######
+
+def Phi(N, Vbin):
+    return N/Vbin
+
+def VBin(f, z, m, dz, dm, A):
+    zmin = z - dz
+    zmax = z + dz
+    mmin = m - dm
+    mmax = m + dm
+    return integrate(f, zmin, zmax, mmin, mmax, A)
+
+def integrate(f, zmin, zmax, mmin, mmax, A):
+    # print()
+    # print("f is ", f)
+    # print("zmin is ", zmin)
+    # print("zmax is ", zmax)
+    # print("mmin is ", mmin)
+    # print("mmax is ", mmax)
+    # print("A is ", A)
+    g = lambda z, m: volume(z, A, cosmo) * f(z, m)
+    # print("g is ", g)
+    # print("g(10, 1) is ", g(120, 1090909))
+
+    int= scipy.integrate.dblquad(g, mmin, mmax, zmin, zmax)[0]
+    # print("int is ", int)
+    return int
+
+def f(z, m):
+    return 1
+
+# print("z[0] is ", z[0])
+# print("m is ", m)
+# print("dz is ", dz)
+# print("dm is ", dm)
+# print("A is ", A)
+phi_val1 = [Phi(1, VBin(f, zi, m, dz, dm, A)) for zi in z]
+print("phi_val1 is ", phi_val1)
+print("phi_val is ", phi_val)
+print("ratio between phis is ", phi_val1/phi_val)
+sys.exit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 print()
 print("phi is ", phi_val)
 print("ratio between phi is ", phi_val[1]/phi_val[0])
