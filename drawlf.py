@@ -81,7 +81,7 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     down = np.percentile(phi, 84.13, axis=0)
     f = ax.fill_between(mags, down, y2=up, color='#ffbf00', alpha=0.7)
 
-    return f
+    return f, [up, down]
 
 def plot_bestfit_lf(lf, ax, mags, **kwargs):
     # print("In drawlf.py plot_bestfit_lf")
@@ -414,7 +414,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
     if show_individual_fit: 
         mag_plot = np.linspace(-32.0, -16.0, num=200) 
-        indf = plot_posterior_sample_lfs(lf, ax, (-32.0, -16.0), lw=1,
+        indf , limsposterior= plot_posterior_sample_lfs(lf, ax, (-32.0, -16.0), lw=1,
                                        c='#ffbf00', alpha=0.1, zorder=2) 
         # plot_bestfit_lf(lf, ax, mag_plot, lw=2,
         #                      c='#ffbf00', zorder=3, label='This work')

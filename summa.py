@@ -20,13 +20,14 @@ dz = 0.5
 
 m = -19.5
 dm = 0.5
+print()
 
 import cosmolopy.distance as cd
 import astropy.stats
 import scipy.integrate
-x = 0.3
-cosmo = {'omega_M_0':x,
-         'omega_lambda_0':1-x,
+
+cosmo = {'omega_M_0':0.3,
+         'omega_lambda_0':0.7,
          'omega_k_0':0,
          'h':0.7}
 

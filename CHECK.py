@@ -14,6 +14,7 @@ dm = 0.5
 
 import cosmolopy.distance as cd
 import astropy.stats
+import matplotlib.pyplot as plt
 
 cosmo = {'omega_M_0': 0.3,
          'omega_lambda_0': 0.7,
@@ -38,6 +39,91 @@ print("phi is ", phi_val)
 print("ratio between phi is ", phi_val[1]/phi_val[0])
 print("ratio between required phi is ", 1.075/1.025, " to ", 1.065/1.035)
 print()
+
+dm_values = np.arange(0.5, 0.55, 0.0005)
+phi_values = []
+
+for dm_val in dm_values:
+    phi_val = phi(1, Vbin(dVdz, dz, dm_val))
+    phi_values.append(phi_val)
+
+
+# Assuming phi_values and dm_values are already defined
+phi_values = np.array(phi_values)
+print("phi_values are ", phi_values)
+
+# Plot phi with respect to dm
+plt.plot(dm_values, phi_values[:, 0], label='Phi for z = 5.15')
+plt.plot(dm_values, phi_values[:, 1], label='Phi for z = 5.24')
+
+# Plot the given values
+given_values = np.array([1.025, 1.03, 1.035, 1.065, 1.07, 1.075]) * 10**-5
+plt.plot(dm_values, np.full_like(dm_values, given_values[1]), 'r-', label='Main Line 1.03')
+plt.fill_between(dm_values, given_values[0], given_values[2], color='red', alpha=0.3)
+plt.plot(dm_values, np.full_like(dm_values, given_values[4]), 'g-', label='Main Line 1.07')
+plt.fill_between(dm_values, given_values[3], given_values[5], color='green', alpha=0.3)
+
+
+# Manually check for the range where phi crosses the given values
+range_5_15 = (phi_values[:, 0] > 1.03 * 10**-5)
+range_5_24 = (phi_values[:, 1] > 1.07 * 10**-5)
+
+index_5_15 = np.where(range_5_15)[0][-1]
+index_5_24 = np.where(range_5_24)[0][-1]
+
+print("range_5_15 is ", range_5_15)
+print("range_5_24 is ", range_5_24)
+
+print("index_5_15 is ", index_5_15)
+print("index_5_24 is ", index_5_24)
+
+# Fit a straight line between the two values and interpolate
+def linear_interpolation(x, y, target):
+    print("x is ", x)
+    print("y is ", y)
+    print("target is ", target)
+    return np.interp(target, y, x)
+
+print("dm_values[index_5_15] is ", dm_values[index_5_15])
+print("dm_values[index_5_15+1] is ", dm_values[index_5_15+1])
+print("phi_values[index_5_15, 0] is ", phi_values[index_5_15, 0])
+print("phi_values[index_5_15+1, 0] is ", phi_values[index_5_15+1, 0])
+
+print("dm_values[index_5_24] is ", dm_values[index_5_24])
+print("dm_values[index_5_24+1] is ", dm_values[index_5_24+1])
+print("phi_values[index_5_24, 1] is ", phi_values[index_5_24, 1])
+print("phi_values[index_5_24+1, 1] is ", phi_values[index_5_24+1, 1])
+
+intersection_5_15 = linear_interpolation(
+    [dm_values[index_5_15], dm_values[index_5_15+1]], 
+    [phi_values[index_5_15, 0], phi_values[index_5_15+1, 0]], 
+    1.03 * 10**-5
+)
+intersection_5_24 = linear_interpolation(
+    [dm_values[index_5_24], dm_values[index_5_24+1]], 
+    [phi_values[index_5_24, 1], phi_values[index_5_24+1, 1]], 
+    1.07 * 10**-5
+)
+
+print()
+print("Intersection for z = 5.15 is ", intersection_5_15)
+print("Intersection for z = 5.24 is ", intersection_5_24)
+
+# Plot the intersection points
+plt.plot(intersection_5_15, 1.03 * 10**-5, 'ro', label='Intersection for z = 5.15')
+plt.plot(intersection_5_24, 1.07 * 10**-5, 'go', label='Intersection for z = 5.24')
+
+# Add circles around the intersection points
+# plt.gca().add_patch(plt.Circle((intersection_5_15, 1.03 * 10**-5), 0.5e-6, color='red', fill=False))
+# plt.gca().add_patch(plt.Circle((intersection_5_24, 1.07 * 10**-5), 0.5e-6, color='green', fill=False))
+
+# Set plot labels and title
+plt.xlabel('dm')
+plt.ylabel('Phi')
+plt.title('Phi vs dm')
+plt.legend()
+plt.grid(True)
+plt.show()
 
 import sys
 sys.exit()
