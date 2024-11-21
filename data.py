@@ -202,13 +202,13 @@ if int(sys.argv[1]) == 0:
 #                                      Adding new quasars                                                   #
 #############################################################################################################
 print("New data")
-f = ['Data_2019+/DESI_SV1.txt','Data_2019+/DESI_main_selection.txt']
+f = ['Data_2019+/DESI_SV1_sample.dat','Data_2019+/DESI_main_selection_sample.dat']
 l = r'DESI Yang et al. (2024)'
 s = sample(f, label=l)
 data.append(s)
 
 
-f = ['Data_2019+/CEERS_Kocevski.txt']
+f = ['Data_2019+/CEERS_Kocevski_sample.dat']
 l = r'CEERS Kocevski et al. (2023)'
 s = sample(f, label=l)
 data.append(s)

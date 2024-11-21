@@ -1,6 +1,6 @@
-# Checked once. Runs without error. Produces the output kcorr.pdf
-print("In kcorr.py")
-
+"""
+Program to plot the K-corrections for g, i, and z bands as a function of redshift.
+"""
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -67,5 +67,6 @@ plt.legend(handles, labels, loc='upper right', fontsize=14, handlelength=3,
            frameon=False, framealpha=0.0, labelspacing=.1,
            handletextpad=0.4, borderpad=0.5)
 
+print("Saving fig in filename: kcorr.pdf")
 plt.savefig('kcorr.pdf', bbox_inches='tight')
 
