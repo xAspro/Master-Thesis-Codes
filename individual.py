@@ -23,6 +23,7 @@ cosmo = {'omega_M_0':0.3,
 import gammapi
 import rtg
 import corner
+from pathos.multiprocessing import ProcessingPool as Pool
 
 def getqlums(lumfile, zlims=None):
 
@@ -457,12 +458,32 @@ class lf:
         pos = [self.mcmc_start + 1e-4*np.random.randn(self.ndim) for i
                in range(self.nwalkers)]
         
-        self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
-                                             self.lnprob)
+        # self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
+        #                                      self.lnprob)
 
-        self.sampler.run_mcmc(pos, 1000)
-        self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
+        # self.sampler.run_mcmc(pos, 1000)
+        # self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
         
+        ######################################################################################
+        ######################################################################################
+        ## It seems my Mac doesnt have enough memory to run the MCMC in parallel *sobs*     ##
+        ## Serial version took 6 mins 10 seconds                                            ##  
+        ## Parallel version took 6 mins                                                     ##
+        ## Not getting much speedup                                                         ##
+        ## My memory is full and swap memory is being used. That's why it's slow.           ##
+        ## I will have to try it on the cluster.                                            ##
+        ######################################################################################
+        ######################################################################################
+
+        # creates a pool of workers to run the MCMC
+        with Pool() as pool:
+            self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim, self.lnprob, pool=pool)
+            self.sampler.run_mcmc(pos, 1000)
+            # for i, result in enumerate(self.sampler.sample(pos, iterations=1000)):
+            #     if (i + 1) % 100 == 0:
+            #         print(f"Step {i + 1} / 1000")
+
+        self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
 
         return
 
