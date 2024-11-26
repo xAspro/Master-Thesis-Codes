@@ -26,13 +26,65 @@ import corner
 
 def getqlums(lumfile, zlims=None):
 
-    """Read quasar luminosities."""
+    """
+
+    Read quasar luminosities.
+
+    Parameters
+    ----------
+    lumfile : str
+        The file containing the quasar luminosities.
+    zlims : list of float, optional
+        The redshift limits for the quasar luminosities. 
+        The default is None.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the following elements:
+        - z : ndarray
+            The selected redshifts of the quasars.
+        - mag : ndarray
+            The selected magnitudes of the quasars.
+        - p : ndarray
+            The selected probabilities of the quasars.
+        - area : ndarray
+            The selected areas of the quasars.
+        - sample_id : ndarray
+            The selected sample IDs of the quasars.
+        - z_all : ndarray
+            All redshifts of the quasars within the redshift limits.
+        - mag_all : ndarray
+            All magnitudes of the quasars within the redshift limits.
+        - p_all : ndarray
+            All probabilities of the quasars within the redshift limits.
+        - area_all : ndarray
+            All areas of the quasars within the redshift limits.
+        - sample_id_all : ndarray
+            All sample IDs of the quasars within the redshift limits.
+
+    Notes
+    -----
+    The selected values are based on the redshift limits and the sample ID.
+    It is possible that the select value is None. In that case, all values
+    are returned. The array sizes are not guaranteed to be the same.
+
+    CHECK THE FUNCTION ONCE MORE, LATER ON!!!
+    FOR getselfunc(), WE HAVE np.squeeze IN SELFILE CONSTRUCTOR!!!
+    NEED TO CHECK IF FOR QLUMS ALSO DO WE HAVE SOMETHING LIKE THAT TO HANDLE MULTIPLE DIMENSIONS!!!
+
+    """
+    # print()
 
     with open(lumfile,'r') as f: 
         z, mag, p, area, sample_id = np.loadtxt(lumfile,
                                                 usecols=(1,2,3,4,5),
                                                 unpack=True)
     if zlims is None:
+        # print("In getqlums")
+        # print("In lumfile = ", lumfile)
+        # print("zlims is None")
+        # print("select1 is None")
         select = None
     else:
         z_min, z_max = zlims 
@@ -43,6 +95,9 @@ def getqlums(lumfile, zlims=None):
     p_all = p[select]
     area_all = area[select]
     sample_id_all = sample_id[select]
+
+    # print("z = ", z, "\t\tsample_id = ", sample_id)
+    # print("z_all = ", z_all)
 
     try:
         sid = sample_id[0]
@@ -74,11 +129,26 @@ def getqlums(lumfile, zlims=None):
     if sid == 8:
         select = (mag_all > -26.73)
 
+
+
+
     z = z_all[select]
     mag = mag_all[select]
     p = p_all[select]
     area = area_all[select]
     sample_id = sample_id_all[select]
+
+    # if select is None:
+    #     print("In getqlums")
+    #     print("In lumfile = ", lumfile)
+    #     print("select2 is None")
+    #     print("z: ", z)
+    #     print("size of z: ", z.size)
+    # if z.size != 0:
+    #     print("\n\n\n\n\n\t\t\t\tz[0]: ", z[0])
+    #     # CHECK THIS!!!!
+    #     # Sometimes z will be a number and sometimes it will be an array of a number(at least while calling bins.py)
+    #     # Because bins.py always gives zlims, so None case will occur only when select2 is None!
 
     return (z, mag, p, area, sample_id, z_all, mag_all, p_all,
             area_all, sample_id_all)
@@ -94,6 +164,7 @@ def getselfn(selfile, zlims=None):
         z, mag, p, dz, dm = np.loadtxt(f, usecols=(1,2,3,4,5), unpack=True)
 
     if zlims is None:
+        # Can afford to do this because of np.squeeze in selmap constructor
         select = None
     else:
         z_min, z_max = zlims 
@@ -307,6 +378,31 @@ class lf:
         return result
     
     def create_param_range(self):
+        """
+        Create parameter ranges for optimization.
+
+        This function calculates the minimum and maximum values for the parameters
+        based on the best-fit parameters (`self.bf.x`). The minimum values are set
+        to half of the best-fit values, and the maximum values are set to twice the
+        best-fit values. A redundant assertion is included to ensure that the 
+        minimum values are always less than the maximum values.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Attributes
+        ----------
+        self.prior_min_values : ndarray
+            The minimum values for the parameters, calculated as half of the best-fit values.
+        self.prior_max_values : ndarray
+            The maximum values for the parameters, calculated as twice the best-fit values.
+
+        """
 
         half = self.bf.x/2.0
         double = 2.0*self.bf.x
@@ -320,7 +416,22 @@ class lf:
         """
         Set up uniform priors.
 
+        Parameters
+        ----------
+        theta : ndarray
+            The parameter vector to be evaluated.
+
+        Returns
+        -------
+        float
+            The log prior probability. Returns 0.0 if theta is within the prior
+            bounds, and -np.inf if theta is outside the prior bounds.
         """
+        # """
+        # Set up uniform priors.
+
+        # """
+
         if (np.all(theta < self.prior_max_values) and
             np.all(theta > self.prior_min_values)):
             return 0.0 

@@ -1,5 +1,51 @@
 import numpy as np
 
+import sys
+
+print(np.log10(1.e-6))
+arr = np.array([])
+print(arr)  # [1 2 3 4 5 6 7 8 9]
+print(arr.shape)    # (9,)
+
+arr_none = arr[None]    
+print(arr.shape)
+print("arr.size", arr.size)
+print(arr_none.shape)
+print("arr_none.size", arr_none.size)
+
+print()
+arr = np.append(arr, 10)
+arr_none = np.append(arr_none, 10)
+print(arr)
+print(arr_none)
+print()
+print(arr)
+print(arr_none)
+print()
+print(arr.shape)
+print("arr.size", arr.size)
+print(arr_none.shape)
+print("arr_none.size", arr_none.size)
+
+select = ((arr >= 3) | (arr <= 7))
+print(select)   # [False False  True  True  True  True  True False False]
+
+print(arr[select])  # [3 4 5 6 7]
+print(arr_none[select]) # IndexError: boolean index did not match indexed array along axis 0; size of axis is 1 but size of corresponding boolean axis is 9
+
+# z_all = np.array([0.5, 0.7, 0.9, 1.3, 1.9])
+# mag_all = np.array([-21, -21, -22, -23, -24])
+
+# select = (((z_all >= 0.4) & (z_all < 0.6)) |
+#           ((z_all >= 0.6) & (z_all < 0.8) & (mag_all <= -20.7)) |
+#           ((z_all >= 0.8) & (z_all < 1.2) & (mag_all <= -21.9)) |
+#           ((z_all >= 1.2) & (z_all < 1.8) & (mag_all <= -22.5)) |
+#           ((z_all >= 1.8) & (z_all < 2.2) & (mag_all <= -24.1)))
+
+# print(select)  # [ True  True  True  True  True]
+
+sys.exit()
+
 def phi(N, Vbin):
     return N/Vbin
 

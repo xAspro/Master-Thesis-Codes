@@ -9,7 +9,10 @@ importlib.reload(individual)
 from individual import lf
 import mosaic
 import drawlf
+import time
 
+
+start_time = time.time()
 
 # # WRITE_PARAMS = sys.argv[1] if len(sys.argv) > 1 else False
 # WRITE_PARAMS = True
@@ -33,9 +36,10 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
             'Data_new/willott10_cfhqsdeepsample.dat',
             'Data_new/willott10_cfhqsvwsample.dat',
             'Data_new/kashikawa15_sample.dat',
-            'Data_2019+/DESI_SV1_sample.dat',
-            'Data_2019+/DESI_main_selection_sample.dat',
-            'Data_2019+/CEERS_Kocevski_sample.dat']
+            # 'Data_2019+/DESI_SV1_sample.dat',
+            # 'Data_2019+/DESI_main_selection_sample.dat',
+            # 'Data_2019+/CEERS_Kocevski_sample.dat'
+            ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards et al. 2006'),
             #('Selmaps_with_tiles/dr3z2p6_selfunc.dat', 1622.0, 13, r'Richards et al. 2006'), # This is DR3 not DR7! 
@@ -64,12 +68,21 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
        (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
        (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5)]
 
+# zls = [(4.7, 5.5), (5.5, 6.5)]
+
+# zls = [(5.5, 6.5)]
+
 # Just for checking reduced zls
 # zls = [(0.1,0.4), (0.4, 0.6), (0.6, 0.8)]
 
-# zls = [(4.74, 5.74)] # Trying to reproduce Kocevski
 
 lfs = [] 
+
+# Notes down the parameters for it to be later used in summary files.
+WRITE_PARAMS2 = True
+if WRITE_PARAMS2: 
+    with open('bins.dat', 'w') as f:
+        f.write('# zmean zmin  zmax  phi_star  phi_star_err    M_star  M_star_err        alpha  alpha_err        beta    beta_err\n')
 
 for i, zl in enumerate(zls):
 
@@ -81,8 +94,11 @@ for i, zl in enumerate(zls):
     print( 'sids (maps): '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps]))
     print( ' ')
     
-    g = (np.log10(1.e-6), -25.0, -3.0, -1.5)
+    g = (np.log10(1.e-6), -25.0, -3.0, -1.5)      # Initial guess for log10(phi_star), M_star, alpha, beta
     b = lfi.bestfit(g, method=method)
+
+    print("\n\n\n\n\n\n\nb:\n", b)
+    print("\n\n\n\n\n\n")
 
     zmin, zmax = zl 
     
@@ -110,23 +126,45 @@ for i, zl in enumerate(zls):
     print("Getting percentiles")
     lfi.get_percentiles()
     print("lfi.phi_star:", lfi.phi_star)
+    print("lfi.M_star:", lfi.M_star)
+    print("lfi.alpha:", lfi.alpha)
+    print("lfi.beta:", lfi.beta)
+    print("\nEND!")
+    print()
+    
 
     drawlf.draw(lfi, show_individual_fit=True)
+
+    # Print all attributes of the object as a dictionary
+    # print()
+    # print("lfi.__dict__:")
+    # print(lfi.__dict__)
+    # print()
+
     
-    WRITE_PARAMS2 = True
+    # FOR SUMMARY (Fig 4)
     if WRITE_PARAMS2: 
         with open('bins.dat', 'a') as f:
             output = ([lfi.z.mean()] + list(zl) + lfi.phi_star
                     + lfi.M_star + lfi.alpha + lfi.beta)
-            f.write(('{:.3f}  '*len(output)).format(*output)) 
+            f.write(('{:.3f}  '*len(output)).format(*output))
+            print()
+            # print()
+            # print()
+            # print("output:", output) 
+            # print(('{:.3f}  ' * len(output)).format(*output))
             f.write('\n')
     
     lfs.append(lfi)
 
     # mosaic.draw(lfs)
 
-print("lfs:", lfs)
+end_time = time.time()
 
+print()
+print()
+elapsed_time = end_time - start_time
+print("Time taken:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
 
 # with open('bins_lfs.dat', 'x') as f:
 #     f.write(','.join(map(str, lfs))) 

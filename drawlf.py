@@ -69,7 +69,7 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     mags = np.linspace(*maglims, num=nmags)
     nsample = 1000
     rsample = lf.samples[np.random.randint(len(lf.samples), size=nsample)]
-    print("rsample= ", rsample)
+    # print("rsample= ", rsample)
     phi = np.zeros((nsample, nmags))
     
     for i, theta in enumerate(rsample):
@@ -81,7 +81,7 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     down = np.percentile(phi, 84.13, axis=0)
     f = ax.fill_between(mags, down, y2=up, color='#ffbf00', alpha=0.7)
 
-    return f, [up, down]
+    return f
 
 def plot_bestfit_lf(lf, ax, mags, **kwargs):
     # print("In drawlf.py plot_bestfit_lf")
@@ -400,6 +400,38 @@ def plot_giallongo_z4p25(lf, ax, mags):
 
     return 
 
+def savedata(data):
+    zlims = data[0]
+    if zlims == (0.1, 0.4):
+    # if zlims == (5.5, 6.5):
+        with open('datapoints.dat', 'w') as f:
+            f.write('# The data points for the QLF at different redshift bins are given here.\n')
+            f.write('# status 1 points are the selected points and status 0 points are the rejected points. \n')
+            f.write('# The columns are as follows:\n')
+            f.write('# zmin   zmax   label                      status  mags     logphi     right   left    uperr   downerr\n')
+
+
+    with open('datapoints.dat', 'a') as f:
+        # f.write('{:6.2f} {:6.2f}   '.format(zlims[0], zlims[1]))
+        # for cnt in range(1, len(data)):
+        #     for d in data[cnt]:
+        #         if isinstance(d, str):
+        #             if cnt == 1:
+        #                 f.write('{:20s}'.format(d))
+        #             else:
+        #                 f.write('{:25s}'.format(d))
+        #             continue
+        #         print()
+        #         print("d= ", d)
+        #         f.write('{:7.2f} {:7.2f} {:7.2f} {:7.2f} {:7.2f} {:7.2f}\n{:20s}'.format(d[0], d[1], d[2], d[3], d[4], d[5],''))
+        for cnt in range(1, len(data)):
+            for d in data[cnt]:
+                if isinstance(d, str):
+                    continue
+                f.write('{:6.2f} {:6.2f}   {:25s} {:7d} {:7.2f}   {:<7.2f} {:7.2f} {:7.2f} {:7.2f} {:7.2f}\n'.format(zlims[0], zlims[1], data[cnt][0], d[0], d[1], d[2], d[3], d[4], d[5], d[6]))
+
+
+    return
 
 def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=True, c2=None, c3=None):
     # print("In drawlf.py render")
@@ -411,10 +443,12 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
     """
 
     z_plot = lf.z.mean() 
+    show_individual_fit = True
+    showMockSample = False
 
     if show_individual_fit: 
         mag_plot = np.linspace(-32.0, -16.0, num=200) 
-        indf , limsposterior= plot_posterior_sample_lfs(lf, ax, (-32.0, -16.0), lw=1,
+        indf = plot_posterior_sample_lfs(lf, ax, (-32.0, -16.0), lw=1,
                                        c='#ffbf00', alpha=0.1, zorder=2) 
         # plot_bestfit_lf(lf, ax, mag_plot, lw=2,
         #                      c='#ffbf00', zorder=3, label='This work')
@@ -531,6 +565,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         26: '#5254a3'  # dark blue
     }
     
+    # By now best fit LFs have been plotted. Now plot the data.
+
     def dsl(i):
         for x in lf.maps:
             if x.sid == i:
@@ -551,13 +587,34 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
                         fmt='None', zorder=4)
             ax.scatter(mags, logphi, c='#ffffff', edgecolor=cs[i], zorder=4, s=16, label=dsl(i)+' (rejected bins)')
         return
-
+    
+    data = [lf.zlims]
+    cnt = 0
+    # This segment plots the data points in the graph.
     for i in sids[::-1]:
+        cnt += 1
 
         mags, left, right, logphi, uperr, downerr = get_lf(lf, i, z_plot)
 
         print( mags[logphi>-100.0])
         print( logphi[logphi>-100.0])
+
+        mask = logphi > -100.0
+        data.append([])
+        data[cnt].append(dsl(i))
+        for j in range(len(mags[mask])):
+            data[cnt].append([1, mags[mask][j], logphi[mask][j], right[mask][j], left[mask][j], uperr[mask][j], downerr[mask][j]])
+
+
+        # For some reason, the omitted data are not actually omitted. 
+        # Since the data points dont make any sense, they dont show up.
+        # But they are still there in the background.
+        # Theplot could have been done after masking the data points.
+        # mask = logphi > -100.0
+        # mags = mags[mask]
+        # logphi = logphi[mask]
+        # and so on.
+        # If I do this, I need to do the same for rejected bins as well.
         ax.scatter(mags, logphi, c=cs[i], edgecolor='None', zorder=4, s=20, label=dsl(i))
         ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
                     xerr=np.vstack((left, right)), 
@@ -570,6 +627,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
             # incompleteness.
             continue 
         
+        # For the rejected bins!
         mags_all, left_all, right_all, logphi_all, uperr_all, downerr_all = get_lf_all(lf, i, z_plot)
         print( mags_all[logphi_all!=logphi])
         print( logphi_all[logphi_all!=logphi])
@@ -582,6 +640,11 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         uperr_all  = uperr_all[select]
         downerr_all = downerr_all[select]
 
+        mask = logphi_all > -100.0
+
+        for j in range(len(mags_all[mask])):
+            data[cnt].append([0, mags_all[mask][j], logphi_all[mask][j], right_all[mask][j], left_all[mask][j], uperr_all[mask][j], downerr_all[mask][j]])
+
         if mags_all.any(): 
             ax.errorbar(mags_all, logphi_all, ecolor=cs[i], capsize=0,
                         xerr=np.vstack((left_all, right_all)), 
@@ -589,6 +652,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
                         fmt='None', zorder=4)
             ax.scatter(mags_all, logphi_all, c='#ffffff', edgecolor=cs[i],
                        zorder=4, s=16, label=dsl(i)+' (rejected bin)')
+
+    savedata(data)
 
     if showMockSample:
         for i in sids:
