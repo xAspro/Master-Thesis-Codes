@@ -614,9 +614,13 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False):
     print( 'plotting now')
     
     plot_phi_star(fig, composite, individuals=individuals, compOpt=compOpt)
+    print("plot_phi_star done")
     plot_m_star(fig, composite, individuals=individuals, compOpt=compOpt)
+    print("plot_m_star done")
     plot_alpha(fig, composite, individuals=individuals, compOpt=compOpt)
+    print("plot_alpha done")
     plot_beta(fig, composite, individuals=individuals, compOpt=compOpt)
+    print("plot_beta done")
 
     plt.savefig('evolution.pdf',bbox_inches='tight')
     print("In summary.py summary_plot > plt.savefig('evolution.pdf',bbox_inches='tight')")

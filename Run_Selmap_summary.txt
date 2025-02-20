@@ -4,7 +4,7 @@ croom09sgp_sample.dat		croom09sgp_selfunc.dat
 dr3z2p6_sample.dat		dr3z2p6_selfunc.dat
 dr7z2p2_sample.dat		dr7z2p2_selfunc.dat
 dr7z3p7_sample.dat		dr7z3p7_selfunc.dat
-s_sample.dat		jiang16main_selfunc.dat
+jiang16main_sample.dat		jiang16main_selfunc.dat
 jiang16overlap_sample.dat		jiang16overlap_selfunc.dat
 jiang16s82_sample.dat		jiang16s82_selfunc.dat
 mcgreer13_dr7sample.dat		mcgreer13_dr7selfunc.dat
@@ -27,13 +27,30 @@ yang16_sample.dat
 
 
 Files with only 'selfunc' versions:
+banados_sel.dat
+banados_sel_2.dat
+banados_sel_4.dat
+fan06_sel.dat
+giallongo15_sel.dat
+giallongo15_sel_correction.dat
+glikman11_selfunc_dls.dat
+glikman11_selfunc_dls_old.dat
+glikman11_selfunc_ndwfs.dat
+glikman11_selfunc_ndwfs_old.dat
+jiang08_sel.dat
+jiang09_sel.dat
+kashikawa15_sel.dat
+ross13_selfunc2.dat
+ukidss_sel.dat
+ukidss_sel_2.dat
+ukidss_sel_4.dat
+willott10_cfhqsdeepsel.dat
+willott10_cfhqsvwsel.dat
+yang16_sel.dat
 
 
 
 Files with neither 'sample' nor 'selfunc' versions:
-banados_sel.dat
-banados_sel_2.dat
-banados_sel_4.dat
 bossdr9color.dat
 compostella14.txt
 daloisio18_gammaHI.txt
@@ -42,19 +59,9 @@ emissivity_b07.dat
 emissivity_c17.dat
 emissivity_pd13.dat
 emissivity_pd16.dat
-fan06_sel.dat
 giallongo15_emissivity.txt
-giallongo15_sel.dat
-giallongo15_sel_correction.dat
-glikman11_selfunc_dls.dat
-glikman11_selfunc_dls_old.dat
-glikman11_selfunc_ndwfs.dat
-glikman11_selfunc_ndwfs_old.dat
 glikman11debug.dat
 glikman11qso.dat
-jiang08_sel.dat
-jiang09_sel.dat
-kashikawa15_sel.dat
 kcorrg_l15.dat
 kcorrg_t02.dat
 kcorrg_v01.dat
@@ -79,11 +86,4 @@ puchwein18_qheiii.txt
 qhe_mh15.txt
 readme.txt
 ross13_s82.txt
-ross13_selfunc2.dat
-ukidss_sel.dat
-ukidss_sel_2.dat
-ukidss_sel_4.dat
-willott10_cfhqsdeepsel.dat
-willott10_cfhqsvwsel.dat
 wyithe11_gammaHI.txt
-yang16_sel.dat

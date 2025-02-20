@@ -108,7 +108,7 @@ def plot_data(data, plotname):
     ax.set_xlabel(r'redshift')
     ax.set_ylabel(r'Number of AGN')
 
-    plt.ylim(7e-1, 1.0e4)
+    plt.ylim(7e-1, 1.0e5)
     plt.xlim(0., 8.)
 
     plt.legend(loc='upper right', fontsize=12, handlelength=3,
@@ -210,6 +210,41 @@ data.append(s)
 
 f = ['Data_2019+/CEERS_Kocevski_sample.dat']
 l = r'CEERS Kocevski et al. (2023)'
+s = sample(f, label=l)
+data.append(s)
+
+#############################################################################################################
+#                                      Using MilliQuas                                                      #
+#############################################################################################################
+
+# /QLF\ -\ Database\ Details/milliquas-ref-2023/processed_data
+f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/BLAZZ2.txt']
+l = r'MilliQuas BLAZZ2 (2023)'
+s = sample(f, label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/ALCS.txt']
+l = r'MilliQuas ALCS (2023)'
+s = sample(f, label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/DESEDR.txt']
+l = r'MilliQuas DESEDER (2023)'
+s = sample(f, label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2020/processed_data/DR16.txt']
+l = r'MilliQuas DR16 (2020)'
+s = sample(f, label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2020/processed_data/DR16Q.txt']
+l = r'MilliQuas DR16Q (2020)'
+s = sample(f, label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/GAIA3.txt']
+l = r'MilliQuas GAIA3 (2023)'
 s = sample(f, label=l)
 data.append(s)
     

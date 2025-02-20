@@ -10,9 +10,14 @@ from individual import lf
 import mosaic
 import drawlf
 import time
+import datetime
 
 
 start_time = time.time()
+curr_date_time = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
+print("curr_date_time:", curr_date_time)
+
+
 
 # # WRITE_PARAMS = sys.argv[1] if len(sys.argv) > 1 else False
 # WRITE_PARAMS = True
@@ -133,7 +138,7 @@ for i, zl in enumerate(zls):
     print()
     
 
-    drawlf.draw(lfi, show_individual_fit=True)
+    drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
 
     # Print all attributes of the object as a dictionary
     # print()
@@ -164,7 +169,7 @@ end_time = time.time()
 print()
 print()
 elapsed_time = end_time - start_time
-print("Time taken:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
+print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
 
 # with open('bins_lfs.dat', 'x') as f:
 #     f.write(','.join(map(str, lfs))) 

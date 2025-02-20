@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 
 # Define the path to the directory containing the data files
@@ -22,11 +23,16 @@ sample_dat_files = []
 selfunc_dat_files = []
 other_files = []
 
+
+# Regular expression for matching 'sel.dat', 'sel1.dat', 'sel2.dat', 'sel_4.dat', 'sel_correction.dat', etc.
+sel_dat_pattern = re.compile(r'.*sel.*\.dat')
+
+
 # Iterate over each file in the data directory
 for filename in os.listdir(data_dir):
     if filename.endswith('sample.dat'):
         sample_dat_files.append(filename)
-    elif filename.endswith('selfunc.dat'):
+    elif filename.endswith('selfunc.dat') or sel_dat_pattern.match(filename):
         selfunc_dat_files.append(filename)
     else:
         other_files.append(filename)
@@ -35,6 +41,16 @@ for filename in os.listdir(data_dir):
 sample_dat_files.sort()
 selfunc_dat_files.sort()
 other_files.sort()
+
+print("Files with 'sample' versions:")
+for sample_file in sample_dat_files:
+    print(sample_file)
+print("\n\nFiles with 'selfunc' versions:")
+for selfunc_file in selfunc_dat_files:
+    print(selfunc_file)
+print("\n\nFiles with neither 'sample' nor 'selfunc' versions:")
+for other_file in other_files:
+    print(other_file)
 
 # Find files that have both 'sample' and 'selfunc' versions
 common_files = []

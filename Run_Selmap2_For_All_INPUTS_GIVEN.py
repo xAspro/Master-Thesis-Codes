@@ -10,8 +10,11 @@ commands = [
     "python selmap2.py 0 jiang16main SDSS_Main",
     "python selmap2.py 0 jiang16overlap SDSS_Main",
     "python selmap2.py 0 jiang16s82 SDSS_Main",
-    # "python selmap2.py 0 mcgreer13_dr7",
-    # "python selmap2.py 0 mcgreer13_s82",
+    # "python selmap2.py 0 mcgreer13_dr7", # No such file or directory: 'Data_new/mcgreer13_dr7_selfunc.dat'
+    # "python selmap2.py 0 mcgreer13_s82", # No such file or directory: 'Data_new/mcgreer13_s82_selfunc.dat'
+    "python selmap2.py 1 CEERS_Kocevski CEERS",
+    "python selmap2.py 1 DESI_main_selection DESI",
+    "python selmap2.py 1 DESI_SV1 DESI",
 ]
 
 # Run each command
