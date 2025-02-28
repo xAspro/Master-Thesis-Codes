@@ -13,13 +13,18 @@ You only need to set data, z_tolerance, and mag_tolerance.
 
 import numpy as np
 import sys
+import os
 
 # filename = sys.argv[1]
 #data = np.loadtxt('Data_new/croom09sgp_selfunc.dat')
 
 
-in_file = 'smooth_maps/' + sys.argv[1]
-out_file = 'smooth_maps/' + sys.argv[1][:-4] + '_with_tiles.dat'
+# in_file = 'smooth_maps/' + sys.argv[1]
+in_file = 'Data_2019+/' + sys.argv[1]
+out_dir = 'smooth_maps/2019+/'
+if not os.path.exists(out_dir):
+    os.makedirs(out_dir)
+out_file = out_dir + sys.argv[1][:-4] + '_with_tiles.dat'
 print( 'Reading ' + in_file)
 print( 'Writing to ' + out_file)
 

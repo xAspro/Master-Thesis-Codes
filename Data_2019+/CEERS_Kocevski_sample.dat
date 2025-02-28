@@ -1,7 +1,7 @@
 # Data from CEERS
 # K-corr is not mentioned in the paper. And K-corr formula isnt matching with the M1450 given. Need negative 2ish K corr.
 # But why wouldnt they directly give the K-corr if its from same survey? Can I take K_corr such that it works for 1?
-# Considering Area to be total area 14000
+# Considering Area to be total area 0.009583
 # Taking probability from paper Kocevski et al. (2023)
 # counter  z     M1450  p       area    sample
         1  5.242 -19.40 1.00000     0.01  26

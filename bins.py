@@ -11,11 +11,13 @@ import mosaic
 import drawlf
 import time
 import datetime
+import os
 
 
 start_time = time.time()
-curr_date_time = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
+curr_date_time = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")+"/"
 print("curr_date_time:", curr_date_time)
+os.makedirs(curr_date_time, exist_ok=True)
 
 
 
@@ -41,9 +43,9 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
             'Data_new/willott10_cfhqsdeepsample.dat',
             'Data_new/willott10_cfhqsvwsample.dat',
             'Data_new/kashikawa15_sample.dat',
-            # 'Data_2019+/DESI_SV1_sample.dat',
-            # 'Data_2019+/DESI_main_selection_sample.dat',
-            # 'Data_2019+/CEERS_Kocevski_sample.dat'
+            'Data_2019+/DESI_SV1_sample.dat',
+            'Data_2019+/DESI_main_selection_sample.dat',
+            'Data_2019+/CEERS_Kocevski_sample.dat'
             ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards et al. 2006'),
@@ -62,7 +64,11 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards e
             ('Selmaps_with_tiles/jiang16s82_selfunc.dat', 277.0, 18, r'Jiang et al. 2016'),
             ('Selmaps_with_tiles/willott10_cfhqsdeepsel.dat', 4.47, 10, r'Willott et al. 2010'),
             ('Selmaps_with_tiles/willott10_cfhqsvwsel.dat', 494.0, 10, r'Willott et al. 2010'),
-            ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11, r'Kashikawa et al. 2015')]
+            ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11, r'Kashikawa et al. 2015'),
+            ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25, r'DESI SV1'),
+            ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25, r'DESI Main Selection'),
+            ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26, r'CEERS Kocevski')
+            ]
 
 method = 'Nelder-Mead'
 
@@ -73,7 +79,7 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
        (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
        (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5)]
 
-# zls = [(4.7, 5.5), (5.5, 6.5)]
+# zls = [(4.1, 4.7), (4.7, 5.5), (5.5, 6.5)]
 
 # zls = [(5.5, 6.5)]
 

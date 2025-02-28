@@ -44,7 +44,11 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/kashikawa15_sample.dat',
              'Data_new/giallongo15_sample.dat',
              'Data_new/ukidss_sample.dat',
-             'Data_new/banados_sample.dat']
+             'Data_new/banados_sample.dat',
+             'Data_2019+/DESI_SV1_sample.dat',
+             'Data_2019+/DESI_main_selection_sample.dat',
+             'Data_2019+/CEERS_Kocevski_sample.dat'
+             ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/croom09sgp_selfunc.dat', 64.2, 15),
@@ -63,7 +67,10 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11),
              ('Selmaps_with_tiles/giallongo15_sel.dat', 0.047, 7),
              ('Selmaps_with_tiles/ukidss_sel_4.dat', 3370.0, 19),
-             ('Selmaps_with_tiles/banados_sel_4.dat', 2500.0, 20)]
+             ('Selmaps_with_tiles/banados_sel_4.dat', 2500.0, 20),('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
+             ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
+             ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26)
+            ]
 
 lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,5])
 
@@ -87,6 +94,13 @@ lfg1.prior_max_values = np.array([-5.0, 10.0, 5.0,
                                  -10.0, -1.0, 2.0, 2.0,
                                  -1.0, 5.0,
                                  10.0, 10.0, 10.0, 200.0, 2.0])
+
+print("Prior min values:", lfg1.prior_min_values)
+print("Prior max values:", lfg1.prior_max_values)
+print("Best fit values:", lfg1.bf.x)
+print("Comparison result:", lfg1.prior_min_values < lfg1.prior_max_values)
+print("Comparison result:", lfg1.bf.x < lfg1.prior_max_values)
+print("Comparison result:", lfg1.prior_min_values < lfg1.bf.x)
 
 assert(np.all(lfg1.prior_min_values < lfg1.prior_max_values))
 assert(np.all(lfg1.bf.x < lfg1.prior_max_values))
