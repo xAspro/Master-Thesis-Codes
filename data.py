@@ -62,7 +62,7 @@ def plot_data(data, plotname):
     ax.set_yscale('log')
 
     bin_width = 0.1
-    bins = np.arange(0.0, 7.0, bin_width)
+    bins = np.arange(0.0, 15.0, bin_width)
 
     # Colours were obtained from Matplotlib 2.0 colour palette
     # (mpl.rcParams['axes.prop_cycle']), combined with some colours
@@ -109,7 +109,7 @@ def plot_data(data, plotname):
     ax.set_ylabel(r'Number of AGN')
 
     plt.ylim(7e-1, 1.0e5)
-    plt.xlim(0., 8.)
+    plt.xlim(0., 15.)
 
     plt.legend(loc='upper right', fontsize=12, handlelength=3,
                frameon=False, framealpha=0.0, labelspacing=.1,

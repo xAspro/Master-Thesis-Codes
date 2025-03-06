@@ -142,7 +142,9 @@ def totBinVol(lf, m, mbins, selmaps):
     selmaps, compute the volume for an object with magnitude m.
 
     """
-
+    print("In drawlf.py totBinVol")
+    print("m= ", m)
+    print("mbins= ", mbins)
     idx = np.searchsorted(mbins, m)
     mlow = mbins[idx-1]
     mhigh = mbins[idx]
@@ -199,7 +201,7 @@ def get_lf(lf, sid, z_plot, special='None'):
         # These Mgz2 bins of Croom09.  
         bins = np.arange(-30,-19.5,0.5)
     else:
-        bins = np.arange(-30.9, -17.3, 0.6)
+        bins = np.arange(-30.9, -13.3, 0.6)
 
     v1 = np.array([totBinVol(lf, x, bins, selmaps) for x in m])
 
@@ -263,7 +265,7 @@ def get_lf_all(lf, sid, z_plot, special='None'):
         # These Mgz2 bins of Croom09.  
         bins = np.arange(-30,-19.5,0.5)
     else:
-        bins = np.arange(-30.9, -17.3, 0.6)
+        bins = np.arange(-30.9, -13.3, 0.6)
 
     v1 = np.array([totBinVol_all(lf, x, bins, selmaps) for x in m])
 
@@ -562,7 +564,9 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         23: '#8c6d31', # dark brown
         24: '#843c39', # dark red
         25: '#7b4173', # dark purple
-        26: '#5254a3'  # dark blue
+        26: '#5254a3',  # dark blue
+        105: '#000000', # black
+        106: '#444444', # dark grey
     }
     
     # By now best fit LFs have been plotted. Now plot the data.
@@ -591,13 +595,14 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
     data = [lf.zlims]
     cnt = 0
     # This segment plots the data points in the graph.
-    for i in sids[::-1]:
+    for sid in sids[::-1]:
+        i = int(sid)
         cnt += 1
 
         mags, left, right, logphi, uperr, downerr = get_lf(lf, i, z_plot)
 
-        print( mags[logphi>-100.0])
-        print( logphi[logphi>-100.0])
+        # print( mags[logphi>-100.0])
+        # print( logphi[logphi>-100.0])
 
         mask = logphi > -100.0
         data.append([])
@@ -629,8 +634,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         
         # For the rejected bins!
         mags_all, left_all, right_all, logphi_all, uperr_all, downerr_all = get_lf_all(lf, i, z_plot)
-        print( mags_all[logphi_all!=logphi])
-        print( logphi_all[logphi_all!=logphi])
+        # print( mags_all[logphi_all!=logphi])
+        # print( logphi_all[logphi_all!=logphi])
 
         select = (logphi_all!=logphi)
         mags_all = mags_all[select]

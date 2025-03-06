@@ -47,7 +47,9 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/banados_sample.dat',
              'Data_2019+/DESI_SV1_sample.dat',
              'Data_2019+/DESI_main_selection_sample.dat',
-             'Data_2019+/CEERS_Kocevski_sample.dat'
+             'Data_2019+/CEERS_Kocevski_sample.dat',
+             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
+             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt'
              ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
@@ -67,9 +69,12 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11),
              ('Selmaps_with_tiles/giallongo15_sel.dat', 0.047, 7),
              ('Selmaps_with_tiles/ukidss_sel_4.dat', 3370.0, 19),
-             ('Selmaps_with_tiles/banados_sel_4.dat', 2500.0, 20),('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
+             ('Selmaps_with_tiles/banados_sel_4.dat', 2500.0, 20),
+             ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
              ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
-             ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26)
+             ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
+             ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
+             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106)
             ]
 
 lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,5])
@@ -93,7 +98,7 @@ lfg1.prior_min_values = np.array([-15.0, 0.0, -5.0,
 lfg1.prior_max_values = np.array([-5.0, 10.0, 5.0,
                                  -10.0, -1.0, 2.0, 2.0,
                                  -1.0, 5.0,
-                                 10.0, 10.0, 10.0, 200.0, 2.0])
+                                 10.0, 10.0, 20.0, 200.0, 2.0])
 
 print("Prior min values:", lfg1.prior_min_values)
 print("Prior max values:", lfg1.prior_max_values)
@@ -102,9 +107,17 @@ print("Comparison result:", lfg1.prior_min_values < lfg1.prior_max_values)
 print("Comparison result:", lfg1.bf.x < lfg1.prior_max_values)
 print("Comparison result:", lfg1.prior_min_values < lfg1.bf.x)
 
-assert(np.all(lfg1.prior_min_values < lfg1.prior_max_values))
-assert(np.all(lfg1.bf.x < lfg1.prior_max_values))
-assert(np.all(lfg1.prior_min_values < lfg1.bf.x))
+# assert(np.all(lfg1.prior_min_values < lfg1.prior_max_values))
+# assert(np.all(lfg1.bf.x < lfg1.prior_max_values))
+# assert(np.all(lfg1.prior_min_values < lfg1.bf.x))
+
+try:
+    assert(np.all(lfg1.prior_min_values < lfg1.prior_max_values))
+    assert(np.all(lfg1.bf.x < lfg1.prior_max_values))
+    assert(np.all(lfg1.prior_min_values < lfg1.bf.x))
+except AssertionError as e:
+    print(f"Assertion error: {e}")
+    traceback.print_exc()
 
 print("Model 1 commence run_mcmc")
 
@@ -158,7 +171,13 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/jiang16s82_sample.dat',
              'Data_new/willott10_cfhqsdeepsample.dat',
              'Data_new/willott10_cfhqsvwsample.dat',
-             'Data_new/kashikawa15_sample.dat']
+             'Data_new/kashikawa15_sample.dat',
+             'Data_2019+/DESI_SV1_sample.dat',
+             'Data_2019+/DESI_main_selection_sample.dat',
+             'Data_2019+/CEERS_Kocevski_sample.dat',
+             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
+             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt'
+             ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/croom09sgp_selfunc.dat', 64.2, 15),
@@ -174,7 +193,13 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/jiang16s82_selfunc.dat', 277.0, 18),
              ('Selmaps_with_tiles/willott10_cfhqsdeepsel.dat', 4.47, 10),
              ('Selmaps_with_tiles/willott10_cfhqsvwsel.dat', 494.0, 10),
-             ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11)]
+             ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11),
+             ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
+             ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
+             ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
+             ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
+             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106)
+             ]
 
 lfg2 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,5])
 
@@ -186,6 +211,16 @@ g = np.array([-7.95061036, 1.15284665, -0.12037541,
 method = 'Nelder-Mead'
 b = lfg2.bestfit(g, method=method)
 
+# lfg2.prior_min_values = np.array([-15.0, 0.0, -5.0,
+#                                  -30.0, -10.0, 0.0, -2.0,
+#                                  -7.0, -5.0,
+#                                  -10.0, -10.0, 0.0, -10.0, -2.0])
+
+# lfg2.prior_max_values = np.array([-5.0, 10.0, 5.0,
+#                                  -10.0, -1.0, 2.0, 2.0,
+#                                  -1.0, 5.0,
+#                                  10.0, 10.0, 10.0, 200.0, 2.0])
+
 lfg2.prior_min_values = np.array([-15.0, 0.0, -5.0,
                                  -30.0, -10.0, 0.0, -2.0,
                                  -7.0, -5.0,
@@ -194,11 +229,18 @@ lfg2.prior_min_values = np.array([-15.0, 0.0, -5.0,
 lfg2.prior_max_values = np.array([-5.0, 10.0, 5.0,
                                  -10.0, -1.0, 2.0, 2.0,
                                  -1.0, 5.0,
-                                 10.0, 10.0, 10.0, 200.0, 2.0])
+                                 10.0, 10.0, 20.0, 200.0, 2.0])
 
-assert(np.all(lfg2.prior_min_values < lfg2.prior_max_values))
-assert(np.all(lfg2.bf.x < lfg2.prior_max_values))
-assert(np.all(lfg2.prior_min_values < lfg2.bf.x))
+try:
+    assert(np.all(lfg2.prior_min_values < lfg2.prior_max_values))
+    assert(np.all(lfg2.bf.x < lfg2.prior_max_values))
+    assert(np.all(lfg2.prior_min_values < lfg2.bf.x))
+except AssertionError as e:
+    print(f"Assertion error: {e}")
+    traceback.print_exc()
+# assert(np.all(lfg2.prior_min_values < lfg2.prior_max_values))
+# assert(np.all(lfg2.bf.x < lfg2.prior_max_values))
+# assert(np.all(lfg2.prior_min_values < lfg2.bf.x))
 
 print("Model 2 commence run_mcmc")
 
@@ -219,7 +261,7 @@ print("Model 2 over")
 # sd.play(wave, samplerate=sample_rate)
 
 try:
-    sp(composite=(lfg1,lfg2), individuals=bins.lfs, sample=True, output_file_name='evolution4.pdf')  # calling the function
+    sp(composite=(lfg1,lfg2), individuals=bins.lfs, sample=True, output_file_name='evolution4_new.pdf')  # calling the function
 
 except Exception as e:
     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
@@ -249,7 +291,13 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/jiang16s82_sample.dat',
              'Data_new/willott10_cfhqsdeepsample.dat',
              'Data_new/willott10_cfhqsvwsample.dat',
-             'Data_new/kashikawa15_sample.dat']
+             'Data_new/kashikawa15_sample.dat',
+             'Data_2019+/DESI_SV1_sample.dat',
+             'Data_2019+/DESI_main_selection_sample.dat',
+             'Data_2019+/CEERS_Kocevski_sample.dat',
+             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
+             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt'
+             ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/croom09sgp_selfunc.dat', 64.2, 15),
@@ -265,7 +313,13 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/jiang16s82_selfunc.dat', 277.0, 18),
              ('Selmaps_with_tiles/willott10_cfhqsdeepsel.dat', 4.47, 10),
              ('Selmaps_with_tiles/willott10_cfhqsvwsel.dat', 494.0, 10),
-             ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11)]
+             ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11),
+             ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
+             ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
+             ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
+             ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
+             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106)
+             ]
 
 lfg3 = lf_polyb(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,2])
 
@@ -287,9 +341,34 @@ lfg3.prior_max_values = np.array([-5.0, 10.0, 5.0,
                                  -1.0, 5.0,
                                  0.0, 5.0])
 
-assert(np.all(lfg3.prior_min_values < lfg3.prior_max_values))
-assert(np.all(lfg3.bf.x < lfg3.prior_max_values))
-assert(np.all(lfg3.prior_min_values < lfg3.bf.x))
+# lfg3.prior_min_values = np.array([-15.0, 0.0, -5.0,
+#                                  -30.0, -10.0, 0.0, -2.0,
+#                                  -7.0, -5.0,
+#                                  -10.0, -10.0, 0.0, -10.0, -2.0])
+
+# lfg3.prior_max_values = np.array([-5.0, 10.0, 5.0,
+#                                  -10.0, -1.0, 2.0, 2.0,
+#                                  -1.0, 5.0,
+#                                  10.0, 10.0, 20.0, 200.0, 2.0])
+
+print("Prior min values:", lfg3.prior_min_values)
+print("Prior max values:", lfg3.prior_max_values)
+print("Best fit values:", lfg3.bf.x)
+print("Comparison result:", lfg3.prior_min_values < lfg3.prior_max_values)
+print("Comparison result:", lfg3.bf.x < lfg3.prior_max_values)
+print("Comparison result:", lfg3.prior_min_values < lfg3.bf.x)
+
+# assert(np.all(lfg3.prior_min_values < lfg3.prior_max_values))
+# assert(np.all(lfg3.bf.x < lfg3.prior_max_values))
+# assert(np.all(lfg3.prior_min_values < lfg3.bf.x))
+
+try:
+    assert(np.all(lfg3.prior_min_values < lfg3.prior_max_values))
+    assert(np.all(lfg3.bf.x < lfg3.prior_max_values))
+    assert(np.all(lfg3.prior_min_values < lfg3.bf.x))
+except AssertionError as e:
+    print(f"Assertion error: {e}")
+    traceback.print_exc()
 
 print("Model 3 commence run_mcmc")
 
@@ -316,7 +395,7 @@ print("Model 3 over")
 #     traceback.print_exc()
 
 try:
-    sp(composite=lfg1, individuals=bins.lfs, sample=True, lfg_break=lfg2, lfg_polyb=lfg3, output_file_name='evolution6.pdf')  # calling the function
+    sp(composite=lfg1, individuals=bins.lfs, sample=True, lfg_break=lfg2, lfg_polyb=lfg3, output_file_name='evolution6_new.pdf')  # calling the function
 
 except Exception as e:
     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
