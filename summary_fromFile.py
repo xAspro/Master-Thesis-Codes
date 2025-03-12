@@ -183,6 +183,10 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     for i in range(len(zmean)):
         plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
 
+    with open('plot_phi_star.txt', 'w') as f:
+        for i in range(len(zmean)):
+            f.write(f'{zmean[i]:.2f} {c[i]:.2f}\n')
+
     zm, zl, zu, u, l, centre = getParam(individuals, 0, which='new', dtype='bad')
     left = zm-zl
     right = zu-zm
@@ -228,9 +232,6 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     ax.set_ylim(ylim_l, ylim_r)
     ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
     
-
-    # for i in range(len(zmean)):
-    #     plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
     
     if cfit:
         zc = np.linspace(0, 7, 500)
@@ -343,6 +344,10 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
 
     for i in range(len(zmean)):
         plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
+
+    with open('plot_m_star.txt', 'w') as f:
+        for i in range(len(zmean)):
+            f.write(f'{zmean[i]:.2f} {c[i]:.2f}\n')
 
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
     #                                     usecols=(0,4,5,6), unpack=True)
@@ -507,6 +512,10 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
 
     for i in range(len(zmean)):
         plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
+
+    with open('plot_alpha.txt', 'w') as f:
+        for i in range(len(zmean)):
+            f.write(f'{zmean[i]:.2f} {c[i]:.2f}\n')
 
     cfit = False
     if cfit: 
@@ -706,6 +715,10 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     for i in range(len(zmean)):
         plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
 
+    with open('plot_beta.txt', 'w') as f:
+        for i in range(len(zmean)):
+            f.write(f'{zmean[i]:.2f} {c[i]:.2f}\n')
+
     cfit = False
     if cfit:
         zc = np.linspace(0, 7, 500)
@@ -827,7 +840,7 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, l
     plot_phi_star(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
     plot_m_star(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
     plot_alpha(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
-    plot_beta(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
+    # plot_beta(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
 
     print("\n\n Saved result in " + output_file_name + "\n\n")
     # plt.savefig('evolution2.pdf',bbox_inches='tight')

@@ -164,12 +164,12 @@ end_time = time.time()
 print("Time taken: ", end_time - start_time, " seconds")
 print("Model 1 over")
 
-# try:
-#     sp(composite=lfg1, individuals=bins.lfs, sample=True)  # calling the function
+try:
+    sp(composite=lfg1, individuals=bins_lfs, sample=True)  # calling the function
 
-# except Exception as e:
-#     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
-#     traceback.print_exc()
+except Exception as e:
+    print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
+    traceback.print_exc()
 
 duration = 3  # seconds
 frequency = 440  # Hz, the frequency of the beep sound (440Hz is standard A note)

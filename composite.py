@@ -224,7 +224,7 @@ class lf:
 
         """Redshift evolution of QLF parameters."""
 
-        a, b, c, d = p 
+        a, b, c, d, *_ = p 
         return a + b*z + c*z**2 + d*z**3
 
     def getparams(self, theta):
