@@ -219,6 +219,13 @@ class lf:
         h, f0, z0, a, b = p 
         zeta = np.log10((1.0+z)/(1.0+z0))
         return h + f0/(10.0**(a*zeta) + 10.0**(b*zeta))
+    
+    def atz_beta2(self, z, p):
+
+        """Redshift evolution of QLF parameters."""
+
+        a, b, c, d = p 
+        return a + b*z + c*z**2 + d*z**3
 
     def getparams(self, theta):
         # print("In composite.py class-lf getparams")
@@ -249,13 +256,22 @@ class lf:
 
         log10phi_star = self.atz(z, params[0])
         # print("\nlog10phi_star: ", log10phi_star,"\n")
+        # print('\nlen(log10phi_star): ', len(log10phi_star),'\n')
         M_star = self.atz(z, params[1])
         # print("\nM_star: ", M_star,"\n")
+        # print('\nlen(M_star): ', len(M_star),'\n')
         alpha = self.atz(z, params[2])
         # print("\nalpha: ", alpha,"\n")
+        # print('\nlen(alpha): ', len(alpha),'\n')
+        # print('\nz: ', z,'\n')
+        # print('\nlen(z): ', len(z),'\n')
+        # print('\nparams[3]: ', params[3],'\n')
+        # print('\nlen(params[3]): ', len(params[3]),'\n')
         #beta = self.atz(z, params[3])
-        beta = self.atz_beta(z, params[3])
+        # beta = self.atz_beta(z, params[3])
+        beta = self.atz_beta2(z, params[3])
         # print("\nbeta: ", beta,"\n")
+        # print('\nlen(beta): ', len(beta),'\n')
         
         phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(mag-M_star)) +
                                      10.0**(0.4*(beta+1)*(mag-M_star)))

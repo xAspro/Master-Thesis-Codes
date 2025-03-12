@@ -12,7 +12,7 @@ from composite import lf
 from composite import lf_polyb
 from summary_fromFile import summary_plot as sp
 import drawlf
-import bins
+# import bins
 import traceback
 import sounddevice as sd
 
@@ -24,6 +24,8 @@ start_time = time.time()
 readable_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
 print("Time right now: ", readable_time)
 
+
+bins_lfs = np.load('bins_lfs.npy', allow_pickle=True)
 # Model 1 
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
@@ -77,15 +79,50 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106)
             ]
 
-lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,5])
-
-g = np.array([-7.95061036, 1.15284665, -0.12037541,
+pnum1 = [3,4,2,5]
+g1 = np.array([-7.95061036, 1.15284665, -0.12037541,
               -18.64592897, -4.52638114, 0.47207865, -0.01890026,
               -3.35945526, -0.26211017,
               -2.47899576, 0.978408, 3.76233908, 10.96715636, -0.33557835])
+pnum2 = [3,4,2,5]
+g2 = np.array([-7.95061036, 1.15284665, -0.12037541,
+              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+              -3.35945526, -0.26211017,
+              -2.47899576, 0.978408, 3.76233908, 10.96715636, -0.33557835])
+pnum3 = [3,4,2,2]
+g3 = np.array([-7.95061036, 1.15284665, -0.12037541,
+              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+              -3.35945526, -0.26211017,
+              -1.30352181, -0.15925648])
+
+pnum1 = [4,4,4,4]
+g1 = np.array([-7.95061036, 1.15284665, -0.12037541, 0,
+              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+              -3.35945526, -0.26211017, 0, 0,
+              -1.30352181, -0.15925648, 0, 0])
+pnum2 = [4,4,4,4]
+g2 = np.array([-7.95061036, 1.15284665, -0.12037541, 0,
+              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+              -3.35945526, -0.26211017, 0, 0,
+              -1.30352181, -0.15925648, 0, 0])
+pnum3 = [4,4,4,4]
+g3 = np.array([-7.95061036, 1.15284665, -0.12037541, 0,
+              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+              -3.35945526, -0.26211017, 0, 0,
+              -1.30352181, -0.15925648, 0, 0])
+
+
+lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum1)
+
+# lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[4,4,4,4])
+
+# g1 = np.array([-7.95061036, 1.15284665, -0.12037541,
+#               -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+#               -3.35945526, -0.26211017,
+#               -2.47899576, 0.978408, 3.76233908, 10.96715636, -0.33557835])
 
 method = 'Nelder-Mead'
-b = lfg1.bestfit(g, method=method)
+b = lfg1.bestfit(g1, method=method)
 print("\n****************************************************************************************\n")
 print("Best fit parameters: ", b)
 print("\n****************************************************************************************\n")
@@ -100,24 +137,24 @@ lfg1.prior_max_values = np.array([-5.0, 10.0, 5.0,
                                  -1.0, 5.0,
                                  10.0, 10.0, 20.0, 200.0, 2.0])
 
-print("Prior min values:", lfg1.prior_min_values)
-print("Prior max values:", lfg1.prior_max_values)
-print("Best fit values:", lfg1.bf.x)
-print("Comparison result:", lfg1.prior_min_values < lfg1.prior_max_values)
-print("Comparison result:", lfg1.bf.x < lfg1.prior_max_values)
-print("Comparison result:", lfg1.prior_min_values < lfg1.bf.x)
+# print("Prior min values:", lfg1.prior_min_values)
+# print("Prior max values:", lfg1.prior_max_values)
+# print("Best fit values:", lfg1.bf.x)
+# print("Comparison result:", lfg1.prior_min_values < lfg1.prior_max_values)
+# print("Comparison result:", lfg1.bf.x < lfg1.prior_max_values)
+# print("Comparison result:", lfg1.prior_min_values < lfg1.bf.x)
 
-# assert(np.all(lfg1.prior_min_values < lfg1.prior_max_values))
-# assert(np.all(lfg1.bf.x < lfg1.prior_max_values))
-# assert(np.all(lfg1.prior_min_values < lfg1.bf.x))
+# # assert(np.all(lfg1.prior_min_values < lfg1.prior_max_values))
+# # assert(np.all(lfg1.bf.x < lfg1.prior_max_values))
+# # assert(np.all(lfg1.prior_min_values < lfg1.bf.x))
 
-try:
-    assert(np.all(lfg1.prior_min_values < lfg1.prior_max_values))
-    assert(np.all(lfg1.bf.x < lfg1.prior_max_values))
-    assert(np.all(lfg1.prior_min_values < lfg1.bf.x))
-except AssertionError as e:
-    print(f"Assertion error: {e}")
-    traceback.print_exc()
+# try:
+#     assert(np.all(lfg1.prior_min_values < lfg1.prior_max_values))
+#     assert(np.all(lfg1.bf.x < lfg1.prior_max_values))
+#     assert(np.all(lfg1.prior_min_values < lfg1.bf.x))
+# except AssertionError as e:
+#     print(f"Assertion error: {e}")
+#     traceback.print_exc()
 
 print("Model 1 commence run_mcmc")
 
@@ -201,15 +238,17 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106)
              ]
 
-lfg2 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,5])
+lfg2 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum2)
 
-g = np.array([-7.95061036, 1.15284665, -0.12037541,
-              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
-              -3.35945526, -0.26211017,
-              -2.47899576, 0.978408, 3.76233908, 10.96715636, -0.33557835])
+# lfg2 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[4,4,4,4])
+
+# g2 = np.array([-7.95061036, 1.15284665, -0.12037541,
+#               -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+#               -3.35945526, -0.26211017,
+#               -2.47899576, 0.978408, 3.76233908, 10.96715636, -0.33557835])
 
 method = 'Nelder-Mead'
-b = lfg2.bestfit(g, method=method)
+b = lfg2.bestfit(g2, method=method)
 
 # lfg2.prior_min_values = np.array([-15.0, 0.0, -5.0,
 #                                  -30.0, -10.0, 0.0, -2.0,
@@ -231,16 +270,16 @@ lfg2.prior_max_values = np.array([-5.0, 10.0, 5.0,
                                  -1.0, 5.0,
                                  10.0, 10.0, 20.0, 200.0, 2.0])
 
-try:
-    assert(np.all(lfg2.prior_min_values < lfg2.prior_max_values))
-    assert(np.all(lfg2.bf.x < lfg2.prior_max_values))
-    assert(np.all(lfg2.prior_min_values < lfg2.bf.x))
-except AssertionError as e:
-    print(f"Assertion error: {e}")
-    traceback.print_exc()
-# assert(np.all(lfg2.prior_min_values < lfg2.prior_max_values))
-# assert(np.all(lfg2.bf.x < lfg2.prior_max_values))
-# assert(np.all(lfg2.prior_min_values < lfg2.bf.x))
+# try:
+#     assert(np.all(lfg2.prior_min_values < lfg2.prior_max_values))
+#     assert(np.all(lfg2.bf.x < lfg2.prior_max_values))
+#     assert(np.all(lfg2.prior_min_values < lfg2.bf.x))
+# except AssertionError as e:
+#     print(f"Assertion error: {e}")
+#     traceback.print_exc()
+# # assert(np.all(lfg2.prior_min_values < lfg2.prior_max_values))
+# # assert(np.all(lfg2.bf.x < lfg2.prior_max_values))
+# # assert(np.all(lfg2.prior_min_values < lfg2.bf.x))
 
 print("Model 2 commence run_mcmc")
 
@@ -261,7 +300,7 @@ print("Model 2 over")
 # sd.play(wave, samplerate=sample_rate)
 
 try:
-    sp(composite=(lfg1,lfg2), individuals=bins.lfs, sample=True, output_file_name='evolution4_new.pdf')  # calling the function
+    sp(composite=(lfg1,lfg2), individuals=bins_lfs, sample=True, output_file_name='evolution4_new.pdf')  # calling the function
 
 except Exception as e:
     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
@@ -321,15 +360,20 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106)
              ]
 
-lfg3 = lf_polyb(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,2])
 
-g = np.array([-7.95061036, 1.15284665, -0.12037541,
-              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
-              -3.35945526, -0.26211017,
-              -1.30352181, -0.15925648])
+
+# lfg3 = lf_polyb(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,4,2,2])
+
+# lfg3 = lf_polyb(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[4,4,4,4])
+lfg3 = lf_polyb(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum3)
+
+# g3 = np.array([-7.95061036, 1.15284665, -0.12037541,
+#               -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+#               -3.35945526, -0.26211017,
+#               -1.30352181, -0.15925648])
 
 method = 'Nelder-Mead'
-b = lfg3.bestfit(g, method=method)
+b = lfg3.bestfit(g3, method=method)
 
 lfg3.prior_min_values = np.array([-15.0, 0.0, -5.0,
                                  -30.0, -10.0, 0.0, -2.0,
@@ -351,24 +395,24 @@ lfg3.prior_max_values = np.array([-5.0, 10.0, 5.0,
 #                                  -1.0, 5.0,
 #                                  10.0, 10.0, 20.0, 200.0, 2.0])
 
-print("Prior min values:", lfg3.prior_min_values)
-print("Prior max values:", lfg3.prior_max_values)
-print("Best fit values:", lfg3.bf.x)
-print("Comparison result:", lfg3.prior_min_values < lfg3.prior_max_values)
-print("Comparison result:", lfg3.bf.x < lfg3.prior_max_values)
-print("Comparison result:", lfg3.prior_min_values < lfg3.bf.x)
+# print("Prior min values:", lfg3.prior_min_values)
+# print("Prior max values:", lfg3.prior_max_values)
+# print("Best fit values:", lfg3.bf.x)
+# print("Comparison result:", lfg3.prior_min_values < lfg3.prior_max_values)
+# print("Comparison result:", lfg3.bf.x < lfg3.prior_max_values)
+# print("Comparison result:", lfg3.prior_min_values < lfg3.bf.x)
 
-# assert(np.all(lfg3.prior_min_values < lfg3.prior_max_values))
-# assert(np.all(lfg3.bf.x < lfg3.prior_max_values))
-# assert(np.all(lfg3.prior_min_values < lfg3.bf.x))
+# # assert(np.all(lfg3.prior_min_values < lfg3.prior_max_values))
+# # assert(np.all(lfg3.bf.x < lfg3.prior_max_values))
+# # assert(np.all(lfg3.prior_min_values < lfg3.bf.x))
 
-try:
-    assert(np.all(lfg3.prior_min_values < lfg3.prior_max_values))
-    assert(np.all(lfg3.bf.x < lfg3.prior_max_values))
-    assert(np.all(lfg3.prior_min_values < lfg3.bf.x))
-except AssertionError as e:
-    print(f"Assertion error: {e}")
-    traceback.print_exc()
+# try:
+#     assert(np.all(lfg3.prior_min_values < lfg3.prior_max_values))
+#     assert(np.all(lfg3.bf.x < lfg3.prior_max_values))
+#     assert(np.all(lfg3.prior_min_values < lfg3.bf.x))
+# except AssertionError as e:
+#     print(f"Assertion error: {e}")
+#     traceback.print_exc()
 
 print("Model 3 commence run_mcmc")
 
@@ -400,7 +444,7 @@ try:
     # Create the filename using the formatted time string
     filename = 'evolution6_new_' + formatted_time + '.pdf'
 
-    sp(composite=lfg1, individuals=bins.lfs, sample=True, lfg_break=lfg2, lfg_polyb=lfg3, output_file_name=filename)  # calling the function
+    sp(composite=lfg1, individuals=bins_lfs, sample=True, lfg_break=lfg2, lfg_polyb=lfg3, output_file_name=filename)  # calling the function
 
 except Exception as e:
     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function

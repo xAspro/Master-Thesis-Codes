@@ -8,8 +8,7 @@ print("In summary_fromFile.py")
 
 import numpy as np
 import matplotlib as mpl
-# mpl.use('Agg') 
-mpl.use('MacOSX')
+mpl.use('Agg') 
 mpl.rcParams['text.usetex'] = True 
 mpl.rcParams['font.family'] = 'serif'
 mpl.rcParams['font.serif'] = 'cm'
@@ -274,12 +273,12 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     ax.yaxis.labelpad = 8
     ax.set_xticklabels('')
 
-    handles = [plt.Line2D([0], [0], marker='', color='w', markerfacecolor='blue', markersize=10, label=f'{i}: {round(zmean[i], 3)}') for i in range(len(zmean))]
-    # handles = [plt.Text(0, 0, f'{i}: {round(zmean[i], 3)}') for i in range(len(zmean))]
+    # handles = [plt.Line2D([0], [0], marker='', color='w', markerfacecolor='blue', markersize=10, label=f'{i}: {round(zmean[i], 3)}') for i in range(len(zmean))]
+    # # handles = [plt.Text(0, 0, f'{i}: {round(zmean[i], 3)}') for i in range(len(zmean))]
 
-    plt.legend(handles=handles, title='Redshift bins', bbox_to_anchor=(-1.3, 0), loc='center left', fontsize=6, title_fontsize=6)
+    # ax.legend(handles=handles, title='Redshift bins', bbox_to_anchor=(0.05, 0.05), loc='upper left', fontsize=6, title_fontsize=6)
 
-    plt.tight_layout()
+    # fig.tight_layout()
 
     return
 
@@ -830,10 +829,9 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, l
     plot_alpha(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
     plot_beta(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
 
-    print("\n\n Saved result in evolution2.pdf\n\n")
+    print("\n\n Saved result in " + output_file_name + "\n\n")
     # plt.savefig('evolution2.pdf',bbox_inches='tight')
     plt.savefig(output_file_name,bbox_inches='tight')
-    plt.show()
 
     mpl.rcParams['font.size'] = '22'
     

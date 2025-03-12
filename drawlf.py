@@ -142,9 +142,9 @@ def totBinVol(lf, m, mbins, selmaps):
     selmaps, compute the volume for an object with magnitude m.
 
     """
-    print("In drawlf.py totBinVol")
-    print("m= ", m)
-    print("mbins= ", mbins)
+    # print("In drawlf.py totBinVol")
+    # print("m= ", m)
+    # print("mbins= ", mbins)
     idx = np.searchsorted(mbins, m)
     mlow = mbins[idx-1]
     mhigh = mbins[idx]

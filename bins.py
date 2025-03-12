@@ -185,6 +185,13 @@ print()
 elapsed_time = end_time - start_time
 print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
 
+print("\n\n\nlfs:", lfs)
+
+np.save('bins_lfs.npy', lfs)
+
+# with open('bins_lfs.npy', 'w') as f:
+#     f.write(lfs)
+
 # with open('bins_lfs.dat', 'x') as f:
 #     f.write(','.join(map(str, lfs))) 
 
