@@ -8,7 +8,7 @@ print("In summary_fromFile.py")
 
 import numpy as np
 import matplotlib as mpl
-mpl.use('Agg') 
+# mpl.use('Agg') 
 mpl.use('MacOSX')
 mpl.rcParams['text.usetex'] = True 
 mpl.rcParams['font.family'] = 'serif'
@@ -274,8 +274,10 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     ax.yaxis.labelpad = 8
     ax.set_xticklabels('')
 
-    handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=10, label=f'{i+1}: {zmean[i]}') for i in range(len(zmean))]
-    plt.legend(handles=handles, title='Annotations', bbox_to_anchor=(1.05, 1), loc='upper left')
+    handles = [plt.Line2D([0], [0], marker='', color='w', markerfacecolor='blue', markersize=10, label=f'{i}: {round(zmean[i], 3)}') for i in range(len(zmean))]
+    # handles = [plt.Text(0, 0, f'{i}: {round(zmean[i], 3)}') for i in range(len(zmean))]
+
+    plt.legend(handles=handles, title='Redshift bins', bbox_to_anchor=(-1.3, 0), loc='center left', fontsize=6, title_fontsize=6)
 
     plt.tight_layout()
 

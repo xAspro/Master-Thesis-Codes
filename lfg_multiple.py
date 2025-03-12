@@ -395,7 +395,12 @@ print("Model 3 over")
 #     traceback.print_exc()
 
 try:
-    sp(composite=lfg1, individuals=bins.lfs, sample=True, lfg_break=lfg2, lfg_polyb=lfg3, output_file_name='evolution6_new.pdf')  # calling the function
+    # Format the readable_time string to remove spaces and colons
+    formatted_time = readable_time.replace(' ', '_').replace(':', '-')
+    # Create the filename using the formatted time string
+    filename = 'evolution6_new_' + formatted_time + '.pdf'
+
+    sp(composite=lfg1, individuals=bins.lfs, sample=True, lfg_break=lfg2, lfg_polyb=lfg3, output_file_name=filename)  # calling the function
 
 except Exception as e:
     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
