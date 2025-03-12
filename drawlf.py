@@ -567,6 +567,9 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         26: '#5254a3',  # dark blue
         105: '#000000', # black
         106: '#444444', # dark grey
+        107: '#888888', # light grey
+        108: '#bbbbbb', # light grey
+        109: '#dddddd', # light grey
     }
     
     # By now best fit LFs have been plotted. Now plot the data.

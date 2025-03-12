@@ -9,6 +9,7 @@ print("In summary_fromFile.py")
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
+mpl.use('MacOSX')
 mpl.rcParams['text.usetex'] = True 
 mpl.rcParams['font.family'] = 'serif'
 mpl.rcParams['font.serif'] = 'cm'
@@ -180,16 +181,57 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
                 fmt='None', zorder=6)
     ax.scatter(zmean, c, color=colors[0], edgecolor='None', zorder=6, s=30)
 
-    zmean, zl, zu, u, l, c = getParam(individuals, 0, which='new', dtype='bad')
-    left = zmean-zl
-    right = zu-zmean
-    uperr = abs(u-c)
-    downerr = abs(c-l)
-    ax.errorbar(zmean, c, ecolor='grey', capsize=0,
+    for i in range(len(zmean)):
+        plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
+
+    zm, zl, zu, u, l, centre = getParam(individuals, 0, which='new', dtype='bad')
+    left = zm-zl
+    right = zu-zm
+    uperr = abs(u-centre)
+    downerr = abs(centre-l)
+    ax.errorbar(zm, centre, ecolor='grey', capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color='#ffffff', edgecolor='grey', zorder=6, s=27)
+    ax.scatter(zm, centre, color='#ffffff', edgecolor='grey', zorder=6, s=27)
+
+
+    # print('zmean:', zmean)
+    # print('zm:', zm)
+    # print('len(zmean):', len(zmean))
+    # print('len(zm):', len(zm))
+    # print('zm[:10]:', zm[:10])
+    # print('zmean[:10]:', zmean[:10])
+    print('c:', c)
+    print('centre:', centre)
+    # print('min(zmean[:10]):', np.min(zmean[:10]))
+    # print('max(zmean[:10]):', np.max(zmean[:10]))
+    # print('min(zm):', np.min(zm))
+    # print('max(zm):', np.max(zm))
+    print('min(c):', np.min(c))
+    print('max(c):', np.max(c))
+    print('min(centre):', np.min(centre))
+    print('max(centre):', np.max(centre))
+    print()
+    print()
+
+
+    # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
+    # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
+    xlim_l = 0
+    xlim_r = 7
+    ax.set_xlim(xlim_l, xlim_r)
+    ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
+
+    ylim_l = min(np.min(c), np.min(centre))-1
+    ylim_r = max(np.max(c), np.max(centre))+1
+    ylim_r = min(4, ylim_r)
+    ax.set_ylim(ylim_l, ylim_r)
+    ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
+    
+
+    # for i in range(len(zmean)):
+    #     plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
     
     if cfit:
         zc = np.linspace(0, 7, 500)
@@ -232,6 +274,11 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     ax.yaxis.labelpad = 8
     ax.set_xticklabels('')
 
+    handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=10, label=f'{i+1}: {zmean[i]}') for i in range(len(zmean))]
+    plt.legend(handles=handles, title='Annotations', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+    plt.tight_layout()
+
     return
 
 def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lfg_break=None, lfg_polyb=None):
@@ -247,9 +294,9 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     ax.yaxis.tick_right()
     ax.yaxis.set_ticks_position('both')
     ax.yaxis.set_label_position('right')
-    ax.set_xlim(zmin, zmax)
-    ax.set_ylim(-32, -20)
-    ax.set_yticks(np.arange(-32, -19, 2))
+    # ax.set_xlim(zmin, zmax)
+    # ax.set_ylim(-32, -20)
+    # ax.set_yticks(np.arange(-32, -19, 2))
 
     if compOpt is not None:
         M = compOpt.atz(z, compOpt.getparams(compOpt.bf.x)[1])
@@ -293,6 +340,9 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
                 fmt='None', zorder=6)
     ax.scatter(zmean, c, color=colors[1], edgecolor='None', zorder=6, s=30, label='included data')
 
+    for i in range(len(zmean)):
+        plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
+
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
     #                                     usecols=(0,4,5,6), unpack=True)
     # ax.errorbar(zm, cm, ecolor='grey', capsize=0,
@@ -315,17 +365,52 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
         print( popt)
         plt.plot(zc, func(zc+1, *popt), lw=1, c='k', dashes=[7,2])
 
-    zmean, zl, zu, u, l, c = getParam(individuals, 1, which='new', dtype='bad')
-    left = zmean-zl
-    right = zu-zmean
-    uperr = abs(u-c)
-    downerr = abs(c-l)
-    ax.errorbar(zmean, c, ecolor='grey', capsize=0,
+    zm, zl, zu, u, l, centre = getParam(individuals, 1, which='new', dtype='bad')
+    left = zm-zl
+    right = zu-zm
+    uperr = abs(u-centre)
+    downerr = abs(centre-l)
+    ax.errorbar(zm, centre, ecolor='grey', capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color='#ffffff', edgecolor='grey', zorder=6, s=27, label='excluded data')
+    ax.scatter(zm, centre, color='#ffffff', edgecolor='grey', zorder=6, s=27, label='excluded data')
         
+
+    # print('zmean:', zmean)
+    # print('zm:', zm)
+    # print('len(zmean):', len(zmean))
+    # print('len(zm):', len(zm))
+    # print('zm[:10]:', zm[:10])
+    # print('zmean[:10]:', zmean[:10])
+    print('c:', c)
+    print('centre:', centre)
+    # print('min(zmean[:10]):', np.min(zmean[:10]))
+    # print('max(zmean[:10]):', np.max(zmean[:10]))
+    # print('min(zm):', np.min(zm))
+    # print('max(zm):', np.max(zm))
+    print('min(c):', np.min(c))
+    print('max(c):', np.max(c))
+    print('min(centre):', np.min(centre))
+    print('max(centre):', np.max(centre))
+    print()
+    print()
+
+
+    # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
+    # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
+    xlim_l = 0
+    xlim_r = 7
+    ax.set_xlim(xlim_l, xlim_r)
+    ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
+
+    ylim_l = min(np.min(c), np.min(centre))-1
+    ylim_r = max(np.max(c), np.max(centre))+1
+    ylim_r = min(4, ylim_r)
+    ax.set_ylim(ylim_l, ylim_r)
+    ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
+    
+    
     curvefit = False
     if curvefit:
         zc = np.linspace(0, 7, 500)
@@ -347,7 +432,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
         print( popt)
         plt.plot(zc, func(zc, *popt), lw=1, c='r', dashes=[7,2])
         
-    ax.set_xticks((0,1,2,3,4,5,6,7))
+    # ax.set_xticks((0,1,2,3,4,5,6,7))
     ax.set_ylabel(r'$M_*$')
     ax.yaxis.labelpad = 12
     ax.set_xticklabels('')
@@ -419,6 +504,9 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
                 fmt='None', zorder=6)
     ax.scatter(zmean, c, color=colors[2], edgecolor='None', zorder=6, s=30)
 
+    for i in range(len(zmean)):
+        plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
+
     cfit = False
     if cfit: 
         zc = np.linspace(0, 7, 500)
@@ -447,17 +535,51 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
         print( popt)
         plt.plot(zc, func(zc, *popt), lw=1, c='r', dashes=[7,2])
 
-    zmean, zl, zu, u, l, c = getParam(individuals, 2, which='new', dtype='bad')
-    left = zmean-zl
-    right = zu-zmean
-    uperr = abs(u-c)
-    downerr = abs(c-l)
-    ax.errorbar(zmean, c, ecolor='grey', capsize=0,
+    zm, zl, zu, u, l, centre = getParam(individuals, 2, which='new', dtype='bad')
+    left = zm-zl
+    right = zu-zm
+    uperr = abs(u-centre)
+    downerr = abs(centre-l)
+    ax.errorbar(zm, centre, ecolor='grey', capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color='#ffffff', edgecolor='grey', zorder=6, s=27)
+    ax.scatter(zm, centre, color='#ffffff', edgecolor='grey', zorder=6, s=27)
 
+
+    # print('zmean:', zmean)
+    # print('zm:', zm)
+    # print('len(zmean):', len(zmean))
+    # print('len(zm):', len(zm))
+    # print('zm[:10]:', zm[:10])
+    # print('zmean[:10]:', zmean[:10])
+    print('c:', c)
+    print('centre:', centre)
+    # print('min(zmean[:10]):', np.min(zmean[:10]))
+    # print('max(zmean[:10]):', np.max(zmean[:10]))
+    # print('min(zm):', np.min(zm))
+    # print('max(zm):', np.max(zm))
+    print('min(c):', np.min(c))
+    print('max(c):', np.max(c))
+    print('min(centre):', np.min(centre))
+    print('max(centre):', np.max(centre))
+    print()
+    print()
+
+
+    # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
+    # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
+    xlim_l = 0
+    xlim_r = 7
+    ax.set_xlim(xlim_l, xlim_r)
+    ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
+
+    ylim_l = min(np.min(c), np.min(centre))-1
+    ylim_r = max(np.max(c), np.max(centre))+1
+    ylim_r = min(4, ylim_r)
+    ax.set_ylim(ylim_l, ylim_r)
+    ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
+    
         
 
     handles, labels = [], []
@@ -492,7 +614,7 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
                labelspacing=.1, handletextpad=0.3, borderpad=0.1,
                scatterpoints=1)
 
-    ax.set_xticks((0,1,2,3,4,5,6,7))
+    # ax.set_xticks((0,1,2,3,4,5,6,7))
     ax.set_ylabel(r'$\alpha$ (bright-end slope)')
     ax.set_xlabel('$z$')
 
@@ -511,9 +633,11 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     ax.yaxis.tick_right()
     ax.yaxis.set_ticks_position('both')
     ax.yaxis.set_label_position('right')
-    ax.set_xlim(zmin, zmax)
-    ax.set_ylim(-3, 0)
-    ax.set_yticks(np.arange(-3, 0.2, 0.5))
+    # ax.set_xlim(zmin, zmax)
+    # ax.set_ylim(-3, 0)
+    # ax.set_ylim(min(-3, np.min(individuals[0].beta[1]), np.min(individuals[0].beta[2])),
+                # max(0, np.max(individuals[0].beta[1]), np.max(individuals[0].beta[2])))
+    # ax.set_yticks(np.arange(-3, 0.2, 0.5))
     
     if compOpt is not None:
         beta = compOpt.atz_beta(z, compOpt.getparams(compOpt.bf.x)[3])
@@ -578,6 +702,9 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
                 fmt='None', zorder=6)
     ax.scatter(zmean, c, color=colors[3], edgecolor='None', zorder=6, s=30)
 
+    for i in range(len(zmean)):
+        plt.annotate(str(i), (zmean[i], c[i]), fontsize=8, color='k')
+
     cfit = False
     if cfit:
         zc = np.linspace(0, 7, 500)
@@ -615,16 +742,50 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
         print( popt)
         plt.plot(zc, func(zc, *popt), lw=1, c='k', dashes=[7,2])
 
-    zmean, zl, zu, u, l, c = getParam(individuals, 3, which='new', dtype='bad')
-    left = zmean-zl
-    right = zu-zmean
-    uperr = abs(u-c)
-    downerr = abs(c-l)
-    ax.errorbar(zmean, c, ecolor='grey', capsize=0,
+    zm, zl, zu, u, l, centre = getParam(individuals, 3, which='new', dtype='bad')
+    left = zm-zl
+    right = zu-zm
+    uperr = abs(u-centre)
+    downerr = abs(centre-l)
+    ax.errorbar(zm, centre, ecolor='grey', capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color='#ffffff', edgecolor='grey', zorder=6, s=27)
+    ax.scatter(zm, centre, color='#ffffff', edgecolor='grey', zorder=6, s=27)
+
+    # print('zmean:', zmean)
+    # print('zm:', zm)
+    # print('len(zmean):', len(zmean))
+    # print('len(zm):', len(zm))
+    # print('zm[:10]:', zm[:10])
+    # print('zmean[:10]:', zmean[:10])
+    print('c:', c)
+    print('centre:', centre)
+    # print('min(zmean[:10]):', np.min(zmean[:10]))
+    # print('max(zmean[:10]):', np.max(zmean[:10]))
+    # print('min(zm):', np.min(zm))
+    # print('max(zm):', np.max(zm))
+    print('min(c):', np.min(c))
+    print('max(c):', np.max(c))
+    print('min(centre):', np.min(centre))
+    print('max(centre):', np.max(centre))
+    print()
+    print()
+
+
+    # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
+    # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
+    xlim_l = 0
+    xlim_r = 7
+    ax.set_xlim(xlim_l, xlim_r)
+    ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
+
+    ylim_l = min(np.min(c), np.min(centre))-1
+    ylim_r = max(np.max(c), np.max(centre))+1
+    ylim_r = min(4, ylim_r)
+    ax.set_ylim(ylim_l, ylim_r)
+    ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
+    
         
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
     #                                     usecols=(0,7,8,9), unpack=True)
@@ -670,6 +831,7 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, l
     print("\n\n Saved result in evolution2.pdf\n\n")
     # plt.savefig('evolution2.pdf',bbox_inches='tight')
     plt.savefig(output_file_name,bbox_inches='tight')
+    plt.show()
 
     mpl.rcParams['font.size'] = '22'
     

@@ -220,5 +220,7 @@ l = r'CEERS Kocevski et al. (2023)'
 s = sample(f, color= u'#ffba08', label=l)
 data.append(s)
 
+
+
 plot_data(data, 'qsos4.pdf')
 
