@@ -224,8 +224,8 @@ class lf:
 
         """Redshift evolution of QLF parameters."""
 
-        a, b, c, d, *_ = p 
-        return a + b*z + c*z**2 + d*z**3
+        a, b, c, d, e, *_ = p 
+        return a + b*z + c*z**2 + d*z**3 + e*z**4
 
     def getparams(self, theta):
         # print("In composite.py class-lf getparams")
@@ -267,8 +267,8 @@ class lf:
         # print('\nlen(z): ', len(z),'\n')
         # print('\nparams[3]: ', params[3],'\n')
         # print('\nlen(params[3]): ', len(params[3]),'\n')
-        #beta = self.atz(z, params[3])
-        # beta = self.atz_beta(z, params[3])
+        beta = self.atz(z, params[3])
+        beta = self.atz_beta(z, params[3])
         beta = self.atz_beta2(z, params[3])
         # print("\nbeta: ", beta,"\n")
         # print('\nlen(beta): ', len(beta),'\n')

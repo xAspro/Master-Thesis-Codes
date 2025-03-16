@@ -403,6 +403,8 @@ def plot_giallongo_z4p25(lf, ax, mags):
     return 
 
 def savedata(data):
+    print("\n\nIn drawlf.py savedata\n")
+    print("data= ", data)
     zlims = data[0]
     if zlims == (0.1, 0.4):
     # if zlims == (5.5, 6.5):
@@ -449,8 +451,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
     showMockSample = False
 
     if show_individual_fit: 
-        mag_plot = np.linspace(-32.0, -16.0, num=200) 
-        indf = plot_posterior_sample_lfs(lf, ax, (-32.0, -16.0), lw=1,
+        mag_plot = np.linspace(-34.0, -12.0, num=200) 
+        indf = plot_posterior_sample_lfs(lf, ax, (-34.0, -12.0), lw=1,
                                        c='#ffbf00', alpha=0.1, zorder=2) 
         # plot_bestfit_lf(lf, ax, mag_plot, lw=2,
         #                      c='#ffbf00', zorder=3, label='This work')
@@ -471,7 +473,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
     if composite is not None:
 
         nmags = 200 
-        mags = np.linspace(-32.0, -16.0, num=nmags)
+        mags = np.linspace(-34.0, -12.0, num=nmags)
         bf = np.median(composite.samples, axis=0)
         nsample = 1000
         rsample = composite.samples[np.random.randint(len(composite.samples), size=nsample)]
@@ -490,7 +492,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
     if c2 is not None: 
         nmags = 200 
-        mags = np.linspace(-32.0, -16.0, num=nmags)
+        mags = np.linspace(-34.0, -12.0, num=nmags)
         bf = np.median(c2.samples, axis=0)
         nsample = 1000
         rsample = c2.samples[np.random.randint(len(c2.samples), size=nsample)]
@@ -509,7 +511,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
     if c3 is not None: 
         nmags = 200 
-        mags = np.linspace(-32.0, -16.0, num=nmags)
+        mags = np.linspace(-34.0, -12.0, num=nmags)
         bf = np.median(c3.samples, axis=0)
         nsample = 1000
         rsample = c3.samples[np.random.randint(len(c3.samples), size=nsample)]
@@ -570,6 +572,14 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         107: '#888888', # light grey
         108: '#bbbbbb', # light grey
         109: '#dddddd', # light grey
+        150: '#ff0000', # red
+        151: '#00ff00', # green
+        152: '#0000ff', # blue
+        153: '#ffff00', # yellow
+        154: '#ff00ff', # pink
+        155: '#00ffff', # cyan
+        156: '#000000', # black
+        157: '#ffffff', # white
     }
     
     # By now best fit LFs have been plotted. Now plot the data.
@@ -696,9 +706,9 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     render(ax, lf, composite=composite, showMockSample=showMockSample,
            show_individual_fit=show_individual_fit)
 
-    ax.set_xlim(-17.0, -31.0)
-    ax.set_ylim(-12.0, -4.0)
-    ax.set_xticks(np.arange(-31,-16, 2))
+    ax.set_xlim(-12.0, -34.0)
+    ax.set_ylim(-16.0, 0.0)
+    ax.set_xticks(np.arange(-34,-11, 2))
 
     ax.set_xlabel(r'$M_{1450}$')
     ax.set_ylabel(r'$\log_{10}\left(\phi/\mathrm{cMpc}^{-3}\,\mathrm{mag}^{-1}\right)$')

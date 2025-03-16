@@ -46,9 +46,15 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
             'Data_2019+/DESI_SV1_sample.dat',
             'Data_2019+/DESI_main_selection_sample.dat',
             'Data_2019+/CEERS_Kocevski_sample.dat',
+            'Data_2019+/LRD_Data_CEERS_sample.txt',
+            'Data_2019+/LRD_Data_JADES_sample.txt',
+            'Data_2019+/LRD_Data_NGDEEP_sample.txt',
+            'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
+            'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
+            'Data_2019+/LRD_Data_UNCOVER_sample.txt',
             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
-            '../QLF - Database Details/SHELLQs_sample.txt'
+            '../QLF - Database Details/SHELLQs_sample.txt',
             ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards et al. 2006'),
@@ -71,6 +77,12 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards e
             ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25, r'DESI SV1'),
             ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25, r'DESI Main Selection'),
             ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26, r'CEERS Kocevski'),
+            ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151, r'CEERS Kocevski'),
+            ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152, r'JADES'),
+            ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153, r'NGDEEP'),
+            ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154, r'PRIMER-COS'),
+            ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155, r'PRIMER-UDS'),
+            ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156, r'UNCOVER'),
             ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105, r'Milliquas DR16 gG'),
             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106, r'Milliquas DR16Q gG'),
             ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107, r'SHELLQs Matsuoka 2022')
@@ -83,9 +95,9 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
        (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),
        (2.4, 2.5), (2.5, 2.6), (2.6, 2.7), (2.7, 2.8), (2.8, 2.9),
        (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
-       (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5)]
-    #    (6.5, 7.5), (7.5, 8.5), (8.5, 9.5), (9.5, 10.5), (10.5, 11.5),
-    #    (11.5, 13.5)]
+       (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5),
+       (6.5, 7.5), (7.5, 8.5), (8.5, 9.5), (9.5, 10.5), (10.5, 12.5)
+       ]
 
 # zls = [(4.1, 4.7), (4.7, 5.5), (5.5, 6.5)]
 
