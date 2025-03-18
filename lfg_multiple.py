@@ -26,7 +26,124 @@ print("Time right now: ", readable_time)
 
 
 bins_lfs = np.load('bins_lfs.npy', allow_pickle=True)
-# Model 1 
+
+
+###############################################################################################
+###############################################################################################
+###############################################################################################
+
+pnum1 = [3,4,2,5]
+g1 = np.array([-7.95061036, 1.15284665, -0.12037541,
+              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+              -3.35945526, -0.26211017,
+              -2.47899576, 0.978408, 3.76233908, 10.96715636, -0.33557835])
+lfg1_prior_min_values = np.array([-15.0, 0.0, -5.0,
+                                 -30.0, -10.0, 0.0, -2.0,
+                                 -7.0, -5.0,
+                                 -10.0, -10.0, 0.0, -10.0, -2.0])
+
+lfg1_prior_max_values = np.array([-5.0, 10.0, 5.0,
+                                 -10.0, -1.0, 2.0, 2.0,
+                                 -1.0, 5.0,
+                                 10.0, 10.0, 20.0, 200.0, 2.0])
+
+###############################################################################################
+
+pnum2 = [3,4,2,5]
+g2 = np.array([-7.95061036, 1.15284665, -0.12037541,
+              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+              -3.35945526, -0.26211017,
+              -2.47899576, 0.978408, 3.76233908, 10.96715636, -0.33557835])
+lfg2_prior_min_values = np.array([-15.0, 0.0, -5.0,
+                                 -30.0, -10.0, 0.0, -2.0,
+                                 -7.0, -5.0,
+                                 -10.0, -10.0, 0.0, -10.0, -2.0])
+
+lfg2_prior_max_values = np.array([-5.0, 10.0, 5.0,
+                                 -10.0, -1.0, 2.0, 2.0,
+                                 -1.0, 5.0,
+                                 10.0, 10.0, 20.0, 200.0, 2.0])
+
+###############################################################################################
+
+pnum3 = [3,4,2,2]
+g3 = np.array([-7.95061036, 1.15284665, -0.12037541,
+              -18.64592897, -4.52638114, 0.47207865, -0.01890026,
+              -3.35945526, -0.26211017,
+              -1.30352181, -0.15925648])
+lfg3_prior_min_values = np.array([-15.0, 0.0, -5.0,
+                                 -30.0, -10.0, 0.0, -2.0,
+                                 -7.0, -5.0,
+                                 -5.0, -5.0])
+
+lfg3_prior_max_values = np.array([-5.0, 10.0, 5.0,
+                                 -10.0, -1.0, 2.0, 2.0,
+                                 -1.0, 5.0,
+                                 0.0, 5.0])
+
+###############################################################################################
+###############################################################################################
+###############################################################################################
+
+###############################################################################################
+###############################################################################################
+###############################################################################################
+
+# pnum1 = [5,5,5,5]
+# g1 = np.array([-7.95061036, 1.15284665, -0.12037541, 0, 0,
+#               -18.64592897, -4.52638114, 0.47207865, -0.01890026, 0,
+#               -3.35945526, -0.26211017, 0, 0, 0,
+#               -1.30352181, -0.15925648, 0, 0, 0])
+# lfg1_prior_min_values = np.array([-25.0, -25.0, -25.0, -25.0, -25.0,
+#                                  -50.0, -50.0, -50.0, -50.0, -50.0,
+#                                  -15.0, -15.0, -15.0, -15.0, -15.0,
+#                                  -10000.0, -10000.0, -10000.0, -10000.0, -10000.0,])
+
+# lfg1_prior_max_values = np.array([25.0, 25.0, 25.0, 25.0, 25.0,
+#                                  50.0, 5.0, 50.0, 50.0, 50.0,
+#                                  15.0, 15.0, 15.0, 15.0, 15.0,
+#                                  10000.0, 10000.0, 10000.0, 10000.0, 10000.0,])
+
+# ###############################################################################################
+
+# pnum2 = [5,5,5,5]
+# g2 = np.array([-7.95061036, 1.15284665, -0.12037541, 0, 0,
+#               -18.64592897, -4.52638114, 0.47207865, -0.01890026, 0,
+#               -3.35945526, -0.26211017, 0, 0, 0,
+#               -1.30352181, -0.15925648, 0, 0, 0])
+# lfg2_prior_min_values = np.array([-25.0, -25.0, -25.0, -25.0, -25.0,
+#                                  -50.0, -50.0, -50.0, -50.0, -50.0,
+#                                  -15.0, -15.0, -15.0, -15.0, -15.0,
+#                                  -10000.0, -10000.0, -10000.0, -10000.0, -10000.0,])
+
+# lfg2_prior_max_values = np.array([25.0, 25.0, 25.0, 25.0, 25.0,
+#                                  50.0, 5.0, 50.0, 50.0, 50.0,
+#                                  15.0, 15.0, 15.0, 15.0, 15.0,
+#                                  10000.0, 10000.0, 10000.0, 10000.0, 10000.0,])
+
+# ###############################################################################################
+
+# pnum3 = [5,5,5,5]
+# g3 = np.array([-7.95061036, 1.15284665, -0.12037541, 0, 0,
+#               -18.64592897, -4.52638114, 0.47207865, -0.01890026, 0,
+#               -3.35945526, -0.26211017, 0, 0, 0,
+#               -1.30352181, -0.15925648, 0, 0, 0])
+# lfg3_prior_min_values = np.array([-15.0, 0.0, -5.0,
+#                                  -30.0, -10.0, 0.0, -2.0,
+#                                  -7.0, -5.0,
+#                                  -5.0, -5.0])
+
+# lfg3_prior_max_values = np.array([-5.0, 10.0, 5.0,
+#                                  -10.0, -1.0, 2.0, 2.0,
+#                                  -1.0, 5.0,
+#                                  0.0, 5.0])
+
+###############################################################################################
+###############################################################################################
+###############################################################################################
+
+
+# Model 1
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/croom09sgp_sample.dat',
@@ -50,8 +167,15 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_2019+/DESI_SV1_sample.dat',
              'Data_2019+/DESI_main_selection_sample.dat',
              'Data_2019+/CEERS_Kocevski_sample.dat',
+             'Data_2019+/LRD_Data_CEERS_sample.txt',
+             'Data_2019+/LRD_Data_JADES_sample.txt',
+             'Data_2019+/LRD_Data_NGDEEP_sample.txt',
+             'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
+             'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
+             'Data_2019+/LRD_Data_UNCOVER_sample.txt',
              '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt'
+             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
+             '../QLF - Database Details/SHELLQs_sample.txt',
              ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
@@ -75,41 +199,18 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
              ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
              ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
+             ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151),
+             ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152),
+             ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153),
+             ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154),
+             ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155),
+             ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
              ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
-             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106)
+             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
+             ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
             ]
 
-# pnum1 = [3,4,2,5]
-# g1 = np.array([-7.95061036, 1.15284665, -0.12037541,
-#               -18.64592897, -4.52638114, 0.47207865, -0.01890026,
-#               -3.35945526, -0.26211017,
-#               -2.47899576, 0.978408, 3.76233908, 10.96715636, -0.33557835])
-# pnum2 = [3,4,2,5]
-# g2 = np.array([-7.95061036, 1.15284665, -0.12037541,
-#               -18.64592897, -4.52638114, 0.47207865, -0.01890026,
-#               -3.35945526, -0.26211017,
-#               -2.47899576, 0.978408, 3.76233908, 10.96715636, -0.33557835])
-# pnum3 = [3,4,2,2]
-# g3 = np.array([-7.95061036, 1.15284665, -0.12037541,
-#               -18.64592897, -4.52638114, 0.47207865, -0.01890026,
-#               -3.35945526, -0.26211017,
-#               -1.30352181, -0.15925648])
 
-pnum1 = [5,5,5,5]
-g1 = np.array([-7.95061036, 1.15284665, -0.12037541, 0, 0,
-              -18.64592897, -4.52638114, 0.47207865, -0.01890026, 0,
-              -3.35945526, -0.26211017, 0, 0, 0,
-              -1.30352181, -0.15925648, 0, 0, 0])
-pnum2 = [5,5,5,5]
-g2 = np.array([-7.95061036, 1.15284665, -0.12037541, 0, 0,
-              -18.64592897, -4.52638114, 0.47207865, -0.01890026, 0,
-              -3.35945526, -0.26211017, 0, 0, 0,
-              -1.30352181, -0.15925648, 0, 0, 0])
-pnum3 = [5,5,5,5]
-g3 = np.array([-7.95061036, 1.15284665, -0.12037541, 0, 0,
-              -18.64592897, -4.52638114, 0.47207865, -0.01890026, 0,
-              -3.35945526, -0.26211017, 0, 0, 0,
-              -1.30352181, -0.15925648, 0, 0, 0])
 
 
 lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum1)
@@ -127,26 +228,11 @@ print("\n***********************************************************************
 print("Best fit parameters: ", b)
 print("\n****************************************************************************************\n")
 
-# lfg1.prior_min_values = np.array([-15.0, 0.0, -5.0,
-#                                  -30.0, -10.0, 0.0, -2.0,
-#                                  -7.0, -5.0,
-#                                  -10.0, -10.0, 0.0, -10.0, -2.0])
 
-# lfg1.prior_max_values = np.array([-5.0, 10.0, 5.0,
-#                                  -10.0, -1.0, 2.0, 2.0,
-#                                  -1.0, 5.0,
-#                                  10.0, 10.0, 20.0, 200.0, 2.0])
 
-lfg1.prior_min_values = np.array([-25.0, -25.0, -25.0, -25.0, -25.0,
-                                 -50.0, -50.0, -50.0, -50.0, -50.0,
-                                 -15.0, -15.0, -15.0, -15.0, -15.0,
-                                 -10000.0, -10000.0, -10000.0, -10000.0, -10000.0,])
+lfg1.prior_min_values = lfg1_prior_min_values
 
-lfg1.prior_max_values = np.array([25.0, 25.0, 25.0, 25.0, 25.0,
-                                 50.0, 5.0, 50.0, 50.0, 50.0,
-                                 15.0, 15.0, 15.0, 15.0, 15.0,
-                                 10000.0, 10000.0, 10000.0, 10000.0, 10000.0,])
-
+lfg1.prior_max_values = lfg1_prior_max_values
 
 # print("Prior min values:", lfg1.prior_min_values)
 # print("Prior max values:", lfg1.prior_max_values)
@@ -223,8 +309,15 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_2019+/DESI_SV1_sample.dat',
              'Data_2019+/DESI_main_selection_sample.dat',
              'Data_2019+/CEERS_Kocevski_sample.dat',
+             'Data_2019+/LRD_Data_CEERS_sample.txt',
+             'Data_2019+/LRD_Data_JADES_sample.txt',
+             'Data_2019+/LRD_Data_NGDEEP_sample.txt',
+             'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
+             'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
+             'Data_2019+/LRD_Data_UNCOVER_sample.txt',
              '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt'
+             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
+             '../QLF - Database Details/SHELLQs_sample.txt',
              ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
@@ -245,8 +338,15 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
              ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
              ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
+             ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151),
+             ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152),
+             ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153),
+             ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154),
+             ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155),
+             ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
              ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
-             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106)
+             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
+             ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
              ]
 
 lfg2 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum2)
@@ -261,30 +361,17 @@ lfg2 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum2)
 method = 'Nelder-Mead'
 b = lfg2.bestfit(g2, method=method)
 
-# lfg2.prior_min_values = np.array([-15.0, 0.0, -5.0,
-#                                  -30.0, -10.0, 0.0, -2.0,
-#                                  -7.0, -5.0,
-#                                  -10.0, -10.0, 0.0, -10.0, -2.0])
 
 # # lfg2.prior_max_values = np.array([-5.0, 10.0, 5.0,
 # #                                  -10.0, -1.0, 2.0, 2.0,
 # #                                  -1.0, 5.0,
 # #                                  10.0, 10.0, 10.0, 200.0, 2.0])
 
-# lfg2.prior_max_values = np.array([-5.0, 10.0, 5.0,
-#                                  -10.0, -1.0, 2.0, 2.0,
-#                                  -1.0, 5.0,
-#                                  10.0, 10.0, 20.0, 200.0, 2.0])
 
-lfg2.prior_min_values = np.array([-25.0, -25.0, -25.0, -25.0, -25.0,
-                                 -50.0, -50.0, -50.0, -50.0, -50.0,
-                                 -15.0, -15.0, -15.0, -15.0, -15.0,
-                                 -10000.0, -10000.0, -10000.0, -10000.0, -10000.0,])
 
-lfg2.prior_max_values = np.array([25.0, 25.0, 25.0, 25.0, 25.0,
-                                 50.0, 5.0, 50.0, 50.0, 50.0,
-                                 15.0, 15.0, 15.0, 15.0, 15.0,
-                                 10000.0, 10000.0, 10000.0, 10000.0, 10000.0,])
+lfg2.prior_min_values = lfg2_prior_min_values
+
+lfg2.prior_max_values = lfg2_prior_max_values
 
 # try:
 #     assert(np.all(lfg2.prior_min_values < lfg2.prior_max_values))
@@ -350,8 +437,15 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_2019+/DESI_SV1_sample.dat',
              'Data_2019+/DESI_main_selection_sample.dat',
              'Data_2019+/CEERS_Kocevski_sample.dat',
+             'Data_2019+/LRD_Data_CEERS_sample.txt',
+             'Data_2019+/LRD_Data_JADES_sample.txt',
+             'Data_2019+/LRD_Data_NGDEEP_sample.txt',
+             'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
+             'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
+             'Data_2019+/LRD_Data_UNCOVER_sample.txt',
              '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt'
+             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
+             '../QLF - Database Details/SHELLQs_sample.txt',
              ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
@@ -372,8 +466,15 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
              ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
              ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
+             ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151),
+             ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152),
+             ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153),
+             ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154),
+             ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155),
+             ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
              ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
-             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106)
+             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
+             ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
              ]
 
 
@@ -391,15 +492,11 @@ lfg3 = lf_polyb(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum3)
 method = 'Nelder-Mead'
 b = lfg3.bestfit(g3, method=method)
 
-lfg3.prior_min_values = np.array([-15.0, 0.0, -5.0,
-                                 -30.0, -10.0, 0.0, -2.0,
-                                 -7.0, -5.0,
-                                 -5.0, -5.0])
 
-lfg3.prior_max_values = np.array([-5.0, 10.0, 5.0,
-                                 -10.0, -1.0, 2.0, 2.0,
-                                 -1.0, 5.0,
-                                 0.0, 5.0])
+
+lfg3.prior_min_values = lfg3_prior_min_values
+
+lfg3.prior_max_values = lfg3_prior_max_values
 
 # lfg3.prior_min_values = np.array([-15.0, 0.0, -5.0,
 #                                  -30.0, -10.0, 0.0, -2.0,

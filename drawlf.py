@@ -403,8 +403,8 @@ def plot_giallongo_z4p25(lf, ax, mags):
     return 
 
 def savedata(data):
-    print("\n\nIn drawlf.py savedata\n")
-    print("data= ", data)
+    # print("\n\nIn drawlf.py savedata\n")
+    # print("data= ", data)
     zlims = data[0]
     if zlims == (0.1, 0.4):
     # if zlims == (5.5, 6.5):

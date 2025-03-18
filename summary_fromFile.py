@@ -29,7 +29,7 @@ nplots_y = 2
 nplots = 4
 plot_number = 0 
 
-zlims=(0.0,7.0)
+zlims=(0.0,12.0)
 zmin, zmax = zlims
 z = np.linspace(zmin, zmax, num=500)
 cfit = False
@@ -216,13 +216,17 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     print('min(centre):', np.min(centre))
     print('max(centre):', np.max(centre))
     print()
+    print("Good data:")
+    for i in range(len(zmean)):
+        print(f"{i}: {zmean[i]}, {c[i]}")
+    print()
     print()
 
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = 0
-    xlim_r = 7
+    xlim_r = 12
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
@@ -268,7 +272,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     #             fmt='None', zorder=4)
     # ax.scatter(zm, cm, color='#ffffff', edgecolor='grey', zorder=4, s=30)
 
-    ax.set_xticks((0,1,2,3,4,5,6,7))
+    # ax.set_xticks((0,1,2,3,4,5,6,7))
+    # ax.set_xticks((0,1,2,3,4,5,6,7,8,9,10,11,12))
     ax.set_ylabel(r'$\log_{10}\left(\phi_*/\mathrm{mag}^{-1}'+
                   r'\mathrm{cMpc}^{-3}\right)$')
     ax.yaxis.labelpad = 8
@@ -400,19 +405,23 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     print('min(centre):', np.min(centre))
     print('max(centre):', np.max(centre))
     print()
+    print("Good data:")
+    for i in range(len(zmean)):
+        print(f"{i}: {zmean[i]}, {c[i]}")
+    print()
     print()
 
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = 0
-    xlim_r = 7
+    xlim_r = 12
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
     ylim_l = min(np.min(c), np.min(centre))-1
     ylim_r = max(np.max(c), np.max(centre))+1
-    ylim_r = min(4, ylim_r)
+    ylim_r = min(14, ylim_r)
     ax.set_ylim(ylim_l, ylim_r)
     ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
     
@@ -574,19 +583,23 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     print('min(centre):', np.min(centre))
     print('max(centre):', np.max(centre))
     print()
+    print("Good data:")
+    for i in range(len(zmean)):
+        print(f"{i}: {zmean[i]}, {c[i]}")
+    print()
     print()
 
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = 0
-    xlim_r = 7
+    xlim_r = 12
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
     ylim_l = min(np.min(c), np.min(centre))-1
     ylim_r = max(np.max(c), np.max(centre))+1
-    ylim_r = min(4, ylim_r)
+    ylim_r = min(14, ylim_r)
     ax.set_ylim(ylim_l, ylim_r)
     ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
     
@@ -784,19 +797,23 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     print('min(centre):', np.min(centre))
     print('max(centre):', np.max(centre))
     print()
+    print("Good data:")
+    for i in range(len(zmean)):
+        print(f"{i}: {zmean[i]}, {c[i]}")
+    print()
     print()
 
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = 0
-    xlim_r = 7
+    xlim_r = 12
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
     ylim_l = min(np.min(c), np.min(centre))-1
     ylim_r = max(np.max(c), np.max(centre))+1
-    ylim_r = min(4, ylim_r)
+    ylim_r = min(10, ylim_r)
     ax.set_ylim(ylim_l, ylim_r)
     ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
     
@@ -808,7 +825,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     #             fmt='None', zorder=4)
     # ax.scatter(zm, cm, color='#ffffff', edgecolor='grey', zorder=4, s=30)
     
-    ax.set_xticks((0,1,2,3,4,5,6,7))
+    # ax.set_xticks((0,1,2,3,4,5,6,7))
+    # ax.set_xticks((0,1,2,3,4,5,6,7,8,9,10,11,12))
     ax.set_ylabel(r'$\beta$ (faint-end slope)')
     ax.set_xlabel('$z$')
 
@@ -840,7 +858,7 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, l
     plot_phi_star(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
     plot_m_star(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
     plot_alpha(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
-    # plot_beta(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
+    plot_beta(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
 
     print("\n\n Saved result in " + output_file_name + "\n\n")
     # plt.savefig('evolution2.pdf',bbox_inches='tight')

@@ -269,7 +269,7 @@ class lf:
         # print('\nlen(params[3]): ', len(params[3]),'\n')
         beta = self.atz(z, params[3])
         beta = self.atz_beta(z, params[3])
-        beta = self.atz_beta2(z, params[3])
+        # beta = self.atz_beta2(z, params[3])
         # print("\nbeta: ", beta,"\n")
         # print('\nlen(beta): ', len(beta),'\n')
         

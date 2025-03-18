@@ -19,23 +19,74 @@ Histogram of all quasar data used in this study.
 """
 
 def getqlums(lumfile):
-    # print("In data.py getqlums")
+    """
+    Read quasar luminosities.
 
-    """Read quasar luminosities."""
+    Parameters
+    ----------
+    lumfile : str
+        The file containing quasar luminosity data.
+        
+    Returns
+    -------
+    z : numpy.ndarray
+        Array of redshift values.
+    mag : numpy.ndarray
+        Array of magnitude values.
+    """
 
     with open(lumfile,'r') as f: 
-        z, mag, p = np.loadtxt(lumfile, usecols=(1,2,3), unpack=True)
+        z, mag = np.loadtxt(lumfile, usecols=(1,2), unpack=True)
         
-    return z, mag, p
+    return z, mag
 
 class sample:
-    # print("In data.py class-sample")
+    """
+    A class to represent a sample data object.
+
+    Attributes
+    ----------
+    z : numpy.ndarray
+        Array of redshift values.
+
+    m : numpy.ndarray
+        Array of magnitude values.
+
+    color : str
+        Color attribute for the data.
+
+    label : str
+        Label for the data.
+
+    Methods:
+    __init__(sample_data_files, color='None', label=None):
+        Initializes the sample data object with sample data files, color, and label.
+    """
 
     def __init__(self, sample_data_files, color='None', label=None):
-        # print("In data.py class-sample __init__")
+        """
+        Constructor - Initialises the data object with sample data, color, and label.
+
+        Parameters
+        ----------
+        sample_data_files : (list) str
+            List of file paths containing sample data.
+
+        color : str, optional
+            Color attribute for the data. Defaults to 'None'.
+
+        label : str, optional
+            Label for the data. Defaults to None.
+            
+        Returns
+        -------
+        None
+
+        """
+
 
         for f in sample_data_files: 
-            z, m, p = getqlums(f)
+            z, m = getqlums(f)
             try:
                 self.z = np.append(self.z, z)
                 self.m = np.append(self.m, m)
@@ -51,8 +102,24 @@ class sample:
         return 
 
 def plot_data(data, plotname):
-    # Command to let user know that the output will be stored in qsos.pdf
-    # print("In data.py plot_data\nOutput will be stored in qsos.pdf")
+    """
+    
+    Plots the cumulative histogram of redshifts of all the quasars in the data.
+
+    Parameters
+    ----------
+    data : list
+        List of sample data objects.
+    
+    plotname : str
+        The name of the file where the plot will be saved.
+
+    Returns
+    -------
+    None
+
+    """
+
     fig = plt.figure(figsize=(14, 7), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
 
@@ -217,7 +284,6 @@ data.append(s)
 #                                      Using MilliQuas                                                      #
 #############################################################################################################
 
-# /QLF\ -\ Database\ Details/milliquas-ref-2023/processed_data
 f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/BLAZZ2.txt']
 l = r'MilliQuas BLAZZ2 (2023)'
 s = sample(f, label=l)
@@ -245,6 +311,21 @@ data.append(s)
 
 f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/GAIA3.txt']
 l = r'MilliQuas GAIA3 (2023)'
+s = sample(f, label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/SHELLQs_sample.txt']
+l = r'SHELLQs (2023)'
+s = sample(f, label=l)
+data.append(s)
+
+f = ['Data_2019+/LRD_Data_CEERS_sample.txt',
+     'Data_2019+/LRD_Data_JADES_sample.txt',
+     'Data_2019+/LRD_Data_NGDEEP_sample.txt',
+     'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
+     'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
+     'Data_2019+/LRD_Data_UNCOVER_sample.txt']
+l = r'LRD Data (2023)'
 s = sample(f, label=l)
 data.append(s)
     

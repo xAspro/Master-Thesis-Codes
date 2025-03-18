@@ -20,20 +20,75 @@ Histogram of all quasar data used in this study.
 """
 
 def getqlums(lumfile):
+    """
+    Read quasar luminosities.
 
-    """Read quasar luminosities."""
+    Parameters
+    ----------
+    lumfile : str
+        The file containing quasar luminosity data.
+        
+    Returns
+    -------
+    z : numpy.ndarray
+        Array of redshift values.
+    """
 
     with open(lumfile,'r') as f: 
-        z, mag, p = np.loadtxt(lumfile, usecols=(1,2,3), unpack=True)
+        z = np.loadtxt(lumfile, usecols=1)
         
-    return z, mag, p
+    return np.atleast_1d(z)
+    # return z
+
+    # with open(lumfile,'r') as f: 
+    #     z, mag = np.loadtxt(lumfile, usecols=(1,2), unpack=True)
+        
+    # return z, mag
 
 class sample:
+    """
+    A class to represent a sample data object.
+
+    Attributes
+    ----------
+    z : numpy.ndarray
+        Array of redshift values.
+
+    color : str
+        Color attribute for the data.
+
+    label : str
+        Label for the data.
+
+    Methods:
+    __init__(sample_data_files, color='None', label=None):
+        Initializes the sample data object with sample data files, color, and label.
+    """
 
     def __init__(self, sample_data_files, color='None', label=None):
+        """
+        Constructor - Initialises the data object with sample data, color, and label.
 
+        Parameters
+        ----------
+        sample_data_files : (list) str
+            List of file paths containing sample data.
+
+        color : str, optional
+            Color attribute for the data. Defaults to 'None'.
+
+        label : str, optional
+            Label for the data. Defaults to None.
+            
+        Returns
+        -------
+        None
+
+        """
+                
         for f in sample_data_files: 
-            z, m, p = getqlums(f)
+            z = getqlums(f)
+            # z, mag = getqlums(f)
             try:
                 self.z = np.append(self.z, z)
             except(AttributeError):
@@ -45,6 +100,23 @@ class sample:
         return 
     
 def plot_data(data, plotname):
+    """
+    Plots the histogram of all quasar data used in this study.
+
+    Parameters
+    ----------
+    data : list
+        List of sample objects containing sample data.
+    
+    plotname : str
+        The name of the file where the plot will be saved.
+
+    Returns
+    -------
+    None
+    
+    """
+
 
     fig = plt.figure(figsize=(14, 7), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
@@ -58,7 +130,7 @@ def plot_data(data, plotname):
     for d in data:
         nbins = int(np.ptp(d.z)/bin_width)+1
         if d.z.size == 1:
-            zlim = (d.z-bin_width/2.0, d.z+bin_width/2.0)
+            zlim = (d.z[0]-bin_width/2.0, d.z[0]+bin_width/2.0)
             plt.hist(d.z, bins=nbins, range=zlim, color=d.color,
                      histtype='stepfilled', ec='k', label=d.label, linewidth=0.2)
         else:
@@ -74,8 +146,8 @@ def plot_data(data, plotname):
     ax.set_xlabel(r'redshift')
     ax.set_ylabel(r'Number of quasars')
 
-    plt.ylim(7e-1, 5.0e4)
-    plt.xlim(0., 8.)
+    plt.ylim(7e-1, 5.0e5)
+    plt.xlim(0., 15.)
 
     plt.legend(loc='upper right', fontsize=10, handlelength=3,
                frameon=False, framealpha=0.0, labelspacing=.1,
@@ -220,7 +292,54 @@ l = r'CEERS Kocevski et al. (2023)'
 s = sample(f, color= u'#ffba08', label=l)
 data.append(s)
 
+#############################################################################################################
+#                                      Using MilliQuas                                                      #
+#############################################################################################################
 
+f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/BLAZZ2.txt']
+l = r'MilliQuas BLAZZ2 (2023)'
+s = sample(f, color= u'#f4d35e', label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/ALCS.txt']
+l = r'MilliQuas ALCS (2023)'
+s = sample(f, color= u'#95d5b2', label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/DESEDR.txt']
+l = r'MilliQuas DESEDER (2023)'
+s = sample(f, color= u'#028090', label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2020/processed_data/DR16.txt']
+l = r'MilliQuas DR16 (2020)'
+s = sample(f, color= u'#05668d', label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2020/processed_data/DR16Q.txt']
+l = r'MilliQuas DR16Q (2020)'
+s = sample(f, color= u'#4d194d', label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/milliquas-ref-2023/processed_data/GAIA3.txt']
+l = r'MilliQuas GAIA3 (2023)'
+s = sample(f, color= u'#6a0572', label=l)
+data.append(s)
+
+f = ['../QLF - Database Details/SHELLQs_sample.txt']
+l = r'SHELLQs (2023)'
+s = sample(f, color= u'#ff6f61', label=l)
+data.append(s)
+
+f = ['Data_2019+/LRD_Data_CEERS_sample.txt',
+     'Data_2019+/LRD_Data_JADES_sample.txt',
+     'Data_2019+/LRD_Data_NGDEEP_sample.txt',
+     'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
+     'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
+     'Data_2019+/LRD_Data_UNCOVER_sample.txt']
+l = r'LRD Data (2023)'
+s = sample(f, color= u'#d72638', label=l)
+data.append(s)
 
 plot_data(data, 'qsos4.pdf')
 
