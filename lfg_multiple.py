@@ -16,10 +16,14 @@ import drawlf
 import traceback
 import sounddevice as sd
 
-
-##add time!!!!
 import time
 from datetime import datetime
+
+
+"""
+This program applies multiple models for the evolution of the quasar luminosity function.
+"""
+
 start_time = time.time()
 readable_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
 print("Time right now: ", readable_time)
