@@ -21,9 +21,31 @@ from numpy.polynomial import Chebyshev as T
 from numpy.polynomial.polynomial import polyval
 
 def getselfn(selfile):
-    # print("In composite.py getselfn")
+    """
+    Reads selection map.
 
-    """Read selection map."""
+    Parameters
+    ----------
+    selfile : str
+        File path to the selection map.
+
+    Returns
+    -------
+    z : numpy.ndarray
+        Array of redshift values.
+
+    mag : numpy.ndarray
+        Array of magnitude values.
+
+    p : numpy.ndarray
+        Array of selection probability values.
+
+    dz : numpy.ndarray
+        Array of redshift bin widths.
+
+    dm : numpy.ndarray
+        Array of magnitude bin widths.
+    """
 
     with open(selfile,'r') as f: 
         z, mag, p, dz, dm = np.loadtxt(f, usecols=(1,2,3,4,5), unpack=True)
@@ -31,7 +53,6 @@ def getselfn(selfile):
     return z, mag, p, dz, dm 
 
 def getqlums(lumfile):
-    # print("In composite.py getqlums")
 
     """Read quasar luminosities."""
 
@@ -76,7 +97,26 @@ def getqlums(lumfile):
     return z, mag, p 
 
 def volume(z, area, cosmo=cosmo):
-    # print("In composite.py volume")
+    """
+    Calculates the comoving volume element.
+    Equation 5 in Kulkarni 2019.
+
+    Parameters
+    ----------
+    z : numpy.ndarray
+        Array of redshift values.
+
+    area : float
+        Area of survey.
+
+    cosmo : dict, optional
+        Dictionary containing cosmological parameters. Defaults to cosmo.
+
+    Returns
+    -------
+    volperstr : numpy.ndarray
+        Array of comoving volume elements.
+    """
 
     omega = (area/41253.0)*4.0*np.pi # str
     volperstr = cd.diff_comoving_volume(z,**cosmo) # cMpc^3 str^-1 dz^-1
@@ -84,10 +124,57 @@ def volume(z, area, cosmo=cosmo):
     return omega*volperstr # cMpc^3 dz^-1 
 
 class selmap:
-    # print("In composite.py class-selmap")
+    """
+    A class to represent a selection map object.
+
+    Attributes
+    ----------
+    z : numpy.ndarray
+        Array of redshift values.
+
+    m : numpy.ndarray
+        Array of magnitude values.
+
+    p : numpy.ndarray
+        Array of selection probability values.
+
+    dz : numpy.ndarray
+        Array of redshift bin widths.
+
+    dm : numpy.ndarray
+        Array of magnitude bin widths.
+
+    area : float
+        Area of survey for the selection map.
+
+    sid : int
+        Identifier or index for the selection map.
+
+    volume : numpy.ndarray
+        Array of comoving volume elements.
+    
+    """
 
     def __init__(self, selection_map_file, area, sample_id):
-        # print("In composite.py class-selmap __init__")
+        """
+        Constructor - Initialises the selection map object with selection map file, area, and sample id.
+
+        Parameters
+        ----------
+        selection_map_file : str
+            File path to the selection map.
+
+        area : float
+            Area of survey for the selection map.
+
+        sample_id : int
+            Identifier or index for the selection map.
+
+        Returns
+        -------
+        None
+
+        """
 
         self.z, self.m, self.p, self.dz, self.dm  = getselfn(selection_map_file)
 
@@ -97,6 +184,9 @@ class selmap:
         print( 'sample_id={:d}'.format(sample_id))
 
         self.sid = sample_id 
+
+        ### Removing certain redshift ranges for certain samples.
+        ### Explained in Kulkarni 2019.
 
         if sample_id == 7:
             # Giallongo's sample needs special treatment due to
@@ -170,7 +260,14 @@ class selmap:
         return
 
     def nqso(self, lumfn, theta):
-        # print("In composite.py class-selmap nqso")
+        """
+        Fill this in!!!
+        """
+        # Called using 
+        # ns = np.array([x.nqso(self, theta) for x in self.maps])
+        # Each x is a selmap object.
+        # Self in this is actually lf object.
+        # lumfn is that lf object.
 
         psi = 10.0**lumfn.log10phi(theta, self.m, self.z)
         tot = psi*self.p*self.volume*self.dz*self.dm
@@ -178,14 +275,40 @@ class selmap:
         return np.sum(tot) 
             
 class lf:
-    # print("In composite.py class-lf")
-
     """5-parameter model for beta; for polynomial model see lf_polyb below.
 
     """
 
+
+    """
+    
+    FILL THIS!!!
+    """
+
     def __init__(self, quasar_files=None, selection_maps=None, pnum=np.array([2,2,1,1])):
-        # print("In composite.py class-lf __init__")
+        """
+        Constructor - Initialises the luminosity function object with quaasar data, selection maps, and number of parameters for the double power law.
+
+        Parameters
+        ----------
+        quasar_files : (list) str
+            List of file paths containing sample data.
+
+        selection_maps : (list) list of tuples
+            Each tuple contains three elements:
+            - A string representing the file path to the selection map.
+            - A float representing the area of survey for the selection map.
+            - An integer representing the identifier or index for the selection map.
+
+        pnum : int or numpy.ndarray, optional
+            Specifies the number of parameters for the double power law.
+            - If an integer, all groups of parameters have the same size.
+            - If an array, each element specifies the size of a group of parameters.
+            Defaults to np.array([2, 2, 1, 1]).
+        Returns
+        -------
+        None
+        """
 
         self.pnum = pnum 
         
@@ -205,16 +328,44 @@ class lf:
         return
 
     def atz(self, z, p):
-        # print("In composite.py class-lf atz")
+        """
+        Creates a Chebyshev polynomial for redshift evolution of 
+        QLF parameters (p), and evaluates it at '1+z'.
+        Equation 16 of Kulkarni 2019.
 
-        """Redshift evolution of QLF parameters."""
+        Parameters
+        ----------
+        z : numpy.ndarray
+            Array of redshift values.
+
+        p : numpy.ndarray
+            Array of parameters.
+
+        Returns
+        -------
+        (numpy.ndarray) Array of QLF parameters.
+        """
         
         return T(p)(1+z)
     
     def atz_beta(self, z, p):
-        # print("In composite.py class-lf atz_beta")
+        """
+        Creates a Double Power Law for redshift evolution of beta,
+        and calculated the value at the given data points.
+        Equation 17 of Kulkarni 2019.
 
-        """Redshift evolution of QLF parameters."""
+        Parameters
+        ----------
+        z : numpy.ndarray
+            Array of redshift values.
+
+        p : numpy.ndarray
+            Array of parameters.
+
+        Returns
+        -------
+        (numpy.ndarray) Array of parameters for beta.
+        """
 
         h, f0, z0, a, b = p 
         zeta = np.log10((1.0+z)/(1.0+z0))
@@ -222,31 +373,74 @@ class lf:
     
     def atz_beta2(self, z, p):
 
-        """Redshift evolution of QLF parameters."""
+        """
+        Creates a Polynomial Model for redshift evolution of beta.
+
+        Parameters
+        ----------
+        z : numpy.ndarray
+            Array of redshift values.
+
+        p : numpy.ndarray
+            Array of parameters.
+
+        Returns
+        -------
+        (numpy.ndarray) Array of parameters for beta.
+        """
 
         a, b, c, d, e, *_ = p 
         return a + b*z + c*z**2 + d*z**3 + e*z**4
 
     def getparams(self, theta):
-        # print("In composite.py class-lf getparams")
+        """
+            Splits the parameter array 'theta' into individual LF parameters,
+            based on 'self.pnum'.
+
+            Parameters
+            ----------
+            theta : numpy.ndarray
+                Array of parameters.
+
+            Returns
+            -------
+            (numpy.ndarray) Array of LF parameters.
+        """
 
         if isinstance(self.pnum, int):
-            # Evolution of each LF parameter described by 'atz' using same
-            # number 'self.pnum' of parameters.
-            # print("In composite.py class-lf getparams if\n\n")
+            # Case 1: `self.pnum` is a single integer.
+            # Each parameter group has the same number of parameters (`self.pnum`).
             splitlocs = self.pnum*np.array([1,2,3])
         else:
-            # Evolution of each LF parameter described by 'atz' using
-            # different number 'self.pnum[i]' of parameters.
-            # print("In composite.py class-lf getparams else\n\n")
+            # Case 2: `self.pnum` is an array or list.
+            # Each parameter group has a different number of parameters.
+            # The number of parameters for each group is given by `self.pnum[i]`.
             splitlocs = np.cumsum(self.pnum)
-        # print("\nself.pnum: ", self.pnum)
-        # print("\n\ntheta: ", theta,"\n\n")
-        # print("\n\nsplitlocs: ", splitlocs,"\n\n")
-        # print("\n\nnp.split(theta,splitlocs): ", np.split(theta,splitlocs),"\n\n")
+
         return np.split(theta,splitlocs)
 
     def log10phi(self, theta, mag, z):
+        """
+        Calculates the log10 of the quasar luminosity function 
+        for the given parameters, and on the given data points.
+
+        Parameters
+        ----------
+        theta : numpy.ndarray
+            Array of parameters.
+
+        mag : numpy.ndarray
+            Array of magnitude values.
+
+        z : numpy.ndarray
+            Array of redshift values.
+
+        Returns
+        -------
+        (numpy.ndarray) log10 of the quasar luminosity function 
+                        at the given data points.
+        """
+
         # print("In composite.py class-lf log10phi")
         # print("self: ", self)
         # print("\ntheta: ", theta,"\n")
@@ -267,7 +461,7 @@ class lf:
         # print('\nlen(z): ', len(z),'\n')
         # print('\nparams[3]: ', params[3],'\n')
         # print('\nlen(params[3]): ', len(params[3]),'\n')
-        beta = self.atz(z, params[3])
+        # beta = self.atz(z, params[3])
         beta = self.atz_beta(z, params[3])
         # beta = self.atz_beta2(z, params[3])
         # print("\nbeta: ", beta,"\n")
@@ -279,13 +473,27 @@ class lf:
         return np.log10(phi)
 
     def lfnorm(self, theta):
-        # print("In composite.py class-lf lfnorm")
+        """
+        Fill this in!!!
+        """
 
         ns = np.array([x.nqso(self, theta) for x in self.maps])
         return np.sum(ns) 
         
     def neglnlike(self, theta):
-        # print("In composite.py class-lf neglnlike")
+        """
+        Negative log likelihood function.
+        Equation 10 in Kulkarni 2019.
+
+        Parameters
+        ----------
+        theta : numpy.ndarray
+            Array of parameters.
+
+        Returns
+        -------
+        (float) Negative log likelihood.
+        """
 
         logphi = self.log10phi(theta, self.M1450, self.z) # Mpc^-3 mag^-1
         logphi /= np.log10(np.e) # Convert to base e 
@@ -293,7 +501,24 @@ class lf:
         return -2.0*logphi.sum() + 2.0*self.lfnorm(theta)
 
     def bestfit(self, guess, method='Nelder-Mead'):
-        # print("In composite.py class-lf bestfit")
+        """
+        Finds the best-fit parameters that minimize the negative log
+        likelihood function - self.neglnlike.
+
+        Parameters
+        ----------
+        guess : numpy.ndarray
+            Initial guess for the parameters.
+
+        method : str, optional
+            Optimization method. Defaults to 'Nelder-Mead'.
+
+        Returns
+        -------
+        result : scipy.optimize.optimize.OptimizeResult
+            Result of the optimization.
+        """
+
         result = op.minimize(self.neglnlike,
                              guess,
                              method=method, options={'maxfev': 20000,
