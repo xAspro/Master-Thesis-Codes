@@ -157,7 +157,8 @@ class selmap:
 
     def __init__(self, selection_map_file, area, sample_id):
         """
-        Constructor - Initialises the selection map object with selection map file, area, and sample id.
+        Constructor - Initialises the selection map object with 
+                      selection map file, area, and sample id.
 
         Parameters
         ----------
@@ -182,6 +183,7 @@ class selmap:
         # self.dm = dm 
         # print( 'dz={:.3f}, dm={:.3f}, sample_id={:d}'.format(dz, dm, sample_id))
         print( 'sample_id={:d}'.format(sample_id))
+        print( 'size of z: ', self.z.size, '\n')
 
         self.sid = sample_id 
 
@@ -261,17 +263,24 @@ class selmap:
 
     def nqso(self, lumfn, theta):
         """
-        Fill this in!!!
-        """
-        # Called using 
-        # ns = np.array([x.nqso(self, theta) for x in self.maps])
-        # Each x is a selmap object.
-        # Self in this is actually lf object.
-        # lumfn is that lf object.
+        Calculates the total number of quasar in the survey volume, predicted by 
+        the QLF model, while accounting for the selection probability.
 
-        psi = 10.0**lumfn.log10phi(theta, self.m, self.z)
-        tot = psi*self.p*self.volume*self.dz*self.dm
-        
+        Parameters
+        ----------
+        lumfn : lf
+            Luminosity function object.
+
+        theta : numpy.ndarray
+            Array of parameters.
+
+        Returns
+        -------
+        (float) Total number of quasars in the survey volume.
+        """
+
+        phi = 10.0**lumfn.log10phi(theta, self.m, self.z)
+        tot = phi*self.p*self.volume*self.dz*self.dm 
         return np.sum(tot) 
             
 class lf:
@@ -287,7 +296,8 @@ class lf:
 
     def __init__(self, quasar_files=None, selection_maps=None, pnum=np.array([2,2,1,1])):
         """
-        Constructor - Initialises the luminosity function object with quaasar data, selection maps, and number of parameters for the double power law.
+        Constructor - Initialises the luminosity function object with quaasar data, 
+                      selection maps, and number of parameters for the double power law.
 
         Parameters
         ----------
@@ -316,10 +326,14 @@ class lf:
             z, m, p = getqlums(datafile)
             try:
                 self.z=np.append(self.z,z)
+                # print('\n\n\n\t\tsize of z: ', z.size)
+                # print('\n\n\n\t\tshape of z: ', z.shape)
                 self.M1450=np.append(self.M1450,m)
                 self.p=np.append(self.p,p)
             except(AttributeError):
                 self.z=z
+                # print('\n\n\n\t\t\tsize of single z: ', z.size)
+                # print('\n\n\n\t\t\tshape of single z: ', z.shape)
                 self.M1450=m
                 self.p=p
 
@@ -474,7 +488,17 @@ class lf:
 
     def lfnorm(self, theta):
         """
-        Fill this in!!!
+        Calculates the total number of quasar in each survey volume, predicted by 
+        the QLF model, while accounting for their selection probability.
+
+        Parameters
+        ----------
+        theta : numpy.ndarray
+            Array of parameters.
+
+        Returns
+        -------
+        (float) Total number of quasars in the survey volume.
         """
 
         ns = np.array([x.nqso(self, theta) for x in self.maps])
@@ -497,6 +521,13 @@ class lf:
 
         logphi = self.log10phi(theta, self.M1450, self.z) # Mpc^-3 mag^-1
         logphi /= np.log10(np.e) # Convert to base e 
+        # print('\n\nlogphi: ', logphi)
+        # print('size of logphi: ', logphi.size)
+        # print('shape of logphi: ', logphi.shape)
+
+        # print('\n\nsize of self.z: ', self.z.size)
+        # print('shape of self.z: ', self.z.shape)
+
 
         return -2.0*logphi.sum() + 2.0*self.lfnorm(theta)
 
