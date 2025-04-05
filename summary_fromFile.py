@@ -837,7 +837,7 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, l
 
     mpl.rcParams['font.size'] = '14'
     
-    fig = plt.figure(figsize=(6, 6), dpi=100)
+    fig = plt.figure(figsize=(6, 6), dpi=300)
 
     print( 'laying out figure')
 
@@ -861,8 +861,10 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False, l
     plot_beta(fig, composite, individuals=individuals, compOpt=compOpt, sample=sample, lfg_break=lfg_break, lfg_polyb=lfg_polyb)
 
     print("\n\n Saved result in " + output_file_name + "\n\n")
-    # plt.savefig('evolution2.pdf',bbox_inches='tight')
     plt.savefig(output_file_name,bbox_inches='tight')
+
+    print("\n\n Saved result in " + output_file_name[:-4] + ".png\n\n")
+    plt.savefig((output_file_name[:-4]+'.png'),bbox_inches='tight')
 
     mpl.rcParams['font.size'] = '22'
     

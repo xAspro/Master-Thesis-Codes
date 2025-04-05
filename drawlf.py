@@ -19,6 +19,18 @@ cosmo = {'omega_M_0':0.3,
          'omega_k_0':0.0,
          'h':0.70}
 
+xlim = (-12.0, -34.0)
+ylim = (-16.0, 0.0)
+
+# xlim = (125, -100)
+# ylim = (-125, 125)
+
+# xlim = (25, -50)
+# ylim = (-45, 25)
+
+# xlim = (-30, -40)
+# ylim = (-5.0, 5.0)
+
 """Makes LF plots at particular redshifts.  Shows data with
 individual and composite models.  This is similar to the draw()
 function in individual.py but is more flexible.
@@ -67,6 +79,8 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
 
     nmags = 100
     mags = np.linspace(*maglims, num=nmags)
+    print("\n\n\n\nmags= ", mags,'\n\n\n\n')
+    print('\n\n\n\nc= ', kwargs['c'], '\n\n\n\n')
     nsample = 1000
     rsample = lf.samples[np.random.randint(len(lf.samples), size=nsample)]
     # print("rsample= ", rsample)
@@ -79,7 +93,34 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
 
     up = np.percentile(phi, 15.87, axis=0)
     down = np.percentile(phi, 84.13, axis=0)
+    # print("\n\nlf.__dict__= ", lf.__dict__)
+    # Assuming `lf` is your object
+    # for key, value in lf.__dict__.items():
+    #     print(f"\n'{key}' : \t{value}")
+    # print('\n\n\n\nlf.samples= ', lf.samples)
+    # print("\n\n\n\nphi= ", phi)
+
+    # L1 = int(len(phi)/10)
+    # L2 = int(len(phi[0])/10)
+
+    # cnt1, cnt2 = L1, L2
+    # for i in range(len(phi)):
+    #     cnt1 -= 1
+    #     if cnt1 == 0:
+    #         cnt1 = L1
+    #         cnt2 = L2
+    #         print("[", end=' ')
+    #         for j in range(len(phi[i])):
+    #             cnt2 -= 1
+    #             if cnt2 == 0:
+    #                 cnt2 = L2
+    #                 print(phi[i][j], end=' ')
+    #         print("]")
+        
+    print("\n\n\n\nup= ", up)
+    print("\n\n\n\ndown= ", down)
     f = ax.fill_between(mags, down, y2=up, color='#ffbf00', alpha=0.7)
+    # f = ax.fill_between(mags, down, y2=up, color=kwargs['c'])
 
     return f
 
@@ -89,6 +130,7 @@ def plot_bestfit_lf(lf, ax, mags, **kwargs):
     bf = np.median(lf.samples, axis=0)
     phi_fit = lf.log10phi(bf, mags)
     bf, = ax.plot(mags, phi_fit, lw=1.5, c='#ffbf00', zorder=kwargs['zorder'])
+    # bf, = ax.plot(mags, phi_fit, lw=1.5, c=kwargs['c'], zorder=kwargs['zorder'])
     return bf 
 
 def binVol(self, selmap, mrange, zrange):
@@ -452,13 +494,17 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
     if show_individual_fit: 
         mag_plot = np.linspace(-34.0, -12.0, num=200) 
-        indf = plot_posterior_sample_lfs(lf, ax, (-34.0, -12.0), lw=1,
-                                       c='#ffbf00', alpha=0.1, zorder=2) 
+        # indf = plot_posterior_sample_lfs(lf, ax, (-34.0, -12.0), lw=1,
+                                    #    c='#ffbf00', alpha=0.1, zorder=2) 
+        indf = plot_posterior_sample_lfs(lf, ax, xlim, lw=1,
+                                       c='blue', alpha=0.1, zorder=2) 
         # plot_bestfit_lf(lf, ax, mag_plot, lw=2,
         #                      c='#ffbf00', zorder=3, label='This work')
 
-        indbf = plot_bestfit_lf(lf, ax, mag_plot, lw=2,
-                             c='#ffbf00', zorder=3)
+        # indbf = plot_bestfit_lf(lf, ax, mag_plot, lw=2,
+                            #  c='#ffbf00', zorder=3)
+        indbf = plot_bestfit_lf(lf, ax, np.linspace(*xlim, num=200), lw=2,
+                             c='red', zorder=3)
         
         # if z_plot < 4.5:
         #     plot_giallongo_z4p25(lf, ax, mag_plot)
@@ -570,8 +616,16 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         105: '#000000', # black
         106: '#444444', # dark grey
         107: '#888888', # light grey
-        108: '#bbbbbb', # light grey
-        109: '#dddddd', # light grey
+        108: '#b09349', # light grey
+        109: '#43497b', # light grey
+        110: '#ab3239',
+        111: '#193472',
+        112: '#d95f02',
+        113: '#7570b3',
+        114: '#e7298a',
+        115: '#66a61e',
+        116: '#e6ab02',
+        117: '#a6761d',
         150: '#ff0000', # red
         151: '#00ff00', # green
         152: '#0000ff', # blue
@@ -698,7 +752,7 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
 
     z_plot = lf.z.mean() 
     
-    fig = plt.figure(figsize=(7, 7), dpi=100)
+    fig = plt.figure(figsize=(7, 7), dpi=300)
     ax = fig.add_subplot(1, 1, 1)
     ax.tick_params('both', which='major', length=7, width=1)
     ax.tick_params('both', which='minor', length=3, width=1)
@@ -706,9 +760,11 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     render(ax, lf, composite=composite, showMockSample=showMockSample,
            show_individual_fit=show_individual_fit)
 
-    ax.set_xlim(-12.0, -34.0)
-    ax.set_ylim(-16.0, 0.0)
-    ax.set_xticks(np.arange(-34,-11, 2))
+    # ax.set_xlim(-12.0, -34.0)
+    # ax.set_ylim(-16.0, 0.0)
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    # ax.set_xticks(np.arange(-34,-11, 2))
 
     ax.set_xlabel(r'$M_{1450}$')
     ax.set_ylabel(r'$\log_{10}\left(\phi/\mathrm{cMpc}^{-3}\,\mathrm{mag}^{-1}\right)$')
@@ -725,11 +781,13 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     plotfile = dirname+'lf_z{0:.3f}.pdf'.format(z_plot)
 
     plt.savefig(plotfile, bbox_inches='tight')
+    plt.savefig(plotfile.replace('.pdf', '.png'), bbox_inches='tight')
 
     plt.close('all') 
 
     # letting the user know where the plot was saved
     print("saved the figure in ", plotfile)
+    print("saved the figure in ", plotfile.replace('.pdf', '.png'))
     print("command executed in drawlf.py")
 
     return 

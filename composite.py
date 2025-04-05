@@ -573,7 +573,7 @@ class lf:
         return
 
     def lnprior(self, theta):
-        print("In composite.py class-lf lnprior")
+        # print("In composite.py class-lf lnprior")
         """
         Set up uniform priors.
 
@@ -591,7 +591,7 @@ class lf:
         return -np.inf
 
     def lnprob(self, theta):
-        print("In composite.py class-lf lnprob")
+        # print("In composite.py class-lf lnprob")
 
         lp = self.lnprior(theta)
         

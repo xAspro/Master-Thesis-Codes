@@ -54,7 +54,13 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
             'Data_2019+/LRD_Data_UNCOVER_sample.txt',
             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
-            '../QLF - Database Details/SHELLQs_sample.txt',
+            # '../QLF - Database Details/SHELLQs_sample.txt',
+            '../QLF - Database Details/milliquas-ref-2022/processed_data/SHELQ4_z_sample.txt',
+            '../QLF - Database Details/milliquas-ref-2022/processed_data/SHELQ4_i_sample.txt',
+            '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELLQ_i_sample.txt',
+            '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELQS_z_sample.txt',
+            '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELQS_i_sample.txt',
+            '../QLF - Database Details/milliquas-ref-2019/processed_data/SHELQ3_i_sample.txt',
             ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards et al. 2006'),
@@ -85,7 +91,13 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards e
             ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156, r'LRD UNCOVER'),
             ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105, r'Milliquas DR16 gG'),
             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106, r'Milliquas DR16Q gG'),
-            ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107, r'SHELLQs Matsuoka 2022')
+            # ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107, r'SHELLQs Matsuoka 2022'),
+            ('smooth_maps/2019+/SHELLQs_z_selfunc_with_tiles.dat', 1200.0, 108, r'SHELQ4 z Matsuoka 2022'),
+            ('smooth_maps/2019+/SHELLQs_i_selfunc_with_tiles.dat', 1200.0, 108, r'SHELQ4 i Matsuoka 2022'),
+            ('smooth_maps/2019+/SHELLQ_i_selfunc_with_tiles.dat', 1200.0, 109, r'SHELLQ i Matsuoka 2018'),
+            ('smooth_maps/2019+/SHELQS_z_selfunc_with_tiles.dat', 1200.0, 110, r'SHELQS z Matsuoka 2018'),
+            ('smooth_maps/2019+/SHELQS_i_selfunc_with_tiles.dat', 1200.0, 110, r'SHELQS i Matsuoka 2018'),
+            ('smooth_maps/2019+/SHELQ3_i_selfunc_with_tiles.dat', 1200.0, 111, r'SHELQ3 i Matsuoka 2019'),
             ]
 
 method = 'Nelder-Mead'
@@ -98,6 +110,11 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
        (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5),
        (6.5, 7.5), (7.5, 8.5), (8.5, 9.5), (9.5, 10.5), (10.5, 12.5)
        ]
+
+# zls = [(4.7, 5.5), (5.5, 6.5),
+#        (6.5, 7.5), (7.5, 8.5)]
+
+# zls = [(5.5, 6.5)]
 
 # zls = [(4.1, 4.7), (4.7, 5.5), (5.5, 6.5)]
 

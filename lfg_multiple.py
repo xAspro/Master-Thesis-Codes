@@ -179,7 +179,13 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_2019+/LRD_Data_UNCOVER_sample.txt',
              '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
              '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
-             '../QLF - Database Details/SHELLQs_sample.txt',
+            #  '../QLF - Database Details/SHELLQs_sample.txt',
+             '../QLF - Database Details/milliquas-ref-2022/processed_data/SHELQ4_z_sample.txt',
+             '../QLF - Database Details/milliquas-ref-2022/processed_data/SHELQ4_i_sample.txt',
+             '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELLQ_i_sample.txt',
+             '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELQS_z_sample.txt',
+             '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELQS_i_sample.txt',
+             '../QLF - Database Details/milliquas-ref-2019/processed_data/SHELQ3_i_sample.txt',
              ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
@@ -211,7 +217,13 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
              ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
              ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
-             ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
+            #  ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
+             ('smooth_maps/2019+/SHELLQs_z_selfunc_with_tiles.dat', 1200.0, 108),
+             ('smooth_maps/2019+/SHELLQs_i_selfunc_with_tiles.dat', 1200.0, 108),
+             ('smooth_maps/2019+/SHELLQ_i_selfunc_with_tiles.dat', 1200.0, 109),
+             ('smooth_maps/2019+/SHELQS_z_selfunc_with_tiles.dat', 1200.0, 110),
+             ('smooth_maps/2019+/SHELQS_i_selfunc_with_tiles.dat', 1200.0, 110),
+             ('smooth_maps/2019+/SHELQ3_i_selfunc_with_tiles.dat', 1200.0, 111),
             ]
 
 

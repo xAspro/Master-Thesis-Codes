@@ -20,8 +20,8 @@ import os
 
 
 # in_file = 'smooth_maps/' + sys.argv[1]
-in_file = 'Data_2019+/' + sys.argv[1]
-# in_file = '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/' + sys.argv[1]
+# in_file = 'Data_2019+/' + sys.argv[1]
+in_file = f'../QLF - Database Details/milliquas-ref-{sys.argv[2]}/processed_data/' + sys.argv[1]
 # in_file = '../QLF - Database Details/' + sys.argv[1]
 out_dir = 'smooth_maps/2019+/'
 if not os.path.exists(out_dir):
