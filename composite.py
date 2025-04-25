@@ -162,13 +162,11 @@ class selmap:
 
         Parameters
         ----------
-        selection_map_file : str
+        - selection_map_file : str
             File path to the selection map.
-
-        area : float
+        - area : float
             Area of survey for the selection map.
-
-        sample_id : int
+        - sample_id : int
             Identifier or index for the selection map.
 
         Returns

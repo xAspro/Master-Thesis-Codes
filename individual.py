@@ -44,15 +44,15 @@ def getqlums(lumfile, zlims=None):
     tuple
         A tuple containing the following elements:
         - z : ndarray
-            The selected redshifts of the quasars.
+            The redshifts of the selected quasars.
         - mag : ndarray
-            The selected magnitudes of the quasars.
+            The magnitudes of the selected quasars.
         - p : ndarray
-            The selected probabilities of the quasars.
+            The probabilities of the selected quasars.
         - area : ndarray
-            The selected areas of the quasars.
+            The areas of the selected quasars.
         - sample_id : ndarray
-            The selected sample IDs of the quasars.
+            The sample IDs of the quasars.
         - z_all : ndarray
             All redshifts of the quasars within the redshift limits.
         - mag_all : ndarray
@@ -75,7 +75,6 @@ def getqlums(lumfile, zlims=None):
     NEED TO CHECK IF FOR QLUMS ALSO DO WE HAVE SOMETHING LIKE THAT TO HANDLE MULTIPLE DIMENSIONS!!!
 
     """
-    # print()
 
     with open(lumfile,'r') as f: 
         z, mag, p, area, sample_id = np.loadtxt(lumfile,
@@ -156,7 +155,43 @@ def getqlums(lumfile, zlims=None):
         
 def getselfn(selfile, zlims=None):
 
-    """Read selection map."""
+    """
+
+    Read selection map.
+
+    Parameters
+    ----------
+    selfile : str
+        The file containing the selection map.
+    zlims : list of float, optional
+        The redshift limits for the quasar luminosities. 
+        The default is None.
+
+    Returns
+    -------
+    - z : ndarray
+        The redshifts of the selected quasars.
+    - mag : ndarray
+        The magnitudes of the selected quasars.
+    - p : ndarray
+        The probabilities of the selected quasars.
+    - dz : ndarray
+        The dz of the selected quasars.
+    - dm : ndarray
+        The dm of the selected quasars.
+
+    Notes
+    -----
+    The selected values are based on the redshift limits and the sample ID.
+    It is possible that the select value is None. In that case, all values
+    are returned. The array sizes are not guaranteed to be the same.
+
+    CHECK THE FUNCTION ONCE MORE, LATER ON!!!
+    FOR getselfunc(), WE HAVE np.squeeze IN SELFILE CONSTRUCTOR!!!
+    NEED TO CHECK IF FOR QLUMS ALSO DO WE HAVE SOMETHING LIKE THAT TO HANDLE MULTIPLE DIMENSIONS!!!
+
+    """
+
     # print("In getselfn")
     # print("selfile: ", selfile)
 
@@ -175,6 +210,23 @@ def getselfn(selfile, zlims=None):
 
 
 def volume(z, area, cosmo=cosmo):
+    """
+    Calculate the comoving volume in cMpc^3 for a given redshift and area.
+
+    Parameters
+    ----------
+    - z : array_like
+        Redshift values.
+    - area : float
+        Area in square degrees.
+    - cosmo : dict, optional
+        Cosmological parameters. Default is a flat LambdaCDM cosmology.
+
+    Returns
+    -------
+    float
+        Comoving volume in cMpc^3 per unit redshift.
+    """
 
     omega = (area/41253.0)*4.0*np.pi # str
     volperstr = cd.diff_comoving_volume(z,**cosmo) # cMpc^3 str^-1 dz^-1
@@ -182,6 +234,19 @@ def volume(z, area, cosmo=cosmo):
     return omega*volperstr # cMpc^3 dz^-1
 
 def percentiles(x):
+    """
+    Calculate the 1-sigma percentiles for a given array.
+
+    Parameters
+    ----------
+    x : array_like
+        Input array.
+
+    Returns
+    -------
+    list
+        List containing the upper, lower, and central percentiles.
+    """
     
     u = np.percentile(x, 15.87) 
     l = np.percentile(x, 84.13)
@@ -192,6 +257,23 @@ def percentiles(x):
 class selmap:
 
     def __init__(self, x, zlims=None):
+        """
+        Constructor - Initialises the selection map object with 
+                      selection map file, area, and sample id.
+
+        Parameters
+        ----------
+        - x : tuple
+            A tuple containing the selection map file, area, sample id, and label.
+        - zlims : list of float, optional
+            The redshift limits for the selection map. 
+            The default is None.
+
+        Returns
+        -------
+        None
+
+        """
 
         selection_map_file, area, sample_id, label = x
 
@@ -293,8 +375,115 @@ class selmap:
             return 0 
             
 class lf:
+    """
+    Quasar Luminosity Function (QLF) Class.
+
+    This class represents the Quasar Luminosity Function (QLF) and provides methods 
+    to compute, fit, and analyze the QLF using quasar data and selection maps. 
+    It supports both parametric modeling and binned analysis of the QLF.
+
+    Methods
+    -------
+    - __init__(self, quasar_files=None, selection_maps=None, zlims=None)
+        Constructor - Initializes the QLF object with quasar data files, selection maps, 
+        and optional redshift limits.
+
+    - log10phi(self, theta, mag)
+        Computes the logarithm (base 10) of the QLF for given parameters and magnitudes.
+        The QLF is modeled using a double power law.
+
+    - lfnorm(self, theta)
+        Computes the total number of quasars predicted by the QLF model in the survey volume.
+
+    - neglnlike(self, theta)
+        Computes the negative log-likelihood for the QLF model.
+
+    - bestfit(self, guess, method='Nelder-Mead')
+        Finds the best-fit parameters for the QLF model using optimization.
+
+    - run_mcmc(self)
+        Runs Markov Chain Monte Carlo (MCMC) sampling to estimate the posterior distribution 
+        of the QLF parameters.
+
+    - get_percentiles(self)
+        Computes 1-sigma percentiles for the QLF parameters from the MCMC samples.
+
+    - draw(self, z_plot, composite=None, dirname='', plotlit=False)
+        Plots the QLF data, best-fit model, and posterior samples.
+
+    - get_lf(self, sid, z_plot)
+        Computes the binned QLF for a specific sample ID and redshift.
+
+    - plot_literature(self, ax, z_plot)
+        Plots QLF data from the literature for comparison.
+
+    Attributes
+    ----------
+    - z : ndarray
+        Redshift of quasars in the current redshift bin.
+    - M1450 : ndarray
+        Absolute magnitudes of quasars in the current redshift bin.
+    - p : ndarray
+        Selection probabilities of quasars in the current redshift bin.
+    - area : ndarray
+        Survey area corresponding to the quasars in the current redshift bin.
+    - sid : ndarray
+        Sample IDs of quasars in the current redshift bin.
+    - z_all : ndarray
+        Redshift of all quasars (not limited to the current redshift bin).
+    - M1450_all : ndarray
+        Absolute magnitudes of all quasars (not limited to the current redshift bin).
+    - p_all : ndarray
+        Selection probabilities of all quasars (not limited to the current redshift bin).
+    - area_all : ndarray
+        Survey area corresponding to all quasars (not limited to the current redshift bin).
+    - sid_all : ndarray
+        Sample IDs of all quasars (not limited to the current redshift bin).
+    - zlims : list of float, optional
+        The redshift limits for the quasar luminosities. If provided, it is used to filter data and set the `dz` attribute.
+    - dz : float
+        Redshift interval for the current redshift bin. This attribute is only set if 
+        `zlims` is provided during initialization.
+    - maps : list
+        List of selection map objects corresponding to the surveys used in the analysis.
+
+    Notes
+    -----
+    - This class is designed to work with quasar data and selection maps to compute 
+      the QLF in specific redshift bins.
+    - The QLF is modeled using a double power law, with parameters such as `phi_star`, 
+      `M_star`, `alpha`, and `beta`.
+    - The class supports both frequentist and Bayesian approaches for parameter estimation.
+    """
 
     def __init__(self, quasar_files=None, selection_maps=None, zlims=None):
+        """
+        Constructor - Initializes the QLF object with quasar data files, selection maps, 
+        and optional redshift limits.
+
+        Parameters
+        ----------
+        - quasar_files : list of str, optional
+            List of quasar files to be read. The default is None.
+        - selection_maps : list of str, optional
+            List of selection map files to be read. The default is None.
+        - zlims : list of float, optional
+            The redshift limits for the quasar luminosities.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - If `zlims` is provided, the `dz` attribute is set to the difference between 
+          the upper and lower redshift limits (`zlims[1] - zlims[0]`).
+        - If `quasar_files` or `selection_maps` is None, the object will not contain 
+          any data or selection maps.
+
+        CHECK!!! How can quasar_files be None?
+        CHECK!!! zlims and dz too!!!
+        """
 
         self.zlims = zlims
 
@@ -345,6 +534,22 @@ class lf:
         return
 
     def log10phi(self, theta, mag):
+        """
+        Compute the logarithm (base 10) of the QLF for given parameters and magnitudes.
+        The QLF is modeled using a double power law.
+        
+        Parameters
+        ----------
+        - theta : ndarray
+            The parameter vector containing the QLF parameters.
+        - mag : ndarray
+            The absolute magnitudes of the quasars.
+            
+        Returns
+        -------
+        - logphi : ndarray
+            The logarithm (base 10) of the QLF for the given parameters and magnitudes.
+        """
 
         log10phi_star, M_star, alpha, beta = theta 
 
@@ -353,11 +558,39 @@ class lf:
         return np.log10(phi)
 
     def lfnorm(self, theta):
+        """
+        Compute the total number of quasars predicted by the QLF model in the survey volume.
+        This is done by integrating the QLF over the survey volume and the selection maps.
+
+        Parameters
+        ----------
+        - theta : ndarray
+            The parameter vector containing the QLF parameters.
+
+        Returns
+        -------
+        - n : float
+            The total number of quasars predicted by the QLF model in the survey volume.
+
+        """
 
         ns = np.array([x.nqso(self, theta) for x in self.maps])
         return sum(ns) 
 
     def neglnlike(self, theta):
+        """
+        Compute the negative log-likelihood for the QLF model by calculating the 
+        log-likelihood of the observed data given the QLF model.
+
+        Parameters
+        ----------
+        - theta : ndarray
+            The parameter vector containing the QLF parameters.
+        Returns
+        -------
+        - nll : float
+            The negative log-likelihood for the QLF model.
+        """
 
         logphi = self.log10phi(theta, self.M1450) # Mpc^-3 mag^-1
         logphi /= np.log10(np.e) # Convert to base e 
@@ -365,6 +598,25 @@ class lf:
         return -2.0*logphi.sum() + 2.0*self.lfnorm(theta)
 
     def bestfit(self, guess, method='Nelder-Mead'):
+        """
+        Find the best-fit parameters for the QLF model using optimization.
+        This function uses the `scipy.optimize.minimize` function to minimize the
+        negative log-likelihood function.
+
+        Parameters
+        ----------
+        - guess : ndarray
+            Initial guess for the QLF parameters.
+        - method : str, optional
+            The optimization method to use. The default is 'Nelder-Mead'.
+        
+        Returns
+        -------
+        - result : OptimizeResult
+            The optimization result represented as a `scipy.optimize.OptimizeResult` object.
+            The `x` attribute of the result contains the best-fit parameters.
+        """
+
         result = op.minimize(self.neglnlike,
                              guess,
                              method=method,
@@ -413,9 +665,9 @@ class lf:
 
         return
 
-    def lnprior(self, theta):
+    def __lnprior(self, theta):
         """
-        Set up uniform priors.
+        Checks if the parameters are within the prior bounds.
 
         Parameters
         ----------
@@ -428,10 +680,6 @@ class lf:
             The log prior probability. Returns 0.0 if theta is within the prior
             bounds, and -np.inf if theta is outside the prior bounds.
         """
-        # """
-        # Set up uniform priors.
-
-        # """
 
         if (np.all(theta < self.prior_max_values) and
             np.all(theta > self.prior_min_values)):
@@ -439,9 +687,23 @@ class lf:
 
         return -np.inf
     
-    def lnprob(self, theta):
+    def __lnprob(self, theta):
+        """
+        Compute the log-probability of the QLF model given the parameters.
 
-        lp = self.lnprior(theta)
+        Parameters
+        ----------
+        theta : ndarray
+            The parameter vector to be evaluated.
+
+        Returns
+        -------
+        float
+            The log-probability of the QLF model given the parameters. Returns -np.inf
+            if the log prior is not finite.
+        """
+
+        lp = self.__lnprior(theta)
         
         if not np.isfinite(lp):
             return -np.inf
@@ -450,7 +712,18 @@ class lf:
 
     def run_mcmc(self):
         """
-        Run emcee.
+        Run Markov Chain Monte Carlo (MCMC) sampling to estimate the posterior distribution
+        of the QLF parameters.
+        This function initializes the MCMC sampler, runs the sampling process, and stores
+        the samples in the `self.samples` attribute.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
 
         """
         self.ndim, self.nwalkers = self.bf.x.size, 100
@@ -458,39 +731,24 @@ class lf:
         pos = [self.mcmc_start + 1e-4*np.random.randn(self.ndim) for i
                in range(self.nwalkers)]
         
-        # self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
-        #                                      self.lnprob)
+        self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
+                                             self.__lnprob)
 
-        # self.sampler.run_mcmc(pos, 1000)
-        # self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
-        
-        ######################################################################################
-        ######################################################################################
-        ## It seems my Mac doesnt have enough memory to run the MCMC in parallel *sobs*     ##
-        ## Serial version took 6 mins 10 seconds                                            ##  
-        ## Parallel version took 6 mins                                                     ##
-        ## Not getting much speedup                                                         ##
-        ## My memory is full and swap memory is being used. That's why it's slow.           ##
-        ## I will have to try it on the cluster.                                            ##
-        ######################################################################################
-        ######################################################################################
-
-        # creates a pool of workers to run the MCMC
-        with Pool() as pool:
-            self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim, self.lnprob, pool=pool)
-            self.sampler.run_mcmc(pos, 1000)
-            # for i, result in enumerate(self.sampler.sample(pos, iterations=1000)):
-            #     if (i + 1) % 100 == 0:
-            #         print(f"Step {i + 1} / 1000")
-
+        self.sampler.run_mcmc(pos, 1000)
         self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
-
+        
         return
 
     def get_percentiles(self):
         """
-        Get 1-sigma errors on the LF parameters.
+        Calculate the 1-sigma percentile errors for the luminosity function (LF) parameters.
 
+        This method computes the 1-sigma percentiles for the LF parameters 
+        (phi_star, M_star, alpha, and beta) based on the provided samples. 
+        The computed percentiles are stored as attributes of the object.
+
+        Returns:
+            None
         """
         self.phi_star = percentiles(self.samples[:,0])
         self.M_star = percentiles(self.samples[:,1])
@@ -500,6 +758,20 @@ class lf:
         return 
 
     def corner_plot(self, labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$'], dirname=''):
+        """
+        Create a corner plot of the posterior samples.
+
+        Parameters
+        ----------
+        - labels : list of str, optional
+            Labels for the parameters. The default is ['$\phi_*$', '$M_*$', '$\alpha$', '$\beta$'].
+        - dirname : str, optional
+            Directory name to save the plot. The default is ''.
+
+        Returns
+        -------
+        None
+        """
 
         mpl.rcParams['font.size'] = '14'
         self.medians = np.median(self.samples, axis=0)
@@ -511,6 +783,23 @@ class lf:
         return
     
     def plot_chains(self, fig, param, ylabel):
+        """
+        Plot the MCMC chains for a given parameter.
+        
+        Parameters
+        ----------
+        - fig : matplotlib.figure.Figure
+            The figure object to plot on.
+        - param : int
+            The index of the parameter to plot.
+        - ylabel : str
+            The label for the y-axis.
+
+        Returns
+        -------
+        None
+        """
+
         ax = fig.add_subplot(self.bf.x.size, 1, param+1)
         for i in range(self.nwalkers): 
             ax.plot(self.sampler.chain[i,:,param], c='k', alpha=0.1)
@@ -525,6 +814,20 @@ class lf:
         return 
 
     def chains(self, labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$'], dirname=''):
+        """
+        Plot the MCMC chains for all parameters.
+
+        Parameters
+        ----------
+        - labels : list of str, optional
+            Labels for the parameters. The default is ['$\phi_*$', '$M_*$', '$\alpha$', '$\beta$'].
+        - dirname : str, optional
+            Directory name to save the plot. The default is ''.
+
+        Returns
+        -------
+        None
+        """
 
         mpl.rcParams['font.size'] = '10'
         nparams = self.bf.x.size
@@ -542,6 +845,22 @@ class lf:
         return
     
     def plot_posterior_sample_lfs(self, ax, mags, **kwargs):
+        """
+        Plot posterior sample luminosity functions.
+        
+        Parameters
+        ----------
+        - ax : matplotlib.axes.Axes
+            The axes object to plot on.
+        - mags : ndarray
+            The absolute magnitudes for which to compute the luminosity function.
+        - kwargs : keyword arguments
+            Additional keyword arguments for plotting (e.g., color, linestyle).
+
+        Returns
+        -------
+        None    
+        """
 
         random_thetas = self.samples[np.random.randint(len(self.samples), size=300)]
         for theta in random_thetas:
