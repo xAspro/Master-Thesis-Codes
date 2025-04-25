@@ -255,6 +255,43 @@ def percentiles(x):
     return [u, l, c] 
 
 class selmap:
+    """
+    Selection Map Class.
+
+    This class represents a selection map for quasars and provides methods to read,
+    process, and analyze the selection map data. It is used in conjunction with the
+    Quasar Luminosity Function (QLF) class to compute the number of quasars in a given
+    redshift range and area.
+
+    Methods
+    -------
+    - __init__(self, x, zlims=None)
+        Constructor - Initializes the selection map object with selection map file, area, and sample id.
+
+    - nqso(self, lumfn, theta)
+        Computes the number of quasars in the selection map for a given luminosity function and parameters.
+
+    Attributes
+    ----------
+    - label : str
+        Label of the selection map.
+    - sid : int
+        Sample ID of the selection map.
+    - area : float
+        Area of the selection map in square degrees.
+    - z : ndarray
+        Redshift values of quasars in the selection map.
+    - m : ndarray
+        Magnitudes of quasars in the selection map.
+    - p : ndarray
+        Selection probabilities of quasars in the selection map.
+    - volarr : ndarray
+        Comoving volume of the selection map in cMpc^3.
+    - dz : ndarray
+        Redshift intervals for quasars in the selection map.
+    - dm : ndarray
+        Magnitude intervals for quasars in the selection map.
+    """
 
     def __init__(self, x, zlims=None):
         """
@@ -272,6 +309,13 @@ class selmap:
         Returns
         -------
         None
+
+        Notes
+        ------
+        CHECK!!! Understand the purpose of dz and dm in the context of the selection map.
+        CHECK!!! Understand the purpose of z_all, m_all, p_all, dz_all_array, and dm_all_array.
+        CHECK!!! Understand the if sample_id == 7 condition and its implications. It seems like it will reset.
+        CHECK!!! Understand each cases separately, again, thoroughly!!!
 
         """
 
@@ -364,6 +408,21 @@ class selmap:
         return
 
     def nqso(self, lumfn, theta):
+        """
+        Compute the number of quasars in the selection map for a given luminosity function and parameters.
+
+        Parameters
+        ----------
+        - lumfn : object
+            The luminosity function object.
+        - theta : ndarray
+            The parameter vector containing the QLF parameters.
+
+        Returns
+        -------
+        - n : float
+            The number of quasars in the selection map.
+        """
 
         try: 
             psi = 10.0**lumfn.log10phi(theta, self.m)
@@ -747,8 +806,13 @@ class lf:
         (phi_star, M_star, alpha, and beta) based on the provided samples. 
         The computed percentiles are stored as attributes of the object.
 
-        Returns:
-            None
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
         self.phi_star = percentiles(self.samples[:,0])
         self.M_star = percentiles(self.samples[:,1])
@@ -870,6 +934,22 @@ class lf:
         return
 
     def plot_bestfit_lf(self, ax, mags, **kwargs):
+        """
+        Plot the best-fit luminosity function.
+        
+        Parameters
+        ----------
+        - ax : matplotlib.axes.Axes
+            The axes object to plot on.
+        - mags : ndarray
+            The absolute magnitudes for which to compute the luminosity function.
+        - kwargs : keyword arguments
+            Additional keyword arguments for plotting (e.g., color, linestyle).
+            
+        Returns
+        -------
+        None
+        """
 
         phi_fit = self.log10phi(self.bf.x, mags)
         ax.plot(mags, phi_fit, **kwargs)
@@ -878,17 +958,45 @@ class lf:
         return
 
     def quasar_volume(self, sample_id):
+        """
+        Calculate the volume of a quasar sample.
+
+        Parameters
+        ----------
+        - sample_id : int
+            The sample ID for which to calculate the volume.
+        
+        Returns
+        -------
+        - volume : float
+            The volume of the quasar sample in cMpc^3.
+
+        Notes
+        -----
+        CHECK!!! This function is not used in the code.
+        """
 
         smap = [x for x in self.maps if x.sid == sample_id]
 
         return smap[0].volume # cMpc^3
 
     def binVol(self, selmap, mrange, zrange):
-
         """
-
         Calculate volume in an M-z bin for *one* selmap.
 
+        Parameters
+        ----------
+        - selmap : selmap object
+            The selection map object for which to calculate the volume.
+        - mrange : tuple of float
+            The magnitude range for the bin.
+        - zrange : tuple of float
+            The redshift range for the bin.
+
+        Returns
+        -------
+        - v : float
+            The volume in the M-z bin for the selection map.
         """
 
         v = 0.0
@@ -903,12 +1011,23 @@ class lf:
         return v
 
     def totBinVol(self, m, mbins, selmaps):
-
         """
-        
-        Given magnitude bins mbins and a list of selection maps
-        selmaps, compute the volume for an object with magnitude m.
+        Calculate the total volume in an M-z bin for *all* selmaps.
+        This is done by summing the volumes for each selection map.
 
+        Parameters
+        ----------
+        - m : float
+            The magnitude for which to calculate the volume.
+        - mbins : ndarray
+            The magnitude bins for the binning.
+        - selmaps : list of selmap objects
+            The selection map objects for which to calculate the volume.
+
+        Returns
+        -------
+        - total_vol : float
+            The total volume in the M-z bin for all selection maps.
         """
 
         idx = np.searchsorted(mbins, m)
@@ -922,6 +1041,34 @@ class lf:
         return total_vol
     
     def get_lf(self, sid, z_plot):
+        """
+        Calculate the binned luminosity function for a given sample ID and redshift.
+        This function computes the binned luminosity function using the selection maps
+        and the quasar data. It returns the binned magnitudes, left and right errors,
+        logarithm of the luminosity function, and upper and lower errors.
+
+        Parameters
+        ----------
+        - sid : int
+            The sample ID for which to calculate the binned luminosity function.
+        - z_plot : float
+            The redshift at which to calculate the binned luminosity function.
+
+        Returns
+        -------
+        - mags : ndarray
+            The binned magnitudes.
+        - left : ndarray
+            The left error bars for the binned luminosity function.
+        - right : ndarray
+            The right error bars for the binned luminosity function.
+        - logphi : ndarray
+            The logarithm of the binned luminosity function.
+        - uperr : ndarray
+            The upper error bars for the binned luminosity function.
+        - downerr : ndarray
+            The lower error bars for the binned luminosity function.
+        """
 
         # Bin data.  This is only for visualisation and to compare
         # with reported binned values.  
@@ -974,6 +1121,20 @@ class lf:
         """
         Magic number warning: the selection function below is set by hand! 
 
+        Parameters
+        ----------
+        - ax : matplotlib.axes.Axes
+            The axes object to plot on.
+        - z_plot : float
+            The redshift at which to plot the literature data.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        CHECK!!! This function is called only if `draw` is called with `plotlit=True`.
         """
         
         qlf_file = 'Data/allqlfs.dat'
@@ -1012,6 +1173,25 @@ class lf:
         return 
         
     def plot_hopkins(self, ax, filename):
+        """
+        Plot Hopkins et al. (2007) QLF data.
+        This function reads the data from the specified file and plots it on the given axes.
+
+        Parameters
+        ----------
+        - ax : matplotlib.axes.Axes
+            The axes object to plot on.
+        - filename : str
+            The name of the file containing the QLF data.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        CHECK!!! This function is not called in the code.
+        """
 
         with open(filename, 'r') as f:
             M1450, phi = np.loadtxt(f, usecols=(1,4), unpack=True)
@@ -1025,7 +1205,23 @@ class lf:
     def draw(self, z_plot, composite=None, dirname='', plotlit=False):
         """
         Plot data, best fit LF, and posterior LFs.
+        This function creates a plot of the luminosity function (LF) for a given redshift
+        and saves it to a file.
 
+        Parameters
+        ----------
+        - z_plot : float
+            The redshift at which to plot the LF.
+        - composite : str, optional
+            The name of the composite LF to plot. The default is None.
+        - dirname : str, optional
+            The directory name to save the plot. The default is ''.
+        - plotlit : bool, optional
+            Whether to plot literature data. The default is False.
+
+        Returns
+        -------
+        None
         """
         mpl.rcParams['font.size'] = '22'
 
