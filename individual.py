@@ -828,7 +828,7 @@ class lf:
         Parameters
         ----------
         - labels : list of str, optional
-            Labels for the parameters. The default is ['$\phi_*$', '$M_*$', '$\alpha$', '$\beta$'].
+            Labels for the parameters. The default is [r'$\\phi_*$', r'$M_*$', r'$\\alpha$', r'$\\beta$'].
         - dirname : str, optional
             Directory name to save the plot. The default is ''.
 
@@ -884,7 +884,7 @@ class lf:
         Parameters
         ----------
         - labels : list of str, optional
-            Labels for the parameters. The default is ['$\phi_*$', '$M_*$', '$\alpha$', '$\beta$'].
+            Labels for the parameters. The default is [r'$\\phi_*$', r'$M_*$', r'$\\alpha$', r'$\\beta$'].
         - dirname : str, optional
             Directory name to save the plot. The default is ''.
 
@@ -1117,7 +1117,6 @@ class lf:
         return mags, left, right, logphi, uperr, downerr
 
     def plot_literature(self, ax, z_plot):
-
         """
         Magic number warning: the selection function below is set by hand! 
 
