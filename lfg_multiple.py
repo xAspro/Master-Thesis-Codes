@@ -30,6 +30,7 @@ print("Time right now: ", readable_time)
 
 
 bins_lfs = np.load('bins_lfs.npy', allow_pickle=True)
+# bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)
 
 
 ###############################################################################################
@@ -168,24 +169,24 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/giallongo15_sample.dat',
              'Data_new/ukidss_sample.dat',
              'Data_new/banados_sample.dat',
-             'Data_2019+/DESI_SV1_sample.dat',
-             'Data_2019+/DESI_main_selection_sample.dat',
-             'Data_2019+/CEERS_Kocevski_sample.dat',
-             'Data_2019+/LRD_Data_CEERS_sample.txt',
-             'Data_2019+/LRD_Data_JADES_sample.txt',
-             'Data_2019+/LRD_Data_NGDEEP_sample.txt',
-             'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
-             'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
-             'Data_2019+/LRD_Data_UNCOVER_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
-            #  '../QLF - Database Details/SHELLQs_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2022/processed_data/SHELQ4_z_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2022/processed_data/SHELQ4_i_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELLQ_i_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELQS_z_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELQS_i_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2019/processed_data/SHELQ3_i_sample.txt',
+            #  'Data_2019+/DESI_SV1_sample.dat',
+            #  'Data_2019+/DESI_main_selection_sample.dat',
+            #  'Data_2019+/CEERS_Kocevski_sample.dat',
+            #  'Data_2019+/LRD_Data_CEERS_sample.txt',
+            #  'Data_2019+/LRD_Data_JADES_sample.txt',
+            #  'Data_2019+/LRD_Data_NGDEEP_sample.txt',
+            #  'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
+            #  'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
+            #  'Data_2019+/LRD_Data_UNCOVER_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
+            # #  '../QLF - Database Details/SHELLQs_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2022/processed_data/SHELQ4_z_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2022/processed_data/SHELQ4_i_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELLQ_i_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELQS_z_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2018/processed_data/SHELQS_i_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2019/processed_data/SHELQ3_i_sample.txt',
              ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
@@ -206,24 +207,24 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/giallongo15_sel.dat', 0.047, 7),
              ('Selmaps_with_tiles/ukidss_sel_4.dat', 3370.0, 19),
              ('Selmaps_with_tiles/banados_sel_4.dat', 2500.0, 20),
-             ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
-             ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
-             ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
-             ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151),
-             ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152),
-             ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153),
-             ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154),
-             ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155),
-             ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
-             ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
-             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
-            #  ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
-             ('smooth_maps/2019+/SHELLQs_z_selfunc_with_tiles.dat', 1200.0, 108),
-             ('smooth_maps/2019+/SHELLQs_i_selfunc_with_tiles.dat', 1200.0, 108),
-             ('smooth_maps/2019+/SHELLQ_i_selfunc_with_tiles.dat', 1200.0, 109),
-             ('smooth_maps/2019+/SHELQS_z_selfunc_with_tiles.dat', 1200.0, 110),
-             ('smooth_maps/2019+/SHELQS_i_selfunc_with_tiles.dat', 1200.0, 110),
-             ('smooth_maps/2019+/SHELQ3_i_selfunc_with_tiles.dat', 1200.0, 111),
+            #  ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
+            #  ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
+            #  ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
+            #  ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151),
+            #  ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152),
+            #  ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153),
+            #  ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154),
+            #  ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155),
+            #  ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
+            #  ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
+            #  ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
+            # #  ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
+            #  ('smooth_maps/2019+/SHELLQs_z_selfunc_with_tiles.dat', 1200.0, 108),
+            #  ('smooth_maps/2019+/SHELLQs_i_selfunc_with_tiles.dat', 1200.0, 108),
+            #  ('smooth_maps/2019+/SHELLQ_i_selfunc_with_tiles.dat', 1200.0, 109),
+            #  ('smooth_maps/2019+/SHELQS_z_selfunc_with_tiles.dat', 1200.0, 110),
+            #  ('smooth_maps/2019+/SHELQS_i_selfunc_with_tiles.dat', 1200.0, 110),
+            #  ('smooth_maps/2019+/SHELQ3_i_selfunc_with_tiles.dat', 1200.0, 111),
             ]
 
 
@@ -322,18 +323,18 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/willott10_cfhqsdeepsample.dat',
              'Data_new/willott10_cfhqsvwsample.dat',
              'Data_new/kashikawa15_sample.dat',
-             'Data_2019+/DESI_SV1_sample.dat',
-             'Data_2019+/DESI_main_selection_sample.dat',
-             'Data_2019+/CEERS_Kocevski_sample.dat',
-             'Data_2019+/LRD_Data_CEERS_sample.txt',
-             'Data_2019+/LRD_Data_JADES_sample.txt',
-             'Data_2019+/LRD_Data_NGDEEP_sample.txt',
-             'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
-             'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
-             'Data_2019+/LRD_Data_UNCOVER_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
-             '../QLF - Database Details/SHELLQs_sample.txt',
+            #  'Data_2019+/DESI_SV1_sample.dat',
+            #  'Data_2019+/DESI_main_selection_sample.dat',
+            #  'Data_2019+/CEERS_Kocevski_sample.dat',
+            #  'Data_2019+/LRD_Data_CEERS_sample.txt',
+            #  'Data_2019+/LRD_Data_JADES_sample.txt',
+            #  'Data_2019+/LRD_Data_NGDEEP_sample.txt',
+            #  'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
+            #  'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
+            #  'Data_2019+/LRD_Data_UNCOVER_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
+            #  '../QLF - Database Details/SHELLQs_sample.txt',
              ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
@@ -351,18 +352,18 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/willott10_cfhqsdeepsel.dat', 4.47, 10),
              ('Selmaps_with_tiles/willott10_cfhqsvwsel.dat', 494.0, 10),
              ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11),
-             ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
-             ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
-             ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
-             ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151),
-             ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152),
-             ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153),
-             ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154),
-             ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155),
-             ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
-             ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
-             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
-             ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
+            #  ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
+            #  ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
+            #  ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
+            #  ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151),
+            #  ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152),
+            #  ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153),
+            #  ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154),
+            #  ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155),
+            #  ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
+            #  ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
+            #  ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
+            #  ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
              ]
 
 lfg2 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum2)
@@ -450,18 +451,18 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
              'Data_new/willott10_cfhqsdeepsample.dat',
              'Data_new/willott10_cfhqsvwsample.dat',
              'Data_new/kashikawa15_sample.dat',
-             'Data_2019+/DESI_SV1_sample.dat',
-             'Data_2019+/DESI_main_selection_sample.dat',
-             'Data_2019+/CEERS_Kocevski_sample.dat',
-             'Data_2019+/LRD_Data_CEERS_sample.txt',
-             'Data_2019+/LRD_Data_JADES_sample.txt',
-             'Data_2019+/LRD_Data_NGDEEP_sample.txt',
-             'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
-             'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
-             'Data_2019+/LRD_Data_UNCOVER_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
-             '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
-             '../QLF - Database Details/SHELLQs_sample.txt',
+            #  'Data_2019+/DESI_SV1_sample.dat',
+            #  'Data_2019+/DESI_main_selection_sample.dat',
+            #  'Data_2019+/CEERS_Kocevski_sample.dat',
+            #  'Data_2019+/LRD_Data_CEERS_sample.txt',
+            #  'Data_2019+/LRD_Data_JADES_sample.txt',
+            #  'Data_2019+/LRD_Data_NGDEEP_sample.txt',
+            #  'Data_2019+/LRD_Data_PRIMER-COS_sample.txt',
+            #  'Data_2019+/LRD_Data_PRIMER-UDS_sample.txt',
+            #  'Data_2019+/LRD_Data_UNCOVER_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16_gG_sample.txt',
+            #  '../QLF - Database Details/milliquas-ref-2020/unprocessed_data/DR16Q_gG_sample.txt',
+            #  '../QLF - Database Details/SHELLQs_sample.txt',
              ]
 
 selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
@@ -479,18 +480,18 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13),
              ('Selmaps_with_tiles/willott10_cfhqsdeepsel.dat', 4.47, 10),
              ('Selmaps_with_tiles/willott10_cfhqsvwsel.dat', 494.0, 10),
              ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11),
-             ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
-             ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
-             ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
-             ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151),
-             ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152),
-             ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153),
-             ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154),
-             ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155),
-             ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
-             ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
-             ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
-             ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
+            #  ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25),
+            #  ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25),
+            #  ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26),
+            #  ('smooth_maps/2019+/LRD_Data_CEERS_selfunc_with_tiles.dat', 0.024611, 151),
+            #  ('smooth_maps/2019+/LRD_Data_JADES_selfunc_with_tiles.dat', 0.017250, 152),
+            #  ('smooth_maps/2019+/LRD_Data_NGDEEP_selfunc_with_tiles.dat', 0.003167, 153),
+            #  ('smooth_maps/2019+/LRD_Data_PRIMER-COS_selfunc_with_tiles.dat', 0.038583, 154),
+            #  ('smooth_maps/2019+/LRD_Data_PRIMER-UDS_selfunc_with_tiles.dat', 0.067500, 155),
+            #  ('smooth_maps/2019+/LRD_Data_UNCOVER_selfunc_with_tiles.dat', 0.012167, 156),
+            #  ('smooth_maps/2019+/fake_sdss_dr16_selfunc_with_tiles.dat', 14555.0, 105),
+            #  ('smooth_maps/2019+/fake_sdss_dr16Q_selfunc_with_tiles.dat', 14555.0, 106),
+            #  ('smooth_maps/2019+/SHELLQs_selfunc_with_tiles.dat', 1200.0, 107)
              ]
 
 
@@ -579,15 +580,29 @@ except Exception as e:
     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
     traceback.print_exc()
 
+
+sd.play(wave, samplerate=sample_rate)
+
 #------------------------------------------------------------
 ###################################################################################################
 ## What this this doing here???
 # import bins 
 ###################################################################################################
 
-# try:
-#     sp(composite=lfg1, individuals=bins.lfs, sample=True)  # calling the function
+try:
+    sp(composite=lfg1, individuals=bins_lfs, sample=True)  # calling the function
 
-# except Exception as e:
-#     print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
+except Exception as e:
+    print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
 
+print("The different lf models have been run and the plots have been generated.")
+print("You can access the lf models from the variables lfg1, lfg2, and lfg3.")
+print("These lf models are saved using np.save.")
+
+np.save('lfg1.npy', lfg1)
+np.save('lfg2.npy', lfg2)
+np.save('lfg3.npy', lfg3)
+
+# np.save('lfg1_old_data.npy', lfg1)
+# np.save('lfg2_old_data.npy', lfg2)
+# np.save('lfg3_old_data.npy', lfg3)

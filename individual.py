@@ -724,7 +724,7 @@ class lf:
 
         return
 
-    def __lnprior(self, theta):
+    def _lnprior(self, theta):
         """
         Checks if the parameters are within the prior bounds.
 
@@ -746,7 +746,7 @@ class lf:
 
         return -np.inf
     
-    def __lnprob(self, theta):
+    def _lnprob(self, theta):
         """
         Compute the log-probability of the QLF model given the parameters.
 
@@ -762,7 +762,7 @@ class lf:
             if the log prior is not finite.
         """
 
-        lp = self.__lnprior(theta)
+        lp = self._lnprior(theta)
         
         if not np.isfinite(lp):
             return -np.inf
@@ -791,7 +791,7 @@ class lf:
                in range(self.nwalkers)]
         
         self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
-                                             self.__lnprob)
+                                             self._lnprob)
 
         self.sampler.run_mcmc(pos, 1000)
         self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
@@ -1313,3 +1313,35 @@ class lf:
             
         return 
     
+    # def __getstate__(self):
+    #     """
+    #     Prepare the state for serialization by renaming mangled private methods.
+    #     """
+    #     print(f"Getting state: {self.__dict__}")
+    #     state = self.__dict__.copy()
+    #     class_name = self.__class__.__name__
+
+    #     # Rename all mangled private methods to their original names
+    #     for key in list(state.keys()):
+    #         if key.startswith(f"_{class_name}__"):
+    #             print("\n\n\n**************************************************************************************************************\n\n\n****************************************************************************************\n\n\n****************************************************************************************\n\n\n")
+    #             print(f"(Get) Renaming {key} to {key[len(f'_{class_name}__'):]}")
+    #             original_name = key[len(f"_{class_name}__"):]  # Remove the mangling prefix
+    #             state[original_name] = state.pop(key)
+    #     return state
+    
+    # def __setstate__(self, state):
+    #     """
+    #     Restore the state after deserialization by reapplying mangled names to private methods.
+    #     """
+    #     print(f"Setting state: {state}")
+    #     class_name = self.__class__.__name__
+
+    #     # Rename all private methods back to their mangled names
+    #     for key in list(state.keys()):
+    #         if not key.startswith("_") and f"__{key}" in dir(self):  # Check if it's a private method
+    #             print(f"(Set) Renaming {key} to _{class_name}__{key}")
+    #             mangled_name = f"_{class_name}__{key}"
+    #             state[mangled_name] = state.pop(key)
+    #     self.__dict__.update(state)
+

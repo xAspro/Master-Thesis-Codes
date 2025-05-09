@@ -689,14 +689,14 @@ class lf_polyb:
         return
 
     def atz(self, z, p):
-        print("In composite.py class-lf_polyb atz")
+        # print("In composite.py class-lf_polyb atz")
 
         """Redshift evolution of QLF parameters."""
         
         return T(p)(1+z)
     
     def getparams(self, theta):
-        print("In composite.py class-lf_polyb getparams")
+        # print("In composite.py class-lf_polyb getparams")
 
         if isinstance(self.pnum, int):
             # Evolution of each LF parameter described by 'atz' using same
