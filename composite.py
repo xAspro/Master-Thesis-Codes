@@ -710,7 +710,7 @@ class lf_polyb:
         return np.split(theta,splitlocs)
 
     def log10phi(self, theta, mag, z):
-        print("In composite.py class-lf_polyb log10phi")
+        # print("In composite.py class-lf_polyb log10phi")
 
         params = self.getparams(theta)
 

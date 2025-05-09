@@ -12,6 +12,7 @@ mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '22'
 import matplotlib.pyplot as plt
 import fit_emissivity
+import sounddevice as sd
 
 def f(loglf, theta, m, z, fit='individual'):
 
@@ -80,15 +81,15 @@ def draw(individuals, zlims, select=False):
     l = np.array([x.rhoqso[1] for x in selected])
 
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
     
     zs = np.array([x.z.mean() for x in selected])
     uz = np.array([x.zlims[0] for x in selected])
     lz = np.array([x.zlims[1] for x in selected])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
 
     ax.scatter(zs, rho, c='tomato', edgecolor='None',
                label='$M < -18$',
@@ -111,15 +112,15 @@ def draw(individuals, zlims, select=False):
     l = np.array([x.rhoqso[1] for x in selected])
 
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
     
     zs = np.array([x.z.mean() for x in selected])
     uz = np.array([x.zlims[0] for x in selected])
     lz = np.array([x.zlims[1] for x in selected])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
 
     ax.scatter(zs, rho, c='forestgreen', edgecolor='None',
                label='$M<-21$',
@@ -141,15 +142,15 @@ def draw(individuals, zlims, select=False):
     l = np.array([x.rhoqso[1] for x in selected])
 
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
     
     zs = np.array([x.z.mean() for x in selected])
     uz = np.array([x.zlims[0] for x in selected])
     lz = np.array([x.zlims[1] for x in selected])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
 
     ax.scatter(zs, rho, c='goldenrod', edgecolor='None',
                label='$M<-24$',
@@ -171,15 +172,15 @@ def draw(individuals, zlims, select=False):
     l = np.array([x.rhoqso[1] for x in selected])
 
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
     
     zs = np.array([x.z.mean() for x in selected])
     uz = np.array([x.zlims[0] for x in selected])
     lz = np.array([x.zlims[1] for x in selected])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
 
     ax.scatter(zs, rho, c='saddlebrown', edgecolor='None',
                label='$M<-27$',
@@ -270,7 +271,9 @@ def global_optimum_differential(ax, composite, mbright, mfaint, color):
 def individuals_differential(ax, individuals, mbright, mfaint, color):
 
     # These redshift bins are labelled "bad" and are plotted differently.
-    reject = [0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    # reject = [0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+    reject = []
 
     m = np.ones(len(individuals), dtype=bool)
     m[reject] = False
@@ -287,15 +290,15 @@ def individuals_differential(ax, individuals, mbright, mfaint, color):
     l = np.array([x.rhoqso[1] for x in individuals_good])
 
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
     
     zs = np.array([x.z.mean() for x in individuals_good])
     uz = np.array([x.zlims[0] for x in individuals_good])
     lz = np.array([x.zlims[1] for x in individuals_good])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
 
     ax.scatter(zs, rho, c=color, edgecolor='None',
                s=72, zorder=10, linewidths=2) 
@@ -310,15 +313,15 @@ def individuals_differential(ax, individuals, mbright, mfaint, color):
     l = np.array([x.rhoqso[1] for x in individuals_bad])
 
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
     
     zs = np.array([x.z.mean() for x in individuals_bad])
     uz = np.array([x.zlims[0] for x in individuals_bad])
     lz = np.array([x.zlims[1] for x in individuals_bad])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
 
     ax.errorbar(zs, rho, ecolor=color, capsize=0, fmt='None', elinewidth=1,
                 yerr=np.vstack((rho_low, rho_up)),
@@ -335,7 +338,9 @@ def individuals_differential(ax, individuals, mbright, mfaint, color):
 def individuals_cumulative(ax, individuals, mlim, color, label):
 
     # These redshift bins are labelled "bad" and are plotted differently.
-    reject = [0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    # reject = [0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+    reject = []
 
     m = np.ones(len(individuals), dtype=bool)
     m[reject] = False
@@ -352,15 +357,15 @@ def individuals_cumulative(ax, individuals, mlim, color, label):
     l = np.array([x.rhoqso[1] for x in individuals_good])
 
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
     
     zs = np.array([x.z.mean() for x in individuals_good])
     uz = np.array([x.zlims[0] for x in individuals_good])
     lz = np.array([x.zlims[1] for x in individuals_good])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
 
     ax.scatter(zs, rho, c=color, edgecolor='None',
                label=label,
@@ -376,15 +381,15 @@ def individuals_cumulative(ax, individuals, mlim, color, label):
     l = np.array([x.rhoqso[1] for x in individuals_bad])
 
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
     
     zs = np.array([x.z.mean() for x in individuals_bad])
     uz = np.array([x.zlims[0] for x in individuals_bad])
     lz = np.array([x.zlims[1] for x in individuals_bad])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
 
     ax.errorbar(zs, rho, ecolor=color, capsize=0, fmt='None', elinewidth=1,
                 yerr=np.vstack((rho_low, rho_up)),
@@ -406,35 +411,98 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
     """
 
     # These redshift bins are labelled "bad" and are plotted differently.
-    reject = [0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    # reject = [0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
+    print("\n\nIn individuals_cumulative_multiple")
+    print("individuals=", individuals)
+    print("mlim=", mlim)
+    print("len(individuals)=", len(individuals))
+
+    reject = []
+
+    print("reject=", reject)
     m = np.ones(len(individuals), dtype=bool)
+    print("m=", m)
+    print("m[reject]=", m[reject])
     m[reject] = False
+    
     minv = np.logical_not(m)
 
+    print("reject=", reject)
+    print("m=", m)
+    print("len(m)=", len(m))
+
+    for i, x in enumerate(individuals):
+        print("i=", i)
+        print("x=", x)
+
+        print("i in set(reject)=", i in set(reject))
+
     individuals_good = [x for i, x in enumerate(individuals) if i not in set(reject)]
+    print("individuals_good=", individuals_good)
     individuals_bad = [x for i, x in enumerate(individuals) if i in set(reject)]
+    print("individuals_bad=", individuals_bad)
     
     for x in individuals:
         get_rhoqso(x, mlim, x.z.mean())
+        print("x=", x)
     
     c = np.array([x.rhoqso[2] for x in individuals_good])
     u = np.array([x.rhoqso[0] for x in individuals_good])
     l = np.array([x.rhoqso[1] for x in individuals_good])
 
+    print("[u, l, c]=", [u, l, c])
+
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
+
+    print("[rho_up, rho_low]=", [rho_up, rho_low])
+    print("rho=", rho)
     
     zs = np.array([x.z.mean() for x in individuals_good])
     uz = np.array([x.zlims[0] for x in individuals_good])
     lz = np.array([x.zlims[1] for x in individuals_good])
+
+    print("[uz, zs, lz]=", [uz, zs, lz])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
+
+    print("[uzerr, lzerr]=", [uzerr, lzerr])
+    print("\n*************************************************************\n")
 
     ax.scatter(zs, rho, c=color, edgecolor='None',
                s=42, zorder=10, linewidths=2) 
+    
+    # print("\n\n\n******************************************************************\n\n\n")
+    # print('\nzs=', zs)
+    # print('\nrho=', rho)
+    # print('\nuz=', uz)
+    # print('\nlz=', lz)
+    # print('\nuzerr=', uzerr)
+    # print('\nlzerr=', lzerr)
+    # print('\nrho_up=', rho_up)
+    # print('\nrho_low=', rho_low)
+    # print('\nu=', u)
+    # print('\nl=', l)
+    # print('\nc=', c)
+    # print('\n\n\n******************************************************************\n\n\n')
+    # # Check if all uzerr and lzerr are negative
+    # if np.all(uzerr < 0):
+    #     print("All uzerr values are negative.")
+    # elif np.all(uzerr > 0):
+    #     print("All uzerr values are positive.")
+    # else:
+    #     print("Not all uzerr values are negative.")
+
+    # if np.all(lzerr < 0):
+    #     print("All lzerr values are negative.")
+    # elif np.all(lzerr > 0):
+    #     print("All lzerr values are positive.")
+    # else:
+    #     print("Not all lzerr values are negative.")
+
 
     ax.errorbar(zs, rho, ecolor=color, capsize=0, fmt='None', elinewidth=1,
                 yerr=np.vstack((rho_low, rho_up)),
@@ -470,15 +538,15 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
     l = np.array([x.rhoqso[1] for x in individuals_bad])
 
     rho = c
-    rho_up = u - c
-    rho_low = c - l 
+    rho_up = np.abs(u - c)
+    rho_low = np.abs(c - l)
     
     zs = np.array([x.z.mean() for x in individuals_bad])
     uz = np.array([x.zlims[0] for x in individuals_bad])
     lz = np.array([x.zlims[1] for x in individuals_bad])
     
-    uzerr = uz-zs
-    lzerr = zs-lz 
+    uzerr = np.abs(uz - zs)
+    lzerr = np.abs(zs - lz)
 
     ax.errorbar(zs, rho, ecolor=color, capsize=0, fmt='None', elinewidth=1,
                 yerr=np.vstack((rho_low, rho_up)),
@@ -606,7 +674,7 @@ def draw_withGlobal(composite, individuals, zlims, select=False):
 
     return
 
-def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False):
+def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rhoqso_withGlobal_multiple.pdf'):
 
     fig = plt.figure(figsize=(7, 11), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
@@ -669,8 +737,10 @@ def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False):
                handletextpad=0.3, borderpad=0.1,
                scatterpoints=1)
     
-    plt.savefig('rhoqso_withGlobal.pdf',bbox_inches='tight')
+    plt.savefig(filename,bbox_inches='tight')
     plt.close('all')
+
+    print(f'Saved the plot in {filename}')
 
     return
 
@@ -957,3 +1027,48 @@ def draw_onlyGlobal(composite):
 
 
 
+
+
+if __name__ == '__main__':
+    import time
+
+    start_time = time.time()
+    print("Start time:", start_time)
+
+    lfg1 = np.load('lfg1_old_data.npy', allow_pickle=True)
+    lfg2 = np.load('lfg2_old_data.npy', allow_pickle=True)
+    lfg3 = np.load('lfg3_old_data.npy', allow_pickle=True)
+    bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)
+
+    lfg1 = lfg1.tolist()
+    lfg2 = lfg2.tolist()
+    lfg3 = lfg3.tolist()
+    bins_lfs = bins_lfs.tolist()
+
+    print("\n\n\n")
+    print(type(lfg1))
+    print(dir(lfg1))
+    print("\n\n\n")
+    print(type(bins_lfs))
+    print(dir(bins_lfs))
+    print("\n\n\n")
+
+    # import sys
+    # sys.exit(0)
+    draw_withGlobal_multiple(lfg1, lfg2, lfg3, bins_lfs, select=False, filename='rhoqso_withGlobal_multiple2.pdf')
+
+    duration = 3  # seconds
+    frequency = 440  # Hz, the frequency of the beep sound (440Hz is standard A note)
+
+    # Generate sound wave (440Hz sine wave)
+    sample_rate = 44100  # samples per second
+    t = np.linspace(0, duration, int(sample_rate * duration), False)
+    wave = 0.5 * np.sin(2 * np.pi * frequency * t)
+
+    # Play the generated sound wave
+    sd.play(wave, samplerate=sample_rate)
+    # sd.wait()  # Wait until the sound is finished playing
+
+    end_time = time.time()
+    print("End time:", end_time)
+    print("Duration:", end_time - start_time)

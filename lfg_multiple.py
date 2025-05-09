@@ -32,6 +32,8 @@ print("Time right now: ", readable_time)
 bins_lfs = np.load('bins_lfs.npy', allow_pickle=True)
 # bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)
 
+print(type(bins_lfs))
+print(dir(bins_lfs))
 
 ###############################################################################################
 ###############################################################################################
