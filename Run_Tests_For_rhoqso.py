@@ -203,7 +203,7 @@ def logposterior(params, NUM, z, rho, rho_up, rho_low):
         return -np.inf
     return lp + ll
 
-def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2, nsteps_prod=5000):
+def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=200, nsteps_prod=1000):
     """
     Run MCMC to sample the posterior distribution.
     """
@@ -212,8 +212,8 @@ def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2, nsteps_p
 
     p0 = np.empty((nwalkers, ndim))
 
-    p0[:, :NUM] = np.random.uniform(-5, 5, size=(nwalkers, NUM))  # function parameters
-    p0[:, NUM] = np.random.uniform(0, 1, size=nwalkers)  # Pb
+    p0[:, :NUM] = np.random.uniform(-1, 1, size=(nwalkers, NUM))  # function parameters
+    p0[:, NUM] = np.random.uniform(0.1, 0.9, size=nwalkers)  # Pb
     p0[:, NUM + 1] = np.random.uniform(-10, 10, size=nwalkers)  # Yb
     p0[:, NUM + 2] = np.random.uniform(0, 10, size=nwalkers)  # Vb
 
