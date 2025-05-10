@@ -6,6 +6,7 @@ import sys
 from numpy.polynomial.chebyshev import chebfit
 from numpy.polynomial import Chebyshev as T
 import time
+import random
 
 from emcee.moves import StretchMove
 
@@ -40,15 +41,15 @@ def Pb_penalise(Pb):
     """
     if Pb < 0 or Pb > 1:
         return -np.inf
-    return - 100 * Pb + 1
+    return - 150 * Pb + 1
 
 def Vb_penalise(Vb):
     """
     Penalise the Vb parameter.
     """
-    if Vb < 0:
-        return -np.inf
-    return -np.log10(Vb)
+    if 0 < Vb < 1:
+        return - Vb
+    return -np.inf
 
 def Yb_penalise(Yb):
     """
@@ -70,7 +71,7 @@ def function_penalise(params, NUM):
     sum = 0
 
     for i in range(NUM):
-        if i == 0 and not (-0.5 < func_params[i] < 0):
+        if i == 0 and not (-1.5 < func_params[i] < 0):
             return -np.inf
         if i == 0 or i == NUM - 1:
             sum -= np.log(1 +  np.exp(func_params[i]))
@@ -204,7 +205,7 @@ def logposterior(params, NUM, z, rho, rho_up, rho_low):
         return -np.inf
     return lp + ll
 
-def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2, nsteps_prod=10000):
+def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=200, nsteps_prod=1000):
     """
     Run MCMC to sample the posterior distribution.
     """
@@ -217,7 +218,7 @@ def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2, nsteps_p
     p0[:, 1:NUM] = np.random.uniform(-0.5, 0.5, size=(nwalkers, NUM-1))  # other function parameters
     p0[:, NUM] = np.random.uniform(0.2, 0.8, size=nwalkers)  # Pb
     p0[:, NUM + 1] = np.random.uniform(-5, 5, size=nwalkers)  # Yb
-    p0[:, NUM + 2] = np.random.uniform(1, 5, size=nwalkers)  # Vb
+    p0[:, NUM + 2] = np.random.uniform(0.05, 0.5, size=nwalkers)  # Vb
 
 
     # Set up the sampler
@@ -235,6 +236,46 @@ def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2, nsteps_p
     sampler.run_mcmc(None, nsteps_prod, progress=True)
 
     return sampler
+
+def find_bad_data(samples, z, rho, rho_up, rho_low, function):
+    Npoints = len(z)
+    Nsamps = len(samples)
+    probs = np.zeros((Nsamps, Npoints))
+
+    rho_sigma = (rho_up + rho_low) / 2
+
+    for s, params in enumerate(samples):
+        func_params = params[:-3]
+        Pb, Yb, Vb = params[-3:]
+
+        model_vals = function(z, func_params)
+
+        p_fg = (1 / np.sqrt(2 * np.pi * rho_sigma**2)) * np.exp(-0.5 * ((rho - model_vals) / rho_sigma)**2)
+        p_bg = (1 / np.sqrt(2 * np.pi * (Vb + rho_sigma**2))) * np.exp(-0.5 * ((rho - Yb)**2 / (Vb + rho_sigma**2)))
+
+        numerator = Pb * p_bg
+        denominator = (1 - Pb) * p_fg + Pb * p_bg
+
+        if random.random() < 0.00001:
+
+            print("Pb = ", Pb)
+            print("p_fg = ", p_fg)
+            print("p_bg = ", p_bg)
+
+            print("numerator = ", numerator)
+            print("denominator = ", denominator)
+            print("numerator / denominator = ", numerator / denominator)
+
+            print("mask = ", numerator / denominator > 0.5)
+
+
+            residuals = rho - model_vals
+            print(residuals / rho_sigma)  # This should be ~0 if model fits well
+
+        probs[s, :] = numerator / denominator
+
+    return np.mean(probs, axis=0)
+
 
 def compute_corner_statistics(samples):
     """
@@ -378,26 +419,25 @@ for i, subarray in enumerate(subarrays):
     logrho = np.log10(rho)
     logrho_up = 1 / (np.log(10) * rho) * rho_up
     logrho_low = 1 / (np.log(10) * rho) * rho_low
-    # rho_up = np.log10(rho + rho_up) - rho
-    # rho_low = np.log10(rho - rho_low) - rho
 
-    # print("z = ", z)
-    # print("rho = ", rho)
-    # print("rho_up = ", rho_up)
-    # print("rho_low = ", rho_low)
-    # print("length of z = ", len(z))
-    # print("length of rho = ", len(rho))
-    # print("length of rho_up = ", len(rho_up))
+    print("z = ", z)
+    print("rho = ", rho)
+    print("rho_up = ", rho_up)
+    print("rho_low = ", rho_low)
+    print("length of z = ", len(z))
+    print("length of rho = ", len(rho))
+    print("length of rho_up = ", len(rho_up))
 
-    # print("logrho = ", logrho)
-    # print("logrho_up = ", logrho_up)
-    # print("logrho_low = ", logrho_low)
-    # print("length of logrho = ", len(logrho))
-    # print("length of logrho_up = ", len(logrho_up))
-    # print("length of logrho_low = ", len(logrho_low))
+    print("logrho = ", logrho)
+    print("logrho_up = ", logrho_up)
+    print("logrho_low = ", logrho_low)
+    print("length of logrho = ", len(logrho))
+    print("length of logrho_up = ", len(logrho_up))
+    print("length of logrho_low = ", len(logrho_low))
 
     # import sys
     # sys.exit(0)
+    print("\n\n\n")
 
     # Fit a polynomial of the desired order to the data
     order = 2  # Change this to control the order of the polynomial
@@ -433,6 +473,8 @@ for i, subarray in enumerate(subarrays):
     sampler_list.append(sampler)
     logrho_up_list.append(logrho_up)
     logrho_low_list.append(logrho_low)
+
+
 
 # Save and show the main figure
 plt.figure(main_fig.number)
@@ -504,10 +546,17 @@ def plot_data(x, y, parameters, xmin, xmax, sigys):
 
     sigy = (np.abs(sigys[0]) + np.abs(sigys[1])) / 2
 
+    prob_bad_points = find_bad_data(samples, x, y, sigys[0], sigy[1], function)
+    print("prob_bad_points = ", prob_bad_points)
+
+    mask = prob_bad_points > 0.5
+    print("mask = ", mask)
+
     # print("sigys = ", sigys)
     # print("sigy = ", sigy)
 
     plt.scatter(x, y, c='red', label='Data Points', edgecolor='black')
+    plt.scatter(x[mask], y[mask], facecolors='none', edgecolors='red', s=100, label='Bad Data Points')
     plt.errorbar(x, y, yerr=sigy, fmt='o', label='Error bars', alpha=0.6, capsize=5)
     plt.xlabel('z')
     plt.ylabel('rho')
@@ -518,14 +567,14 @@ def plot_data(x, y, parameters, xmin, xmax, sigys):
 
     plt.plot(x_arr, y_arr, color='black', label='MAP Line')
     plt.xlim(xmin, xmax)
-    plt.ylim(-12, 1)
+    plt.ylim(-22, 1)
 
   
 
 for i in range(len(sampler_list)):
     # Get the MAP parameters
     map_params = find_MAP(sampler, NUM=3)
-    print("MAP Parameters:", map_params)
+    print("\n\n\n\n\n\n\n\n\nMAP Parameters:", map_params)
 
     # Plot the data with Gaussian uncertainty for each segment
     plot_data(scatter_z[i], scatter_rho[i], map_params, zmin, zmax, [logrho_up_list[i], logrho_low_list[i]])
@@ -533,6 +582,8 @@ for i in range(len(sampler_list)):
 
 
 filename = "rhoqso_different_final_plot"
+plt.legend()
+
 
 if filename:
     plt.savefig(filename + ".pdf", bbox_inches='tight')
