@@ -584,6 +584,7 @@ except Exception as e:
 
 
 sd.play(wave, samplerate=sample_rate)
+sd.wait()  # Wait until the sound is finished playing
 
 #------------------------------------------------------------
 ###################################################################################################

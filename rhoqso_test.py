@@ -121,7 +121,7 @@ def plotLF(*params):
                      handletextpad=0.1, borderpad=0.01, scatterpoints=1)
         
     plt.xlim(-10,-55)
-    plt.savefig('lf.pdf', bbox_inches='tight')
+    plt.savefig('lf2.pdf', bbox_inches='tight')
 
     return 
     
@@ -171,7 +171,7 @@ def plotRhoQso(zmin, zmax):
     ax.set_yscale('log')
     ax.set_ylim(1.0e-40, 1.0e-3)
 
-    plt.savefig('rhoqso_test.pdf',bbox_inches='tight')
+    plt.savefig('rhoqso_test2.pdf',bbox_inches='tight')
     return 
 
 def plotdRhoQsodz(zmin, zmax): 
@@ -225,7 +225,7 @@ def plotdRhoQsodz(zmin, zmax):
                      frameon=False, framealpha=0.0, labelspacing=.1,
                      handletextpad=0.1, borderpad=0.5, scatterpoints=1)
 
-    plt.savefig('drhoqsodz_test.pdf',bbox_inches='tight')
+    plt.savefig('drhoqsodz_test2.pdf',bbox_inches='tight')
     return 
 
 def plotParams(zmin, zmax): 
@@ -254,8 +254,10 @@ def plotParams(zmin, zmax):
     zc = np.linspace(zmin, zmax, num=500)
 
     ax = fig.add_subplot(nplots_x, nplots_y, 1)
-    ax.set_xlim(zmin, zmax)
-    ax.set_ylim(-50, 0)
+    # ax.set_xlim(zmin, zmax)
+    # ax.set_ylim(-50, 0)
+    ax.set_xlim(0, 7)
+    ax.set_ylim(-12, -5)
     ax.plot(zc, T(p_log10phiStar)(1+zc), c='k', lw=2) 
     ax.set_ylabel(r'$\log_{10}\phi_*$')
     ax.set_xticklabels('')
@@ -264,15 +266,19 @@ def plotParams(zmin, zmax):
     ax.yaxis.tick_right()
     ax.yaxis.set_ticks_position('both')
     ax.yaxis.set_label_position('right')
-    ax.set_xlim(zmin, zmax)
-    ax.set_ylim(-150, -20)
+    # ax.set_xlim(zmin, zmax)
+    # ax.set_ylim(-150, -20)
+    ax.set_xlim(0, 7)
+    ax.set_ylim(-32, -20)
     ax.plot(zc, T(p_MStar)(1+zc), c='k', lw=2) 
     ax.set_ylabel(r'$M_*$')
     ax.set_xticklabels('')
 
     ax = fig.add_subplot(nplots_x, nplots_y, 3)
-    ax.set_xlim(zmin, zmax)
-    ax.set_ylim(-8, -3)
+    # ax.set_xlim(zmin, zmax)
+    # ax.set_ylim(-8, -3)
+    ax.set_xlim(0, 7)
+    ax.set_ylim(-7, -1)
     ax.plot(zc, T(p_alpha)(1+zc), c='k', lw=2) 
     ax.set_ylabel(r'$\alpha$')
 
@@ -280,15 +286,17 @@ def plotParams(zmin, zmax):
     ax.yaxis.tick_right()
     ax.yaxis.set_ticks_position('both')
     ax.yaxis.set_label_position('right')
-    ax.set_xlim(zmin, zmax)
-    ax.set_ylim(-2.6, -1.5)
+    # ax.set_xlim(zmin, zmax)
+    # ax.set_ylim(-2.6, -1.5)
+    ax.set_xlim(0, 7)
+    ax.set_ylim(-3.0, 0.0)
     h, f0, z0, a, b = p_beta
     zeta = np.log10((1.0+zc)/(1.0+z0))
     beta = h + f0/(10.0**(a*zeta) + 10.0**(b*zeta))
     ax.plot(zc, beta, c='k', lw=2) 
     ax.set_ylabel(r'$\beta$')
 
-    plt.savefig('evolutionFC.pdf',bbox_inches='tight')
+    plt.savefig('evolutionFC2.pdf',bbox_inches='tight')
 
     mpl.rcParams['font.size'] = '22'
 
