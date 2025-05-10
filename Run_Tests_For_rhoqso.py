@@ -7,8 +7,18 @@ from numpy.polynomial.chebyshev import chebfit
 from numpy.polynomial import Chebyshev as T
 import time
 
+from emcee.moves import StretchMove
+
+
 zmin = 0
 zmax = 15
+
+####################################################################################
+#### Even the function logrho = A * z ^ (- B - C * log(z)) - D works!!!!        ####
+####                        It works better!!!                                  #### 
+####            A, C and D strictly positive, B can be anything!                ####
+#### Or Double Power law should also work!!!                                    ####
+####################################################################################
 
 def function(x, parameters):
     """
@@ -30,13 +40,13 @@ def Pb_penalise(Pb):
     """
     if Pb < 0 or Pb > 1:
         return -np.inf
-    return - 100 * Pb
+    return - 100 * Pb + 1
 
 def Vb_penalise(Vb):
     """
     Penalise the Vb parameter.
     """
-    if Vb <= 0:
+    if Vb < 0:
         return -np.inf
     return -np.log10(Vb)
 
@@ -58,10 +68,6 @@ def function_penalise(params, NUM):
         return -np.inf
 
     sum = 0
-    # for i in range(NUM):
-    #     if i == 0 and func_params[i] > 0:
-    #         return -np.inf
-    #     sum -= 2**-i * func_params[i] * 10
 
     for i in range(NUM):
         if i == 0 and not (-0.5 < func_params[i] < 0):
@@ -183,11 +189,6 @@ def loglikelihood(params, NUM, z, rho, rho_up, rho_low):
     # print("Pb = ", Pb)
     # print("Yb = ", Yb)
     # print("Vb = ", Vb)
-
-    if Pb < 0 or Pb > 1:
-        return -np.inf
-    if Vb <= 0:
-        return -np.inf
     
     rho_sigma = (rho_up + rho_low) / 2
     return np.sum(np.log10((1 - Pb) / np.sqrt(rho_sigma**2) * np.exp(-0.5 * ((rho - function(z, func_params)) / rho_sigma)**2) + Pb / np.sqrt(Vb + rho_sigma**2) * np.exp(-0.5 * ((rho - Yb)**2 / (Vb + rho_sigma**2)))))
@@ -203,7 +204,7 @@ def logposterior(params, NUM, z, rho, rho_up, rho_low):
         return -np.inf
     return lp + ll
 
-def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=200, nsteps_prod=1000):
+def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2, nsteps_prod=10000):
     """
     Run MCMC to sample the posterior distribution.
     """
@@ -212,14 +213,19 @@ def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=200, nsteps
 
     p0 = np.empty((nwalkers, ndim))
 
-    p0[:, :NUM] = np.random.uniform(-1, 1, size=(nwalkers, NUM))  # function parameters
-    p0[:, NUM] = np.random.uniform(0.1, 0.9, size=nwalkers)  # Pb
-    p0[:, NUM + 1] = np.random.uniform(-10, 10, size=nwalkers)  # Yb
-    p0[:, NUM + 2] = np.random.uniform(0, 10, size=nwalkers)  # Vb
+    p0[:, 0] = np.random.uniform(-0.5, 0, size=nwalkers)  # a2
+    p0[:, 1:NUM] = np.random.uniform(-0.5, 0.5, size=(nwalkers, NUM-1))  # other function parameters
+    p0[:, NUM] = np.random.uniform(0.2, 0.8, size=nwalkers)  # Pb
+    p0[:, NUM + 1] = np.random.uniform(-5, 5, size=nwalkers)  # Yb
+    p0[:, NUM + 2] = np.random.uniform(1, 5, size=nwalkers)  # Vb
 
 
     # Set up the sampler
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, logposterior, args=(NUM, z, rho, rho_up, rho_low))
+    # sampler = emcee.EnsembleSampler(nwalkers, ndim, logposterior, args=(NUM, z, rho, rho_up, rho_low))
+    StretchMove(a=0.5)
+    sampler = emcee.EnsembleSampler(
+    nwalkers, ndim, logposterior, args=(NUM, z, rho, rho_up, rho_low), moves=StretchMove()
+)
 
     # Run the MCMC
     sampler.run_mcmc(p0, nsteps_burn, progress=True)
