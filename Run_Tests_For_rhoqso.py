@@ -14,6 +14,8 @@ from emcee.moves import StretchMove
 zmin = 0
 zmax = 15
 
+steps_percentage = 0
+
 ####################################################################################
 #### Even the function logrho = A * z ^ (- B - C * log(z)) - D works!!!!        ####
 ####                        It works better!!!                                  #### 
@@ -40,22 +42,29 @@ def Pb_penalise(Pb):
     Penalise the Pb parameter.
     """
     if Pb < 0 or Pb > 1:
+        # print("Rejected Pb = ", Pb)
+        # print("Returned -inf")
         return -np.inf
-    return - 150 * Pb + 1
+    return - np.log(Pb + 1)
 
 def Vb_penalise(Vb):
     """
     Penalise the Vb parameter.
     """
-    if 0 < Vb < 1:
+    if 0 < Vb < 3:
         return - Vb
+    
+    # print("Rejected Vb = ", Vb)
+    # print("Returned -inf")
     return -np.inf
 
 def Yb_penalise(Yb):
     """
     Penalise the Yb parameter.
     """
-    if np.abs(Yb) > 1000:
+    if np.abs(Yb) > 50:
+        # print("Rejected Yb = ", Yb)
+        # print("Returned -inf")
         return -np.inf
     return 0
 
@@ -66,90 +75,104 @@ def function_penalise(params, NUM):
     func_params = params[:NUM]
     # print("func_params = ", func_params)
     if np.any(np.abs(func_params) > 50):
+        # print("func_params = ", func_params)
+        # print("Rejected func_params = ", func_params)
+        # print("Returned -inf")
         return -np.inf
 
     sum = 0
 
     for i in range(NUM):
+        # print("i = ", i)
+        # print("func_params[i] = ", func_params[i])
         if i == 0 and not (-1.5 < func_params[i] < 0):
+            # print("Rejected func_params[0] = ", func_params[i])
+            # print("Returned -inf")
             return -np.inf
-        if i == 0 or i == NUM - 1:
-            sum -= np.log(1 +  np.exp(func_params[i]))
+        if i == NUM - 1:
+            if not (-50 < func_params[i] < 0):
+                # print("Rejected func_params[NUM-1] = ", func_params[i])
+                # print("Returned -inf")
+                return -np.inf
+            sum -= np.log(1000 + func_params[i])
         else:
-            sum -= 0
+            if not (-20 < func_params[i] < 20):
+                # print("Rejected func_params[i] = ", func_params[i])
+                # print("Returned -inf")
+                return -np.inf
 
     return sum
 
 
-def plot_penalaty_function(NUM, ch):
-    """
-    Plot the penalty function for the parameters.
-    """
-    if ch == 1:
-        x = np.linspace(-2, 2, 10000)
-        # y1 = function_penalise([x] * NUM, NUM)
+# def plot_penalaty_function(NUM, ch):
+#     """
+#     Plot the penalty function for the parameters.
+#     """
+#     if ch == 1:
+#         x = np.linspace(-2, 2, 10000)
+#         # y1 = function_penalise([x] * NUM, NUM)
 
-        y2 = [Pb_penalise(x[i]) for i in range(len(x))]
-        y3 = [Vb_penalise(x[i]) for i in range(len(x))]
-        y4 = [Yb_penalise(x[i]) for i in range(len(x))]
+#         y2 = [Pb_penalise(x[i]) for i in range(len(x))]
+#         y3 = [Vb_penalise(x[i]) for i in range(len(x))]
+#         y4 = [Yb_penalise(x[i]) for i in range(len(x))]
 
-        print("x = ", x)
-        print("y2 = ", y2)
-        print("y3 = ", y3)
-        print("y4 = ", y4)
+#         print("x = ", x)
+#         print("y2 = ", y2)
+#         print("y3 = ", y3)
+#         print("y4 = ", y4)
 
-        print()
-        print("len(x) = ", len(x))
-        print("len(y2) = ", len(y2))
-        print("len(y3) = ", len(y3))
-        print("len(y4) = ", len(y4))
-        # y2 = Pb_penalise(x)
-        # y3 = Vb_penalise(x)
-        # y4 = Yb_penalise(x)
-        # plt.plot(x, y1, label='Function Penalise')
-        plt.plot(x, y2, label='Pb Penalise', linewidth=5)
-        plt.plot(x, y3, label='Vb Penalise')
-        plt.plot(x, y4, label='Yb Penalise')
-        plt.axhline(0, color='black', linestyle='--')
-        plt.axvline(0, color='black', linestyle='--')
-        # plt.ylim(-10, 10)
-        plt.xlabel('x')
-        plt.ylabel('Penalty')
-        plt.title('Penalty Function')
-        plt.legend()
-        plt.grid()
-        plt.show()
+#         print()
+#         print("len(x) = ", len(x))
+#         print("len(y2) = ", len(y2))
+#         print("len(y3) = ", len(y3))
+#         print("len(y4) = ", len(y4))
+#         # y2 = Pb_penalise(x)
+#         # y3 = Vb_penalise(x)
+#         # y4 = Yb_penalise(x)
+#         # plt.plot(x, y1, label='Function Penalise')
+#         plt.plot(x, y2, label='Pb Penalise', linewidth=5)
+#         plt.plot(x, y3, label='Vb Penalise')
+#         plt.plot(x, y4, label='Yb Penalise')
+#         plt.axhline(0, color='black', linestyle='--')
+#         plt.axvline(0, color='black', linestyle='--')
+#         # plt.ylim(-10, 10)
+#         plt.xlabel('x')
+#         plt.ylabel('Penalty')
+#         plt.title('Penalty Function')
+#         plt.legend()
+#         plt.grid()
+#         plt.show()
 
-        plt.close('all')
+#         plt.close('all')
 
-    if ch == 2:
-        x = np.linspace(-50, 5, 100)
-        y1 = [function_penalise([x[i], 0, 0], NUM) for i in range(len(x))]
-        y2 = [function_penalise([0, x[i], 0], NUM) for i in range(len(x))]
-        y3 = [function_penalise([0, 0, x[i]], NUM) for i in range(len(x))]
+#     if ch == 2:
+#         x = np.linspace(-50, 5, 100)
+#         y1 = [function_penalise([x[i], 0, 0], NUM) for i in range(len(x))]
+#         y2 = [function_penalise([0, x[i], 0], NUM) for i in range(len(x))]
+#         y3 = [function_penalise([0, 0, x[i]], NUM) for i in range(len(x))]
 
-        print("\nx = ", x)
-        print("\ny1 = ", y1)
-        print("\ny2 = ", y2)
-        print("\ny3 = ", y3)
-        print()
-        print("len(x) = ", len(x))
-        print("len(y1) = ", len(y1))
-        print("len(y2) = ", len(y2))
-        print("len(y3) = ", len(y3))
+#         print("\nx = ", x)
+#         print("\ny1 = ", y1)
+#         print("\ny2 = ", y2)
+#         print("\ny3 = ", y3)
+#         print()
+#         print("len(x) = ", len(x))
+#         print("len(y1) = ", len(y1))
+#         print("len(y2) = ", len(y2))
+#         print("len(y3) = ", len(y3))
 
-        plt.plot(x, y1, label='a2')
-        plt.plot(x, y2, label='a1')
-        # plt.plot(x, y3, label='a0')
-        plt.axhline(0, color='black', linestyle='--')
-        plt.axvline(0, color='black', linestyle='--')
-        plt.ylim(-10, 10)
-        plt.xlabel('x')
-        plt.ylabel('Penalty')
-        plt.title('Penalty Function')
-        plt.legend()
-        plt.grid()
-        plt.show()
+#         plt.plot(x, y1, label='a2')
+#         plt.plot(x, y2, label='a1')
+#         # plt.plot(x, y3, label='a0')
+#         plt.axhline(0, color='black', linestyle='--')
+#         plt.axvline(0, color='black', linestyle='--')
+#         plt.ylim(-10, 10)
+#         plt.xlabel('x')
+#         plt.ylabel('Penalty')
+#         plt.title('Penalty Function')
+#         plt.legend()
+#         plt.grid()
+#         plt.show()
 
 
 
@@ -174,8 +197,38 @@ def logprior(params, NUM):
     #         return - 100 * Pb - np.log10(Vb) 
     # return -np.inf  # Reject everything else
 
+    Pb_penalty = Pb_penalise(Pb)
+    Vb_penalty = Vb_penalise(Vb)
+    Yb_penalty = Yb_penalise(Yb)
+    func_penalty = function_penalise(params, NUM)
+
+    # print("\tPb_penalty = ", Pb_penalty)
+    # print("Vb_penalty = ", Vb_penalty)
+    # print("Yb_penalty = ", Yb_penalty)
+    # print("func_penalty = ", func_penalty)
+    if Pb_penalty == -np.inf or Vb_penalty == -np.inf or Yb_penalty == -np.inf or func_penalty == -np.inf:
+        # print("Rejected params = ", params)
+        # print("Returned -inf")
+        return -np.inf
+
     return Pb_penalise(Pb) + Vb_penalise(Vb) + Yb_penalise(Yb) + function_penalise(params, NUM)
 
+def scale(steps_percentage):
+    """
+    Scale the uncertainty based on the number of steps.
+    """
+    # print("steps_percentage = ", steps_percentage)
+    if steps_percentage < 0.25:
+        return 10
+    elif steps_percentage < 0.55:
+        return 5
+    elif steps_percentage < 0.75:
+        return 2
+    elif steps_percentage < 0.85:
+        return 1.5
+    return 1
+
+    
 
 def loglikelihood(params, NUM, z, rho, rho_up, rho_low):
     """
@@ -191,21 +244,92 @@ def loglikelihood(params, NUM, z, rho, rho_up, rho_low):
     # print("Yb = ", Yb)
     # print("Vb = ", Vb)
     
-    rho_sigma = (rho_up + rho_low) / 2
-    return np.sum(np.log10((1 - Pb) / np.sqrt(rho_sigma**2) * np.exp(-0.5 * ((rho - function(z, func_params)) / rho_sigma)**2) + Pb / np.sqrt(Vb + rho_sigma**2) * np.exp(-0.5 * ((rho - Yb)**2 / (Vb + rho_sigma**2)))))
+    rho_sigma = (rho_up + rho_low) / 2 * scale(steps_percentage)
+
+    logforeground_model = np.log((1 / np.sqrt(2 * np.pi * rho_sigma**2))) + (-0.5 * ((rho - function(z, func_params)) / rho_sigma)**2)
+    logbackground_model = np.log((1 / np.sqrt(2 * np.pi * (Vb + rho_sigma**2)))) + (-0.5 * ((rho - Yb)**2 / (Vb + rho_sigma**2)))
+    # print("\nrho[0] = ", rho[0])
+    # print("function(z[0], func_params) = ", function(z[0], func_params))
+    # print("rho_sigma[0] = ", rho_sigma[0])
+    # print("Yb = ", Yb)
+    # print("Vb = ", Vb)
+    # print("residual1 = ", rho[0] - function(z[0], func_params))
+    # print("residual2 = ", rho[0] - Yb)
+    # print("logforeground_model[0] = ", logforeground_model[0])
+    if np.all(logforeground_model) == 0:
+        print("All foreground_model values are zero.")
+        return -np.inf
+    
+    if np.all(logbackground_model) == 0:
+        print("All background_model values are zero.")
+        return -np.inf
+    if np.any(np.isnan(logforeground_model)) or np.any(np.isnan(logbackground_model)):
+        print("NaN values in foreground_model or background_model.")
+        return -np.inf
+
+    rand_seed = random.random()
+    # rand_seed = 0
+    # print("rand_seed < 0.0001 = ", rand_seed < 0.00001)
+    if rand_seed < 0.0001:
+        print("\n\n\na2 = ", func_params[0])
+        print("a1 = ", func_params[1])
+        print("a0 = ", func_params[2])
+        print("function(z, func_params) = ", function(z, func_params))
+        print("rho = ", rho)
+        print("\n\nPb = ", Pb)
+        print("Yb = ", Yb)
+        print("Vb = ", Vb)
+        print("\nforeground_model = ", logforeground_model)
+        print("rho = ", rho)
+        print("function(z, func_params) = ", function(z, func_params))
+        print("rho_sigma = ", rho_sigma)
+        print("rho - function(z, func_params) = ", rho - function(z, func_params))
+        print("rho - Yb = ", rho - Yb)
+        print("(rho - function(z, func_params)) / rho_sigma = ", (rho - function(z, func_params)) / rho_sigma)
+        print("(rho - Yb) / (Vb + rho_sigma) = ", (rho - Yb) / (Vb + rho_sigma))
+        print("background_model = ", logbackground_model)
+        ratio = np.abs(((rho - function(z, func_params)) / rho_sigma)/((rho - Yb) / (Vb + rho_sigma)))
+        print("\n\nratio = ", ratio)
+        ratio2 = logforeground_model / logbackground_model
+        print("ratio2 = ", ratio2)
+
+    # import sys
+    # sys.exit(0)
+
+    # np.sum(np.log10((1 - Pb) / np.sqrt(rho_sigma**2) * np.exp(-0.5 * ((rho - function(z, func_params)) / rho_sigma)**2) +
+    #                  Pb / np.sqrt(Vb + rho_sigma**2) * np.exp(-0.5 * ((rho - Yb)**2 / (Vb + rho_sigma**2)))))
+
+    a = np.log(1 - Pb) + logforeground_model
+    b = np.log(Pb) + logbackground_model
+
+    log10L = np.sum(np.logaddexp(a, b)) / np.log(10)
+    # print("logL = ", logL)
+
+    return log10L
+
+
+
 
 
 def logposterior(params, NUM, z, rho, rho_up, rho_low):
     lp = logprior(params, NUM)
     if not np.isfinite(lp):
+        # print("lp = ", lp)
+        # print("params = ", params)
+        # print("\n\n\n")
+        # import sys
+        # sys.exit(0)
         return -np.inf
+    
+    # import sys
+    # sys.exit(2)
     
     ll = loglikelihood(params, NUM, z, rho, rho_up, rho_low)
     if not np.isfinite(ll):
         return -np.inf
     return lp + ll
 
-def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=200, nsteps_prod=1000):
+def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2000, nsteps_prod=1000, fittedCoeff=None):
     """
     Run MCMC to sample the posterior distribution.
     """
@@ -214,25 +338,46 @@ def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=200, nsteps
 
     p0 = np.empty((nwalkers, ndim))
 
-    p0[:, 0] = np.random.uniform(-0.5, 0, size=nwalkers)  # a2
-    p0[:, 1:NUM] = np.random.uniform(-0.5, 0.5, size=(nwalkers, NUM-1))  # other function parameters
+    if fittedCoeff is not None:
+        epsilon = 0.01  # You can set this value as needed
+        print("fittedCoeff = ", fittedCoeff)
+        p0[:, :NUM] = np.random.uniform(fittedCoeff[:NUM] - epsilon, fittedCoeff[:NUM] + epsilon, size=(nwalkers, NUM))  # a2, a1, a0
+        print("p0[:, :NUM] from fittedCoeff = ", p0[:, :NUM])
+
+    else:
+        p0[:, 0] = np.random.uniform(-0.5, 0, size=nwalkers)  # a2
+        # print("p0[:, 0] from else = ", p0[:, 0])
+        p0[:, 1:NUM] = np.random.uniform(-1, 0, size=(nwalkers, NUM-1))  # other function parameters
     p0[:, NUM] = np.random.uniform(0.2, 0.8, size=nwalkers)  # Pb
-    p0[:, NUM + 1] = np.random.uniform(-5, 5, size=nwalkers)  # Yb
-    p0[:, NUM + 2] = np.random.uniform(0.05, 0.5, size=nwalkers)  # Vb
+    p0[:, NUM + 1] = np.random.uniform(-10, 10, size=nwalkers)  # Yb
+    p0[:, NUM + 2] = np.random.uniform(0.05, 2.5, size=nwalkers)  # Vb
 
 
     # Set up the sampler
     # sampler = emcee.EnsembleSampler(nwalkers, ndim, logposterior, args=(NUM, z, rho, rho_up, rho_low))
-    StretchMove(a=0.5)
+    StretchMove(a=0.25)
     sampler = emcee.EnsembleSampler(
     nwalkers, ndim, logposterior, args=(NUM, z, rho, rho_up, rho_low), moves=StretchMove()
 )
 
-    # Run the MCMC
-    sampler.run_mcmc(p0, nsteps_burn, progress=True)
-    # Discard the burn-in samples
-    sampler.reset()
+    # # Run the MCMC
+    # sampler.run_mcmc(p0, nsteps_burn, progress=True)
+    # # Discard the burn-in samples
+    # sampler.reset()
 
+    # sampler.run_mcmc(None, nsteps_prod, progress=True)
+
+    global steps_percentage
+
+    for i in range(nsteps_burn):
+        # print(f"Burn-in step {i + 1}/{nsteps_burn}")
+        sampler.run_mcmc(p0, 1)
+
+        steps_percentage += 1/ max(100, nsteps_burn)
+        # print("p0 = ", p0)
+        # print("sampler = ", sampler)
+
+    sampler.reset()
     sampler.run_mcmc(None, nsteps_prod, progress=True)
 
     return sampler
@@ -309,12 +454,12 @@ def marginalize_and_reproduce_function(samples, NUM, zlims):
 
 
 
-def modelling_using_David_Hogg_with_uncertainty_in_1D(i, NUM, z, rho, rho_up, rho_low):
+def modelling_using_David_Hogg_with_uncertainty_in_1D(i, NUM, z, rho, rho_up, rho_low, fittedCoeff=None):
     """
     Main function to run the MCMC and plot results for a subarray.
     """
     # Run MCMC
-    sampler = run_mcmc(NUM, z, rho, rho_up, rho_low)
+    sampler = run_mcmc(NUM, z, rho, rho_up, rho_low, fittedCoeff=fittedCoeff)
 
     # Flatten the chain and remove burn-in samples
     samples = sampler.get_chain(flat=True)
@@ -461,7 +606,7 @@ for i, subarray in enumerate(subarrays):
     # plt.show(block=False)
 
     # Run MCMC and plot corner and chain plots for the subarray
-    sampler, samples = modelling_using_David_Hogg_with_uncertainty_in_1D(i, 3, z, logrho, logrho_up, logrho_low)
+    sampler, samples = modelling_using_David_Hogg_with_uncertainty_in_1D(i, 3, z, logrho, logrho_up, logrho_low, fittedCoeff=coefficients)
 
     # Plot the results on the main figure
     sz, sr, fz, fr = plot_results(samples, main_fig, 3, z, logrho, logrho_up, logrho_low)
@@ -557,7 +702,7 @@ def plot_data(x, y, parameters, xmin, xmax, sigys):
 
     plt.scatter(x, y, c='red', label='Data Points', edgecolor='black')
     plt.scatter(x[mask], y[mask], facecolors='none', edgecolors='red', s=100, label='Bad Data Points')
-    plt.errorbar(x, y, yerr=sigy, fmt='o', label='Error bars', alpha=0.6, capsize=5)
+    plt.errorbar(x, y, yerr=sigy, fmt='o', alpha=0.6, capsize=5)
     plt.xlabel('z')
     plt.ylabel('rho')
     plt.title('Fitting for rho with Bad data in dataset')
