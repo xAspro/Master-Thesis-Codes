@@ -11,6 +11,7 @@ import random
 from emcee.moves import StretchMove
 
 
+NUM = 3  # Number of function parameters
 zmin = 0
 zmax = 15
 
@@ -45,7 +46,8 @@ def Pb_penalise(Pb):
         # print("Rejected Pb = ", Pb)
         # print("Returned -inf")
         return -np.inf
-    return - np.log(Pb + 1)
+    # return 1 - np.exp(np.log(Pb + 0.0001))
+    return 1 - 30 * np.exp(np.log(Pb + 0.0001)) ## GIVES GOOD VALUE FOR Pb, but same nan issue
 
 def Vb_penalise(Vb):
     """
@@ -75,9 +77,9 @@ def function_penalise(params, NUM):
     func_params = params[:NUM]
     # print("func_params = ", func_params)
     if np.any(np.abs(func_params) > 50):
-        # print("func_params = ", func_params)
-        # print("Rejected func_params = ", func_params)
-        # print("Returned -inf")
+        print("func_params = ", func_params)
+        print("Rejected func_params = ", func_params)
+        print("Returned -inf")
         return -np.inf
 
     sum = 0
@@ -85,20 +87,23 @@ def function_penalise(params, NUM):
     for i in range(NUM):
         # print("i = ", i)
         # print("func_params[i] = ", func_params[i])
-        if i == 0 and not (-1.5 < func_params[i] < 0):
-            # print("Rejected func_params[0] = ", func_params[i])
-            # print("Returned -inf")
+        if i == 0 and not (-2.5 < func_params[i] < 0):
+            print("Rejected func_params[0] = ", func_params[i])
+            print("Returned -inf")
             return -np.inf
         if i == NUM - 1:
-            if not (-50 < func_params[i] < 0):
-                # print("Rejected func_params[NUM-1] = ", func_params[i])
-                # print("Returned -inf")
+            if not (-100 < func_params[i] < 0):
+                print("Rejected func_params[NUM-1] = ", func_params[i])
+                print("Returned -inf")
                 return -np.inf
             sum -= np.log(1000 + func_params[i])
         else:
-            if not (-20 < func_params[i] < 20):
-                # print("Rejected func_params[i] = ", func_params[i])
-                # print("Returned -inf")
+            if not (-40 < func_params[i] < 40):
+                print("Rejected func_params[i] = ", func_params[i])
+                print("i = ", i)
+                print("func_params = ", func_params)
+
+                print("Returned -inf")
                 return -np.inf
 
     return sum
@@ -208,7 +213,7 @@ def logprior(params, NUM):
     # print("func_penalty = ", func_penalty)
     if Pb_penalty == -np.inf or Vb_penalty == -np.inf or Yb_penalty == -np.inf or func_penalty == -np.inf:
         # print("Rejected params = ", params)
-        # print("Returned -inf")
+        # print("Returned -inf")f
         return -np.inf
 
     return Pb_penalise(Pb) + Vb_penalise(Vb) + Yb_penalise(Yb) + function_penalise(params, NUM)
@@ -268,9 +273,10 @@ def loglikelihood(params, NUM, z, rho, rho_up, rho_low):
         return -np.inf
 
     rand_seed = random.random()
+    rate = 0.0001
     # rand_seed = 0
     # print("rand_seed < 0.0001 = ", rand_seed < 0.00001)
-    if rand_seed < 0.0001:
+    if rand_seed < rate:
         print("\n\n\na2 = ", func_params[0])
         print("a1 = ", func_params[1])
         print("a0 = ", func_params[2])
@@ -287,6 +293,7 @@ def loglikelihood(params, NUM, z, rho, rho_up, rho_low):
         print("rho - Yb = ", rho - Yb)
         print("(rho - function(z, func_params)) / rho_sigma = ", (rho - function(z, func_params)) / rho_sigma)
         print("(rho - Yb) / (Vb + rho_sigma) = ", (rho - Yb) / (Vb + rho_sigma))
+        print("foreground_model = ", logforeground_model)
         print("background_model = ", logbackground_model)
         ratio = np.abs(((rho - function(z, func_params)) / rho_sigma)/((rho - Yb) / (Vb + rho_sigma)))
         print("\n\nratio = ", ratio)
@@ -303,7 +310,8 @@ def loglikelihood(params, NUM, z, rho, rho_up, rho_low):
     b = np.log(Pb) + logbackground_model
 
     log10L = np.sum(np.logaddexp(a, b)) / np.log(10)
-    # print("logL = ", logL)
+    if rand_seed < rate:
+        print("log10L = ", log10L)
 
     return log10L
 
@@ -318,6 +326,7 @@ def logposterior(params, NUM, z, rho, rho_up, rho_low):
         # print("params = ", params)
         # print("\n\n\n")
         # import sys
+        # print("steps_percentage = ", steps_percentage)
         # sys.exit(0)
         return -np.inf
     
@@ -326,10 +335,16 @@ def logposterior(params, NUM, z, rho, rho_up, rho_low):
     
     ll = loglikelihood(params, NUM, z, rho, rho_up, rho_low)
     if not np.isfinite(ll):
+        print("ll = ", ll)
+        print("params = ", params)
+        print("\n\n\n")
+        print("steps_percentage = ", steps_percentage)
+        import sys
+        sys.exit(3)
         return -np.inf
     return lp + ll
 
-def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2000, nsteps_prod=1000, fittedCoeff=None):
+def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=50, nsteps_burn=2000, nsteps_prod=2000, fittedCoeff=None):
     """
     Run MCMC to sample the posterior distribution.
     """
@@ -339,7 +354,7 @@ def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2000, nstep
     p0 = np.empty((nwalkers, ndim))
 
     if fittedCoeff is not None:
-        epsilon = 0.01  # You can set this value as needed
+        epsilon = 0.001  # You can set this value as needed
         print("fittedCoeff = ", fittedCoeff)
         p0[:, :NUM] = np.random.uniform(fittedCoeff[:NUM] - epsilon, fittedCoeff[:NUM] + epsilon, size=(nwalkers, NUM))  # a2, a1, a0
         print("p0[:, :NUM] from fittedCoeff = ", p0[:, :NUM])
@@ -355,7 +370,7 @@ def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2000, nstep
 
     # Set up the sampler
     # sampler = emcee.EnsembleSampler(nwalkers, ndim, logposterior, args=(NUM, z, rho, rho_up, rho_low))
-    StretchMove(a=0.25)
+    StretchMove(a=0.05)
     sampler = emcee.EnsembleSampler(
     nwalkers, ndim, logposterior, args=(NUM, z, rho, rho_up, rho_low), moves=StretchMove()
 )
@@ -382,44 +397,119 @@ def run_mcmc(NUM, z, rho, rho_up, rho_low, nwalkers=100, nsteps_burn=2000, nstep
 
     return sampler
 
-def find_bad_data(samples, z, rho, rho_up, rho_low, function):
+# def find_bad_data(samples, z, rho, rho_up, rho_low, function):
+#     Npoints = len(z)
+#     Nsamps = len(samples)
+#     probs = np.zeros((Nsamps, Npoints))
+
+#     rho_sigma = (rho_up + rho_low) / 2
+
+#     for s, params in enumerate(samples):
+#         func_params = params[:-3]
+#         Pb, Yb, Vb = params[-3:]
+
+#         model_vals = function(z, func_params)
+
+#         p_fg = (1 / np.sqrt(2 * np.pi * rho_sigma**2)) * np.exp(-0.5 * ((rho - model_vals) / rho_sigma)**2)
+#         p_bg = (1 / np.sqrt(2 * np.pi * (Vb + rho_sigma**2))) * np.exp(-0.5 * ((rho - Yb)**2 / (Vb + rho_sigma**2)))
+
+#         epsilon = 1e-20
+#         numerator = Pb * p_bg + epsilon
+#         denominator = (1 - Pb) * p_fg + Pb * p_bg + epsilon
+
+#         if random.random() < 0.003:
+
+#             print("\nPb = ", Pb)
+#             print("p_fg = ", p_fg)
+#             print("p_bg = ", p_bg)
+
+#             print("model_vals = ", model_vals)
+#             print("rho = ", rho)
+#             print("rho_sigma = ", rho_sigma)
+#             print("rho - model_vals = ", rho - model_vals)
+#             print("rho - Yb = ", rho - Yb)
+#             print("Vb = ", Vb)
+#             print("(rho - Yb) / (Vb + rho_sigma) = ", (rho - Yb) / (Vb + rho_sigma))
+#             print("(rho - model_vals) / rho_sigma = ", (rho - model_vals) / rho_sigma)
+#             print()
+
+#             print("numerator = ", numerator)
+#             print("denominator = ", denominator)
+#             print("numerator / denominator = ", numerator / denominator)
+
+#             print("mask = ", numerator / denominator > 0.5)
+
+
+#             residuals = rho - model_vals
+#             print(residuals / rho_sigma)  # This should be ~0 if model fits well
+
+#         probs[s, :] = numerator / denominator
+
+#     return np.mean(probs, axis=0)
+
+def find_bad_data(z, rho, rho_up, rho_low, mar_par, NUM):
     Npoints = len(z)
-    Nsamps = len(samples)
-    probs = np.zeros((Nsamps, Npoints))
+
 
     rho_sigma = (rho_up + rho_low) / 2
 
-    for s, params in enumerate(samples):
-        func_params = params[:-3]
-        Pb, Yb, Vb = params[-3:]
+    Pb, Yb, Vb = mar_par[NUM:]
 
-        model_vals = function(z, func_params)
+    print("\n\n\nHEYYY\n\n\nPb = ", Pb)
+    print("Yb = ", Yb)
+    print("Vb = ", Vb)
+    print("mar_par = ", mar_par)
 
-        p_fg = (1 / np.sqrt(2 * np.pi * rho_sigma**2)) * np.exp(-0.5 * ((rho - model_vals) / rho_sigma)**2)
-        p_bg = (1 / np.sqrt(2 * np.pi * (Vb + rho_sigma**2))) * np.exp(-0.5 * ((rho - Yb)**2 / (Vb + rho_sigma**2)))
+    model_vals = function(z, mar_par[:NUM])
 
-        numerator = Pb * p_bg
-        denominator = (1 - Pb) * p_fg + Pb * p_bg
+    print("polynomial is = ", mar_par[:NUM])
 
-        if random.random() < 0.00001:
+    bad_prob_list = []
+    # return np.full_like(z, 0.5)
+    true_cnt = 0
 
-            print("Pb = ", Pb)
-            print("p_fg = ", p_fg)
-            print("p_bg = ", p_bg)
-
-            print("numerator = ", numerator)
-            print("denominator = ", denominator)
-            print("numerator / denominator = ", numerator / denominator)
-
-            print("mask = ", numerator / denominator > 0.5)
+    for i in range(Npoints):
+        p_fg = (1 / np.sqrt(2 * np.pi * rho_sigma[i]**2)) * np.exp(-0.5 * ((rho[i] - model_vals[i]) / rho_sigma[i])**2)
+        p_bg = (1 / np.sqrt(2 * np.pi * (Vb + rho_sigma[i]**2))) * np.exp(-0.5 * ((rho[i] - Yb)**2 / (Vb + rho_sigma[i]**2)))
 
 
-            residuals = rho - model_vals
-            print(residuals / rho_sigma)  # This should be ~0 if model fits well
+        epsilon = 1e-20
+        numerator = Pb * p_bg + epsilon
+        denominator = (1 - Pb) * p_fg + Pb * p_bg + epsilon
 
-        probs[s, :] = numerator / denominator
+        bad_prob = numerator / denominator
 
-    return np.mean(probs, axis=0)
+        if bad_prob > 0.8:
+            true_cnt += 1
+            # print("\n\ni = ", i)
+            # print(f"Data point = ({z[i]}, {rho[i]})")
+            # print(f"Corresponding point = ({z[i]}, {model_vals[i]})")
+            # print("sigma = ", rho_sigma[i])
+
+            # print("residual = ", rho[i] - model_vals[i])
+            # print("residual / sigma = ", (rho[i] - model_vals[i]) / rho_sigma[i])
+            # print("\nPb = ", Pb)
+            # print("p_fg = ", p_fg)
+            # print("p_bg = ", p_bg)
+
+            # print()
+            # print("numerator = ", Pb * p_bg)
+            # print("denominator = ", (1 - Pb) * p_fg + Pb * p_bg)
+            # print("numerator / denominator = ", Pb * p_bg / ((1 - Pb) * p_fg + Pb * p_bg))
+            # print("mask = ", Pb * p_bg / ((1 - Pb) * p_fg + Pb * p_bg) > 0.5)
+
+            ratio = p_fg / p_bg
+            print("ratio = ", ratio)  # This should be ~0 if model fits well
+        
+        bad_prob_list.append(bad_prob)
+
+    print("true_cnt = ", true_cnt)
+    print("Implied bad points = ", true_cnt / Npoints * 100, "%")
+    return np.array(bad_prob_list)
+
+
+
+
 
 
 def compute_corner_statistics(samples):
@@ -442,7 +532,7 @@ def compute_corner_statistics(samples):
 def marginalize_and_reproduce_function(samples, NUM, zlims):
     z = np.linspace(zlims[0], zlims[1], 100)
 
-    func_params = samples[:, :NUM]
+    func_params = samples[:, :]
     marginalized_params = np.median(func_params, axis=0)
     stats = compute_corner_statistics(func_params)
     print("stats = ", stats)
@@ -450,7 +540,7 @@ def marginalize_and_reproduce_function(samples, NUM, zlims):
     print("\n\n****************************************************************************\n\nmarginalized_params = ", marginalized_params)
     print("\n\n****************************************************************************\n\n")
 
-    return z, function(z, marginalized_params)
+    return z, marginalized_params, function(z, marginalized_params[:NUM])
 
 
 
@@ -515,12 +605,12 @@ def plot_results(samples, main_fig, NUM, z, rho, rho_up, rho_low):
     # ax.errorbar(z, rho, yerr=[rho_up, rho_low], fmt='o', label='Error bars', alpha=0.6)
 
     # Marginalize and reproduce the function
-    z_func, func = marginalize_and_reproduce_function(samples, NUM, (zmin, zmax))
+    z_func, mar_par, func = marginalize_and_reproduce_function(samples, NUM, (zmin, zmax))
     # print("z_func = ", z_func)
     # print("func = ", func)
     ax.plot(z_func, func, linewidth=2)
 
-    return z, rho, z_func, func
+    return z, rho, mar_par, z_func, func
 
 
 # Main loop for processing subarrays
@@ -556,6 +646,8 @@ function_rho = []
 sampler_list = []
 logrho_up_list = []
 logrho_low_list = []
+
+mar_par = []
 
 for i, subarray in enumerate(subarrays):
     print(f"\nProcessing Subarray {i + 1}:")
@@ -605,11 +697,13 @@ for i, subarray in enumerate(subarrays):
     # plt.grid()
     # plt.show(block=False)
 
+    steps_percentage = 0
+
     # Run MCMC and plot corner and chain plots for the subarray
-    sampler, samples = modelling_using_David_Hogg_with_uncertainty_in_1D(i, 3, z, logrho, logrho_up, logrho_low, fittedCoeff=coefficients)
+    sampler, samples = modelling_using_David_Hogg_with_uncertainty_in_1D(i, NUM, z, logrho, logrho_up, logrho_low, fittedCoeff=coefficients)
 
     # Plot the results on the main figure
-    sz, sr, fz, fr = plot_results(samples, main_fig, 3, z, logrho, logrho_up, logrho_low)
+    sz, sr, mp, fz, fr = plot_results(samples, main_fig, NUM, z, logrho, logrho_up, logrho_low)
 
     scatter_z.append(sz)
     scatter_rho.append(sr)
@@ -619,14 +713,32 @@ for i, subarray in enumerate(subarrays):
     logrho_up_list.append(logrho_up)
     logrho_low_list.append(logrho_low)
 
+    mar_par.append(mp)
 
+
+
+print("scatter_z = ", scatter_z)
+print("scatter_rho = ", scatter_rho)
+print("function_z = ", function_z)
+print("function_rho = ", function_rho)
+
+print("length of scatter_z = ", len(scatter_z))
+print("length of scatter_rho = ", len(scatter_rho))
+print("length of function_z = ", len(function_z))
+print("length of function_rho = ", len(function_rho))
+
+print("scatter_z[0] = ", scatter_z[0])
+print("length of scatter_z[0] = ", len(scatter_z[0]))
+
+# import sys
+# sys.exit(0)
 
 # Save and show the main figure
 plt.figure(main_fig.number)
 ax = main_fig.gca()
 ax.legend()
 ax.set_xlim(zmin, zmax)
-ax.set_ylim(-12, 1)
+ax.set_ylim(-11, -3)
 ax.set_xlabel('z')
 ax.set_ylabel('log(rho)')
 plt.savefig('rhoqso_final_plot.png', bbox_inches='tight')
@@ -638,12 +750,12 @@ plt.close('all')
 print("All subarrays processed and results plotted.")
 
 for i in range(len(scatter_z)):
-    plt.plot(scatter_z[i], scatter_rho[i], 'o', label=f'Subarray {i + 1} Data', alpha=0.6)
+    # plt.plot(scatter_z[i], scatter_rho[i], 'o', label=f'Subarray {i + 1} Data', alpha=0.6)
     plt.plot(function_z[i], function_rho[i], label=f'Subarray {i + 1} Function', linewidth=2)
 plt.xlabel('z')
 plt.ylabel('log(rho)')
 plt.xlim(zmin, zmax)
-plt.ylim(-22, 1)
+plt.ylim(-11, -3)
 plt.legend()
 plt.savefig(f'rhoqso_plot.png', bbox_inches='tight')
 plt.savefig(f'rhoqso_plot.pdf', bbox_inches='tight')
@@ -683,15 +795,20 @@ def find_MAP(sampler, NUM):
     # Return the parameter values
     return param_values
 
-def plot_data(x, y, parameters, xmin, xmax, sigys):
+def plot_data(x, y, parameters, xmin, xmax, sigys, NUM, mar_par):
     """
     Plot the data with Gaussian uncertainty for each segment and the MAP line.
     """
     # print("Inside plot_data")
 
+    print("x = ", x)
+    print("y = ", y)
+    print("parameters = ", parameters)
+
+
     sigy = (np.abs(sigys[0]) + np.abs(sigys[1])) / 2
 
-    prob_bad_points = find_bad_data(samples, x, y, sigys[0], sigy[1], function)
+    prob_bad_points = find_bad_data(x, y, sigys[0], sigy[1], mar_par, NUM)
     print("prob_bad_points = ", prob_bad_points)
 
     mask = prob_bad_points > 0.5
@@ -700,9 +817,9 @@ def plot_data(x, y, parameters, xmin, xmax, sigys):
     # print("sigys = ", sigys)
     # print("sigy = ", sigy)
 
-    plt.scatter(x, y, c='red', label='Data Points', edgecolor='black')
-    plt.scatter(x[mask], y[mask], facecolors='none', edgecolors='red', s=100, label='Bad Data Points')
-    plt.errorbar(x, y, yerr=sigy, fmt='o', alpha=0.6, capsize=5)
+    plt.scatter(x[~mask], y[~mask], c='red', label='Data Points', edgecolor='black', s=8)
+    plt.scatter(x[mask], y[mask], facecolors='none', edgecolors='red', s=3, label='Bad Data Points', alpha=0.5)
+    plt.errorbar(x, y, yerr=sigy, fmt='o', alpha=0.6, capsize=0.2)
     plt.xlabel('z')
     plt.ylabel('rho')
     plt.title('Fitting for rho with Bad data in dataset')
@@ -710,9 +827,19 @@ def plot_data(x, y, parameters, xmin, xmax, sigys):
     x_arr = np.linspace(xmin, xmax, 100)
     y_arr = function(x_arr, parameters)
 
-    plt.plot(x_arr, y_arr, color='black', label='MAP Line')
+    ####################################################################################################
+    ####################################################################################################
+    ####################################################################################################
+    # Check what is this line
+    # What is the difference between the line that i am plotting as subarray
+    # Very sleepy now!!! Definitely need to check this out tomorrow!!!
+    ####################################################################################################
+    ####################################################################################################
+    ####################################################################################################
+
+    # plt.plot(x_arr, y_arr, color='black', label='MAP Line')
     plt.xlim(xmin, xmax)
-    plt.ylim(-22, 1)
+    plt.ylim(-11, -3)
 
   
 
@@ -721,8 +848,19 @@ for i in range(len(sampler_list)):
     map_params = find_MAP(sampler, NUM=3)
     print("\n\n\n\n\n\n\n\n\nMAP Parameters:", map_params)
 
+    print("scatter_z[i] = ", scatter_z[i])
+    print("scatter_rho[i] = ", scatter_rho[i])
+    print("length of scatter_z[i] = ", len(scatter_z[i]))
+    print("length of scatter_rho[i] = ", len(scatter_rho[i]))
+
+    pass
+
+
+    # import sys
+    # sys.exit(0)
+
     # Plot the data with Gaussian uncertainty for each segment
-    plot_data(scatter_z[i], scatter_rho[i], map_params, zmin, zmax, [logrho_up_list[i], logrho_low_list[i]])
+    plot_data(scatter_z[i], scatter_rho[i], map_params, zmin, zmax, [logrho_up_list[i], logrho_low_list[i]], NUM, mar_par[i])
 # Example usage of find_MAP
 
 
