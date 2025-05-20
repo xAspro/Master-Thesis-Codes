@@ -819,7 +819,7 @@ def plot_data(x, y, parameters, xmin, xmax, sigys, NUM, mar_par):
 
     plt.scatter(x[~mask], y[~mask], c='red', label='Data Points', edgecolor='black', s=8)
     plt.scatter(x[mask], y[mask], facecolors='none', edgecolors='red', s=3, label='Bad Data Points', alpha=0.5)
-    plt.errorbar(x, y, yerr=sigy, fmt='o', alpha=0.6, capsize=0.2)
+    plt.errorbar(x, y, yerr=sigy, fmt='o', alpha=0.6, capsize=2)
     plt.xlabel('z')
     plt.ylabel('rho')
     plt.title('Fitting for rho with Bad data in dataset')
