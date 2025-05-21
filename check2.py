@@ -23,24 +23,31 @@ sig = 0.2
 zmin = 0
 zmax = 15
 
-method = 'double_power_law'  # Change this to 'poly' for polynomial fitting
+k = 1 # Slope of the sigmoid function
+
+method = 'smooth_piecewise_linear'  # Change this to 'poly' for polynomial fitting
 if method == 'poly':
     NUM = 3
-elif method == 'double_power_law':
+elif method == 'smooth_piecewise_linear':
     NUM = 4
 
 def function(x, params):
     if method == 'poly':
         return np.polyval(params, x)
-    elif method == 'double_power_law':
-        log_rho_star = params[0]
-        rho_star = 10**log_rho_star
-        z_star = params[1]
-        alpha = params[2]
-        beta = params[3]
-        return rho_star / (10**((x - z_star) * (1 + alpha)) + 10**((x - z_star) * (1 + beta)))
+    elif method == 'smooth_piecewise_linear':
+        m1 = params[0]
+        c1 = params[1]
+        m2 = params[2]
+        c2 = params[3]
+        
+        a = - (c2 - c1) / (m2 - m1)
+        w = 1 / (1 + 10**(-k * (x - a)))
+        y1 = m1 * x + c1
+        y2 = m2 * x + c2
+        
+        return w * y1 + (1 - w) * y2
     else:
-        raise ValueError("Invalid method. Use 'poly' or 'double_power_law'.")
+        raise ValueError("Invalid method. Use 'poly' or 'smooth_piecewise_linear'.")
     
 
 def logprior(params, NUM=2):
@@ -76,8 +83,8 @@ def logprior(params, NUM=2):
                     return -np.inf
         return sum
 
-    elif method == 'double_power_law':
-        logrho, z_star, alpha, beta = params[:NUM]
+    elif method == 'smooth_piecewise_linear':
+        m1, c1, m2, c2 = params[:NUM]
         Pb, Yb, Vb = params[NUM:]
 
         if Pb < 0 or Pb > 1:
@@ -85,21 +92,18 @@ def logprior(params, NUM=2):
         if Vb <= 0:
             return -np.inf
         
-        if logrho < -20 or logrho > 0:
+        if m1 > m2 or m1 < -10:
             return -np.inf
-        
-        if z_star < -7 or z_star > 0:
+        if m2 > 10:
             return -np.inf
-        
-        if alpha < -7 or alpha > beta:
+        if c1 < -20 or c1 > 20:
             return -np.inf
-        
-        if beta > 0:
+        if c2 < -20 or c2 > 20:
             return -np.inf
 
         return - np.log(1 + Pb) - np.log(1 + Vb) 
     else:
-        raise ValueError("Invalid method. Use 'poly' or 'double_power_law'.")
+        raise ValueError("Invalid method. Use 'poly' or 'smooth_piecewise_linear'.")
 
 def loglikelihood(params, x, y, sig, NUM=2):
     func_params = params[:NUM]
@@ -133,14 +137,22 @@ def logposterior(params, x, y, sig, NUM=2):
 def find_best_fit(data):
     if method == 'poly':
         return np.polyfit(data[0], data[1], NUM)
-    elif method == 'double_power_law':
+    elif method == 'smooth_piecewise_linear':
         x, y, sig = data
-        def model_function(x, log_rho_star, alpha, beta):
-            rho_star = 10**log_rho_star
-            z_star = 2.5
-            return rho_star / (10**((x - z_star) * (1 + alpha)) + 10**((x - z_star) * (1 + beta)))
-        popt, pcov = curve_fit(model_function, x, y)
-        return [popt[0], 3, popt[1], popt[2]]
+        mask = np.abs(x - 3) >= 0.75
+        x = x[mask]
+        y = y[mask]
+        sig = sig[mask]
+        def model_function(x, m1, c1, m2, c2):
+            a = - (c2 - c1) / (m2 - m1)
+            w = 1 / (1 + 10**(-k * (x - a)))
+            y1 = m1 * x + c1
+            y2 = m2 * x + c2
+            return w * y1 + (1 - w) * y2
+        p0 = [2, 1, 1, 4]
+        popt, pcov = curve_fit(model_function, x, y, p0=p0)
+
+        return popt
 
 
 def mcmc_2_main(data, nwalkers=50, nprod=1000, nburn=1000, NUM=2, plot_number=0):
@@ -149,15 +161,31 @@ def mcmc_2_main(data, nwalkers=50, nprod=1000, nburn=1000, NUM=2, plot_number=0)
 
     popt = find_best_fit(data)
     print("popt = ", popt)
-    import sys
-    sys.exit()
+    # print('\n\n\n\n')
+    # # Plot the function along with the data points before running MCMC
+    # plt.figure(figsize=(8, 6))
+    # plt.errorbar(x, y, yerr=sig, fmt='o', label='Data Points', capsize=4)
+    # x_fit = np.linspace(np.min(x), np.max(x), 500)
+    # y_fit = function(x_fit, popt[:NUM])
+    # plt.plot(x_fit, y_fit, color='red', label='Initial Fit')
+    # plt.xlabel('x')
+    # plt.ylabel('y')
+    # plt.title('Data and Initial Fit')
+    # plt.legend()
+    # plt.grid()
+    # # plt.show()
+    # plt.close()
+    print()
+    # for i in range(len(x)):
+    #     print(f'{x[i]:.3f} {y[i]:.3f}')
+    # import sys
+    # sys.exit()
 
+    param_ranges = [(popt[i] - 1, popt[i] + 1) for i in range(NUM)] + [(0.1, 0.9), (-10, 10), (1, 5)]
     if method == 'poly':
-        param_ranges = [(-10, 10) for i in range(NUM)] + [(0.1, 0.9), (-10, 10), (1, 5)]
         labels = [f'a{i}' for i in range(NUM)] + ["Pb", "Yb", "Vb"]
 
-    elif method == 'double_power_law':
-        param_ranges = [(-10, 10), (-20, 20), (-1, 1), (-1, 1), (0.1, 0.9), (-10, 10), (1, 5)]
+    elif method == 'smooth_piecewise_linear':
         labels = ["logrho", "z_star", "alpha", "beta", "Pb", "Yb", "Vb"]
 
     p0 = np.array([np.random.uniform(low, high, size=nwalkers) for low, high in param_ranges]).T
