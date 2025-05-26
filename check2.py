@@ -55,7 +55,7 @@ def logprior(params, NUM=2):
     if method == 'poly':
         func_params = params[:NUM]
         Pb, Yb, Vb = params[NUM:]
-        if Pb < 0 or Pb >= 1:
+        if Pb < 0 or Pb >= 0.5:
             return -np.inf
         if Vb <= 0:
             return -np.inf
@@ -406,7 +406,7 @@ for i, subarray in enumerate(subarrays):
     plt.scatter(z[mask], rho[mask], c='red', label='Bad Data Points', alpha=0.7, edgecolor='black', s=25, zorder=2)
     plt.plot(x_arr, y_arr_2, label='Good Function')
 
-    A = - (result[2] - result[1]) / (result[0] - result[3])
+    A = - (result[3] - result[1]) / (result[2] - result[0])
     a.append(A)
 
 
