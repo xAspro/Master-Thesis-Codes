@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import sounddevice as sd
 import time
 
-output_data_file = 'rhoqso_output_data.txt'
+output_data_file = 'rhoqso_output_data_2.txt'
 
 with open(output_data_file, 'w') as f:
     f.write("# File: rhoqso_output_data\n")
@@ -515,7 +515,7 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
         f.write("#\n")
         f.write("# Storing the data points and its uncertainities\n")
         for i in range(len(zs)):
-            f.write(f"{zs[i]:.4g}, {uzerr[i]:.4g}, {lzerr[i]:.4g}, {rho[i]:.4g}, {rho_up[i]:.4g}, {rho_low[i]:.4g}\n")
+            f.write(f"{zs[i]:.4g}, {uzerr[i]:.4g}, {lzerr[i]:.4g}, {rho[i]:.4g}, {rho_up[i]:.4g}, {rho_low[i]:.4g}, {mlim:.3g}\n")
 
     ax.scatter(zs, rho, c=color, edgecolor='None',
                s=42, zorder=10, linewidths=2) 

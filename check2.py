@@ -308,7 +308,7 @@ def mcmc_2_main(data, nwalkers=50, nprod=1000, nburn=1000, NUM=2, plot_number=0)
     
     if acceptance_rate < 0.1:
         print("Warning: Low acceptance rate. Consider adjusting the number of walkers or the parameter ranges.")
-        sys.exit('Low acceptance rate. Exiting.')
+        # sys.exit('Low acceptance rate. Exiting.')
     if acceptance_rate > 0.5:
         print("Warning: High acceptance rate. Consider adjusting the number of walkers or the parameter ranges.")
         sys.exit('High acceptance rate. Exiting.')
@@ -355,6 +355,12 @@ def find_bad_data(data, param, NUM=2, plot_number=0):
 
 def read_data(filename):
     data = np.loadtxt(filename, comments='#', delimiter=',', unpack=True)
+    labels = data[-1]
+    print("\n\n\nlabels = ", labels)
+
+
+    label = [labels[0]] + [labels[i] for i in range(1, len(labels)) if labels[i] != labels[i-1]] 
+    print("label = ", label)
 
     all_data = np.array([data[0], np.log10(data[3]), ((1 / (np.log(10) * data[3]) * data[4]) + (1 / (np.log(10) * data[3]) * data[5])) / 2])
     # Find breakpoints in the data
@@ -363,18 +369,22 @@ def read_data(filename):
     # Split the data into subarrays
     subarrays = np.split(all_data, breaks, axis=1)
 
-    return subarrays
+    return subarrays, label
     
 
 
 n_walkers = 50
-n_prod = 10000
+n_prod = 5000
 n_burn = 1000
 n_thin = 50
 
 
-subarrays = read_data("rhoqso_output_data.txt")
+subarrays, label = read_data("rhoqso_output_data_2.txt")
 print("len(subarrays) = ", len(subarrays))
+print("label = ", label)
+
+# import sys
+# sys.exit('Exiting after reading data.')
 
 
 main_fig = plt.figure(figsize=(3, 5), dpi=300)
@@ -391,6 +401,8 @@ for i, subarray in enumerate(subarrays):
     print("rho = ", rho)
     print("rho_sig = ", rho_sig)
 
+    m_value = label[i]
+
     result = mcmc_2_main(subarray, nwalkers=n_walkers, nprod=n_prod, nburn=n_burn, NUM=NUM, plot_number=i)
 
     prob_bad_points_2 = find_bad_data(subarray, result, NUM=NUM, plot_number=i)
@@ -402,8 +414,15 @@ for i, subarray in enumerate(subarrays):
     print("mask = ", mask)
 
     plt.figure(main_fig.number)
-    plt.errorbar(z, rho, yerr=sig, fmt='o', ms=7, capsize=4, zorder=1)
-    plt.scatter(z[mask], rho[mask], c='red', label='Bad Data Points', alpha=0.7, edgecolor='black', s=25, zorder=2)
+    # Define a list of light and corresponding dark colors
+    light_colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan']
+    dark_colors = ['navy', 'darkorange', 'darkgreen', 'indigo', 'maroon', 'deeppink', 'dimgray', 'darkolivegreen', 'teal']
+
+    color_idx = i % len(light_colors)
+    good_color = light_colors[color_idx]
+    bad_color = dark_colors[color_idx]
+    plt.errorbar(z, rho, yerr=sig, fmt='o', label=f'Good Data Points for {m_value}', ms=2, capsize=1, zorder=1, color=good_color)
+    plt.scatter(z[mask], rho[mask], c=bad_color, label=f'Bad Data Points for {m_value}', alpha=0.7, edgecolor='black', s=4, zorder=2)
     plt.plot(x_arr, y_arr_2, label='Good Function')
 
     A = - (result[3] - result[1]) / (result[2] - result[0])
