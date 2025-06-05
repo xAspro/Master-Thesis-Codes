@@ -24,13 +24,13 @@ sig = 0.2
 zmin = 0
 zmax = 15
 
-k = 1 # Slope of the sigmoid function
+# k = 1 # Slope of the sigmoid function
 
 method = 'smooth_piecewise_linear'  # Change this to 'poly' for polynomial fitting
 if method == 'poly':
     NUM = 3
 elif method == 'smooth_piecewise_linear':
-    NUM = 4
+    NUM = 5
 
 def function(x, params):
     if method == 'poly':
@@ -40,6 +40,7 @@ def function(x, params):
         c1 = params[1]
         m2 = params[2]
         c2 = params[3]
+        k = params[4] if len(params) > 4 else 1
         
         a = - (c2 - c1) / (m2 - m1)
         w = 1 / (1 + 10**(-k * (x - a)))
@@ -85,7 +86,8 @@ def logprior(params, NUM=2):
         return sum
 
     elif method == 'smooth_piecewise_linear':
-        m1, c1, m2, c2 = params[:NUM]
+        # m1, c1, m2, c2 = params[:NUM]
+        m1, c1, m2, c2, k = params[:NUM]
         Pb, Yb, Vb = params[NUM:]
 
         a = - (c2 - c1) / (m2 - m1)
@@ -112,6 +114,9 @@ def logprior(params, NUM=2):
             return -np.inf
         if c2 < -20 or c2 > 20:
             # print("Rejected c2 = ", c2)
+            return -np.inf
+        if k < 0 or k > 3:
+            # print("Rejected k = ", k)
             return -np.inf
         if not 0 < a < 5:
             # print("Rejected a = ", a)
@@ -181,16 +186,17 @@ def find_best_fit(data):
         x = x[mask]
         y = y[mask]
         sig = sig[mask]
-        def model_function(x, m1, c1, m2, c2):
+        def model_function(x, m1, c1, m2, c2, k=1):
             a = - (c2 - c1) / (m2 - m1)
             w = 1 / (1 + 10**(-k * (x - a)))
             y1 = m1 * x + c1
             y2 = m2 * x + c2
             return w * y1 + (1 - w) * y2
+        # p0 = [2, 1, 1, 4]
         p0 = [2, 1, 1, 4]
-        popt, pcov = curve_fit(model_function, x, y, p0=p0)
+        popt, pcov = curve_fit(model_function, x, y, p0=p0) 
 
-        return popt
+        return [popt[i] for i in range(len(popt))] + [1]
 
 
 def mcmc_2_main(data, nwalkers=50, nprod=1000, nburn=1000, NUM=2, plot_number=0):
@@ -224,7 +230,8 @@ def mcmc_2_main(data, nwalkers=50, nprod=1000, nburn=1000, NUM=2, plot_number=0)
         labels = [f'a{i}' for i in range(NUM)] + ["Pb", "Yb", "Vb"]
 
     elif method == 'smooth_piecewise_linear':
-        labels = ["m1", "c1", "m2", "c2", "Pb", "Yb", "Vb"]
+        labels = ["m1", "c1", "m2", "c2", "k", "Pb", "Yb", "Vb"]
+        # labels = ["m1", "c1", "m2", "c2", "Pb", "Yb", "Vb"]
 
     print("\n\nparam_ranges =\n", np.array2string(np.array(param_ranges), precision=4))
 
@@ -431,7 +438,7 @@ for i, subarray in enumerate(subarrays):
 
 
     # Reduce the number of samples if needed for speed
-    n_draws = min(50000, len(samples))
+    n_draws = min(100000, len(samples))
     draw_indices = np.random.choice(len(samples), size=n_draws, replace=False)
     drawn_samples = samples[draw_indices]
 
@@ -471,8 +478,9 @@ for i, subarray in enumerate(subarrays):
 plt.figure(main_fig.number)
 plt.xlabel('x', fontsize=7)
 plt.ylabel('y', fontsize=7)
+
+plt.title('Fitting for x with Bad data in dataset', fontsize=9, pad=15)
 plt.tight_layout()
-plt.title('Fitting for x with Bad data in dataset', fontsize=9)
 # plt.legend(fontsize=3, loc='best')
 plt.legend(fontsize=6, loc='upper right')
 plt.xticks(fontsize=6)
