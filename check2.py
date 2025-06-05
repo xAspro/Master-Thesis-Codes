@@ -129,13 +129,15 @@ def logprior(params, NUM=2):
         ret = np.exp(log_ret)
         ret_2 = np.log(log_ret)
         ret_3 = - np.tan((Pb + 1) * np.pi / 2)
+        ret_4 = 0
 
-        if random.random() < 1e-4:
-            print("\n\nPb = ", Pb)
-            print("log_ret = ", log_ret)
-            print("ret = ", ret)
-            print("ret_2 = ", ret_2)
-            print("ret_3 = ", ret_3)
+        # if random.random() < 1e-5:
+            # print("\n\nPb = ", Pb)
+            # print("log_ret = ", log_ret)
+            # print("ret = ", ret)
+            # print("ret_2 = ", ret_2)
+            # print("ret_3 = ", ret_3)
+            # print("ret_4 = ", ret_4)
         return ret_3
 
     else:
@@ -278,7 +280,7 @@ def mcmc_2_main(data, nwalkers=50, nprod=1000, nburn=1000, NUM=2, plot_number=0)
 
     if results["Pb"]["median"] > 0.9:
             print("Warning: Pb is greater than 0.9. This may indicate a poor fit.")
-            sys.exit('Pb > 0.9. Exiting.')
+            # sys.exit('Pb > 0.9. Exiting.')
 
     fig = plt.figure(figsize=(5, 10), dpi=100)
     corner.corner(samples, labels=labels, fig=fig, show_titles=True, quantiles=[0.16, 0.5, 0.84])
@@ -311,9 +313,8 @@ def mcmc_2_main(data, nwalkers=50, nprod=1000, nburn=1000, NUM=2, plot_number=0)
         # sys.exit('Low acceptance rate. Exiting.')
     if acceptance_rate > 0.5:
         print("Warning: High acceptance rate. Consider adjusting the number of walkers or the parameter ranges.")
-        sys.exit('High acceptance rate. Exiting.')
-    return [stats["median"] for param, stats in results.items()]
-
+        # sys.exit('High acceptance rate. Exiting.')
+    return [stats["median"] for param, stats in results.items()], samples
 
 def find_bad_data(data, param, NUM=2, plot_number=0):
     x, y, sig = data
@@ -350,7 +351,7 @@ def find_bad_data(data, param, NUM=2, plot_number=0):
 
     if implied_bad_points > 90:
         print("Warning: High percentage of bad points detected. Consider adjusting the model or data.")
-        sys.exit('High percentage of bad points. Exiting.')
+        # sys.exit('High percentage of bad points. Exiting.')
     return np.array(bad_prob_list)
 
 def read_data(filename):
@@ -387,7 +388,7 @@ print("label = ", label)
 # sys.exit('Exiting after reading data.')
 
 
-main_fig = plt.figure(figsize=(3, 5), dpi=300)
+main_fig = plt.figure(figsize=(3, 5), dpi=300, constrained_layout=True)
 
 x_arr = np.linspace(zmin, zmax, 1000)
 
@@ -403,7 +404,7 @@ for i, subarray in enumerate(subarrays):
 
     m_value = label[i]
 
-    result = mcmc_2_main(subarray, nwalkers=n_walkers, nprod=n_prod, nburn=n_burn, NUM=NUM, plot_number=i)
+    result, samples = mcmc_2_main(subarray, nwalkers=n_walkers, nprod=n_prod, nburn=n_burn, NUM=NUM, plot_number=i)
 
     prob_bad_points_2 = find_bad_data(subarray, result, NUM=NUM, plot_number=i)
 
@@ -413,6 +414,10 @@ for i, subarray in enumerate(subarrays):
     mask = prob_bad_points_2 > 0.5
     print("mask = ", mask)
 
+    print("result = ", result)
+
+    # sys.exit('Exiting after finding bad data points.')
+
     plt.figure(main_fig.number)
     # Define a list of light and corresponding dark colors
     light_colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan']
@@ -421,12 +426,39 @@ for i, subarray in enumerate(subarrays):
     color_idx = i % len(light_colors)
     good_color = light_colors[color_idx]
     bad_color = dark_colors[color_idx]
-    plt.errorbar(z, rho, yerr=sig, fmt='o', label=f'Good Data Points for {m_value}', ms=2, capsize=1, zorder=1, color=good_color)
-    plt.scatter(z[mask], rho[mask], c=bad_color, label=f'Bad Data Points for {m_value}', alpha=0.7, edgecolor='black', s=4, zorder=2)
-    plt.plot(x_arr, y_arr_2, label='Good Function')
+    plt.errorbar(z, rho, yerr=sig, fmt='o', label=f'M<{m_value}:Good Data', ms=2, capsize=1, zorder=1, color=good_color, elinewidth=0.5)
+    plt.scatter(z[mask], rho[mask], c=bad_color, label=f'M<{m_value}:Bad Data', alpha=0.7, edgecolor='black', s=4, zorder=2, linewidths=0.5)
+
+
+    # Reduce the number of samples if needed for speed
+    n_draws = min(50000, len(samples))
+    draw_indices = np.random.choice(len(samples), size=n_draws, replace=False)
+    drawn_samples = samples[draw_indices]
+
+    # Compute y values for each sample
+    y_samples = np.array([function(x_arr, sample[:NUM]) for sample in drawn_samples])
+
+    lower_1 = np.percentile(y_samples, 16, axis=0)
+    median = np.percentile(y_samples, 50, axis=0)
+    upper_1 = np.percentile(y_samples, 84, axis=0)
+
+    lower_2 = np.percentile(y_samples, 2.5, axis=0)
+    upper_2 = np.percentile(y_samples, 97.5, axis=0)
+
+    lower_3 = np.percentile(y_samples, 0.15, axis=0)
+    upper_3 = np.percentile(y_samples, 99.85, axis=0)
+
+
+    plt.plot(x_arr, y_arr_2, linewidth=0.5, color=good_color, zorder=3)
+    plt.fill_between(x_arr, lower_1, upper_1, color=good_color, alpha=0.2, zorder=4)
+    # plt.fill_between(x_arr, lower_2, upper_2, color=good_color, alpha=0.1, zorder=5)
+    # plt.fill_between(x_arr, lower_3, upper_3, color=good_color, alpha=0.05, zorder=6)
 
     A = - (result[3] - result[1]) / (result[2] - result[0])
     a.append(A)
+
+    print("len(subarrays) = ", len(subarrays))
+    print("i = ", i)
 
 
 
@@ -437,23 +469,26 @@ for i, subarray in enumerate(subarrays):
         
 
 plt.figure(main_fig.number)
-plt.xlabel('x')
-plt.ylabel('y')
+plt.xlabel('x', fontsize=7)
+plt.ylabel('y', fontsize=7)
 plt.tight_layout()
 plt.title('Fitting for x with Bad data in dataset', fontsize=9)
-plt.legend(fontsize=3, loc='best')
+# plt.legend(fontsize=3, loc='best')
+plt.legend(fontsize=6, loc='upper right')
 plt.xticks(fontsize=6)
 plt.yticks(fontsize=6)
 plt.xlabel('x', fontsize=7)
 plt.ylabel('y', fontsize=7)
 main_fig.set_size_inches(4, 2.5)
+plt.tight_layout()
+plt.subplots_adjust(left=0.15, right=0.95, top=0.95, bottom=0.15)
 
 plt.xlim(zmin, zmax)
 plt.ylim(-11, -3)
 # plt.ylim(-14, -2)
-plt.legend()
 plt.grid()
 plt.savefig(f"check2_plot_2_{current_time}.png")  # Save the plot as a PNG file with the current time
+plt.savefig(f"check2_plot_2_{current_time}.pdf")  # Save the plot as a PDF file with the current time
 
 print("\na = ", a)
 print()
