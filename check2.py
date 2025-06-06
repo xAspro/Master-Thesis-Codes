@@ -14,6 +14,7 @@ import emcee
 import datetime
 from scipy.optimize import curve_fit
 import random
+from scipy.stats import beta
 
 start_time = datetime.datetime.now()
 current_time = start_time.strftime("%Y%m%d_%H%M%S")
@@ -23,6 +24,29 @@ sig = 0.2
 
 zmin = 0
 zmax = 15
+
+ALPHA = 1
+BETA = 3
+
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
+################Check this out!!!! I think I should split the two lines and try#################
+################to plot them an see what will happen? Will I still have so many#################
+################bad data points?? CHECK THISSSSSSSS!!!!!!!!!!!!!!!!!!!!!!!!!!!!#################
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
+################################################################################################
 
 # k = 1 # Slope of the sigmoid function
 
@@ -92,9 +116,9 @@ def logprior(params, NUM=2):
 
         a = - (c2 - c1) / (m2 - m1)
 
-        if Pb < 0 or Pb > 1:
-            # print("Rejected Pb = ", Pb)
-            return -np.inf
+        # if Pb < 0 or Pb > 1:
+        #     # print("Rejected Pb = ", Pb)
+        #     return -np.inf
         if Vb <= 0:
             # print("Rejected Vb = ", Vb)
             return -np.inf
@@ -135,15 +159,21 @@ def logprior(params, NUM=2):
         ret_2 = np.log(log_ret)
         ret_3 = - np.tan((Pb + 1) * np.pi / 2)
         ret_4 = 0
+        log_pb = np.log(beta.pdf(Pb, ALPHA, BETA))
+        lvb = - np.log(100 + Vb)
 
-        # if random.random() < 1e-5:
-            # print("\n\nPb = ", Pb)
-            # print("log_ret = ", log_ret)
-            # print("ret = ", ret)
-            # print("ret_2 = ", ret_2)
-            # print("ret_3 = ", ret_3)
-            # print("ret_4 = ", ret_4)
-        return ret_3
+        if random.random() < 1e-5:
+            print("\n\nPb = ", Pb)
+            print("log_ret = ", log_ret)
+            print("ret = ", ret)
+            print("ret_2 = ", ret_2)
+            print("ret_3 = ", ret_3)
+            print("ret_4 = ", ret_4)
+            print("log_pb = ", log_pb)
+            print("Vb = ", Vb)
+            print("lvb = ", lvb)
+        # return ret_3
+        return log_pb + lvb
 
     else:
         raise ValueError("Invalid method. Use 'poly' or 'smooth_piecewise_linear'.")
@@ -348,7 +378,8 @@ def find_bad_data(data, param, NUM=2, plot_number=0):
             true_cnt += 1
 
             ratio = p_fg / p_bg
-            print("ratio = ", ratio)  # This should be ~0 if model fits well
+            print("\nratio = ", ratio)  # This should be ~0 if model doesnt fits well
+            print(f'p_fg = {p_fg:.4f}, p_bg = {p_bg:.4f}, Pb = {Pb:.4f}, Yb = {Yb:.4f}, Vb = {Vb:.4f}')
         
         bad_prob_list.append(bad_prob)
 
@@ -384,7 +415,6 @@ def read_data(filename):
 n_walkers = 50
 n_prod = 5000
 n_burn = 1000
-n_thin = 50
 
 
 subarrays, label = read_data("rhoqso_output_data_2.txt")
@@ -438,7 +468,7 @@ for i, subarray in enumerate(subarrays):
 
 
     # Reduce the number of samples if needed for speed
-    n_draws = min(100000, len(samples))
+    n_draws = min(50000, len(samples))
     draw_indices = np.random.choice(len(samples), size=n_draws, replace=False)
     drawn_samples = samples[draw_indices]
 
@@ -489,7 +519,7 @@ plt.xlabel('x', fontsize=7)
 plt.ylabel('y', fontsize=7)
 main_fig.set_size_inches(4, 2.5)
 plt.tight_layout()
-plt.subplots_adjust(left=0.15, right=0.95, top=0.95, bottom=0.15)
+plt.subplots_adjust(left=0.15, right=0.95, top=0.85, bottom=0.15)
 
 plt.xlim(zmin, zmax)
 plt.ylim(-11, -3)
