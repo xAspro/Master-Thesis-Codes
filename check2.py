@@ -158,7 +158,7 @@ def logprior(params, NUM=2):
         # print("ret = ", ret)
         # return - np.log(Pb)**100 
 
-        log_ret = - np.tan((Pb + 1 / 2) * np.pi)
+        log_ret = - np.tan((Pb + 1 / 2) * np.pi) # np.cot(Pb * np.pi)
         ret = np.exp(log_ret)
         ret_2 = np.log(log_ret)
         ret_3 = - np.tan((Pb + 1) * np.pi / 2)

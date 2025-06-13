@@ -118,7 +118,9 @@ method = 'Nelder-Mead'
 
 # zls = [(4.1, 4.7), (4.7, 5.5), (5.5, 6.5)]
 
-zls = [(5.5, 6.5)]
+# zls = [(3.4, 3.5)]
+
+zls = [(0.4, 0.6)]
 
 # Just for checking reduced zls
 # zls = [(0.1,0.4), (0.4, 0.6), (0.6, 0.8)]
@@ -176,6 +178,8 @@ for i, zl in enumerate(zls):
 
     assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
     
+    lfi.run_mcmc_with_bad_points()
+
     print("Running MCMC")
     lfi.run_mcmc()
     print("lfi.bf.x:", lfi.bf.x)

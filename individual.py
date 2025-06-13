@@ -790,6 +790,8 @@ class lf:
         pos = [self.mcmc_start + 1e-4*np.random.randn(self.ndim) for i
                in range(self.nwalkers)]
         
+        print("shape = ", np.array(pos).shape)
+        
         self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
                                              self._lnprob)
 
@@ -797,6 +799,113 @@ class lf:
         self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
         
         return
+    
+    def find_Pb_Yb_Vb(self):
+        Pb = np.random.uniform(0.0, 1.0, size=self.nwalkers_with_bp)
+        mean = self.bf.x[0]
+        log10_Yb = np.random.normal(loc=mean, scale=1, size=self.nwalkers_with_bp)
+        Yb = 10.0**log10_Yb
+        log10_Vb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
+        Vb = 10.0**log10_Vb
+
+        # print("\nStatistics of Yb and Vb for testing purposes")
+        # print("Yb mean = ", np.mean(Yb), "\tYb std = ", np.std(Yb))
+        # print("Vb mean = ", np.mean(Vb), "\tVb std = ", np.std(Vb))
+        # print("Pb mean = ", np.mean(Pb), "\tPb std = ", np.std(Pb))
+        # print("\n\n")
+        # print("log10_Yb mean = ", np.mean(log10_Yb),
+        #       "\tlog10_Yb std = ", np.std(log10_Yb))
+        # print("log10_Vb mean = ", np.mean(log10_Vb),
+        #       "\tlog10_Vb std = ", np.std(log10_Vb))
+
+        # print("Mean = ", mean),
+        
+        # import sys
+
+        # sys.exit("\nQuiting for testing purposes\n")
+
+        print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
+
+        return np.array([Pb, Yb, Vb]).T
+    
+    def _lnprior_with_bad_points(self, theta):
+        """
+        Checks if the parameters are within the prior bounds, including handling of bad points.
+
+        Parameters
+        ----------
+        theta : ndarray
+            The parameter vector to be evaluated.
+
+        Returns
+        -------
+        float
+            The log prior probability. Returns 0.0 if theta is within the prior bounds,
+            and -np.inf if theta is outside the prior bounds.
+        """
+        print("In _lnprior_with_bad_points")
+        if (np.all(theta[:4] < self.prior_max_values) and
+            np.all(theta[:4] > self.prior_min_values)):
+            Pb, Yb, Vb = theta[4], theta[5], theta[6]
+            if (Pb >= 0.0 and Pb < 1.0 and
+                Yb > 0.0 ):
+                # return - np.log(Pb) - np.log(Vb)
+                # return - np.log(1 + Pb) - np.log(1 + Vb)
+                return 0.0
+
+        return -np.inf
+    
+    def lnlike_with_bad_points(self, theta):
+
+
+    def _lnprob_with_bad_points(self, theta):
+        """
+        Compute the log-probability of the QLF model given the parameters,
+        including handling of bad points.
+
+        Parameters
+        ----------
+        theta : ndarray
+            The parameter vector to be evaluated.
+
+        Returns
+        -------
+        float
+            The log-probability of the QLF model given the parameters.
+            Returns -np.inf if the log prior is not finite.
+        """
+
+        print("theta = ", theta)
+        lp = self._lnprior_with_bad_points(theta)
+        if not np.isfinite(lp):
+            return -np.inf
+        return lp
+    
+    def run_mcmc_with_bad_points(self):
+
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 100
+        self.mcmc_start_with_bp = self.bf.x
+        print("shape = ", np.array([self.mcmc_start_with_bp + 1e-4*np.random.randn(self.bf.x.size) for i
+                       in range(self.nwalkers_with_bp)]).shape)
+        pos_with_bp = np.hstack((np.array([self.mcmc_start_with_bp + 1e-4*np.random.randn(self.bf.x.size) for i
+                       in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
+        # print("pos_with_bp = ", pos_with_bp)
+        # import sys
+        # sys.exit("\nQuitting for testing purposes\n")
+
+        print("shape = ", pos_with_bp.shape)
+
+        self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
+                                                     self._lnprob_with_bad_points)
+        
+        self.sampler_with_bp.run_mcmc(pos_with_bp, 1000)
+        self.samples_with_bp = self.sampler_with_bp.chain[:, 500:, :].reshape((-1, self.ndim_with_bp))
+
+        import sys
+        sys.exit("\nQuitting for testing purposes\n")
+        return
+
+
 
     def get_percentiles(self):
         """
