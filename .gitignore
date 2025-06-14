@@ -33,3 +33,4 @@ Make_Selection_Map_2019+.py
 bins_lfs.npy
 bins_lfs_old_data.npy
 bins_lfs_old_data.npy
+run_bins.pbs

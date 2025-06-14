@@ -431,6 +431,13 @@ class selmap:
             tot = psi*self.p*self.volarr*self.dm_array
             return np.sum(tot)
         except(AttributeError):
+            # For Checking Purposes
+            import sys
+            sys.exit("AttributeError in nqso: " + str(lumfn) + " " + str(theta) + "\n" +
+                     "self.m = " + str(self.m) + "\n" +
+                     "self.p = " + str(self.p) + "\n" +
+                     "self.volarr = " + str(self.volarr) + "\n" +
+                     "self.dm_array = " + str(self.dm_array))
             return 0 
             
 class lf:
@@ -512,7 +519,6 @@ class lf:
       the QLF in specific redshift bins.
     - The QLF is modeled using a double power law, with parameters such as `phi_star`, 
       `M_star`, `alpha`, and `beta`.
-    - The class supports both frequentist and Bayesian approaches for parameter estimation.
     """
 
     def __init__(self, quasar_files=None, selection_maps=None, zlims=None):
@@ -628,7 +634,7 @@ class lf:
 
         Returns
         -------
-        - n : float
+        - ns : float
             The total number of quasars predicted by the QLF model in the survey volume.
 
         """
@@ -843,19 +849,81 @@ class lf:
             The log prior probability. Returns 0.0 if theta is within the prior bounds,
             and -np.inf if theta is outside the prior bounds.
         """
-        print("In _lnprior_with_bad_points")
+        # print("In _lnprior_with_bad_points")
         if (np.all(theta[:4] < self.prior_max_values) and
             np.all(theta[:4] > self.prior_min_values)):
             Pb, Yb, Vb = theta[4], theta[5], theta[6]
-            if (Pb >= 0.0 and Pb < 1.0 and
-                Yb > 0.0 ):
+            if (0.0 <= Pb < 1.0 and 0.0 < Vb):
                 # return - np.log(Pb) - np.log(Vb)
                 # return - np.log(1 + Pb) - np.log(1 + Vb)
                 return 0.0
 
         return -np.inf
-    
-    def lnlike_with_bad_points(self, theta):
+
+    def neglnlike_with_bad_points(self, theta):
+        qlf_params = theta[:4]  # logphi_star, M_star, alpha, beta
+        Pb, Yb, Vb = theta[4:]  # mixture model parameters
+
+        logphi_model = self.log10phi(qlf_params, self.M1450)    # Mpc^-3 mag^-1
+
+        # Estimate pointwise data phi using 1 / V_eff from selection maps
+        mbins = np.arange(-30.9, -17.3, 0.6)  # standard binning
+        selmaps = self.maps
+        # print("mbins shape = ", mbins.shape)
+        # print("selmaps shape = ", len(selmaps))
+        # print("self.M1450 shape = ", self.M1450.shape)
+
+        import drawlf
+
+        V = [drawlf.totBinVol(self, m, mbins, selmaps) for m in self.M1450]
+        # print("V shape = ", np.array(V).shape)
+        
+        Veff = np.array([drawlf.totBinVol(self, m, mbins, selmaps) for m in self.M1450])
+        # print("Veff shape = ", Veff.shape)
+        mask = Veff > 0
+        
+
+        if not np.all(mask):
+            print("Warning: Some Veff values are zero or negative. Masking these points.")
+            print("Veff values: ", Veff)
+            print("Corresponding M1450 values:", self.M1450[~mask])
+            print("Indices with bad Veff:", np.where(~mask)[0])
+
+            import sys
+            sys.exit("Exiting due to zero or negative Veff values in neglnlike_with_bad_points.")
+            logphi_model = logphi_model[mask]
+            Veff = Veff[mask]
+
+
+
+        logphi_data = np.log10(1.0 / Veff)  # from phi = 1/Veff
+
+        # Test Case! Checking! Later will get better sigma_fg
+        sigma_fg = 0.3
+
+
+        # Foreground: match to model
+        p_fg = 1.0 / (np.sqrt(2 * np.pi) * sigma_fg) * np.exp(
+            -0.5 * (logphi_data - logphi_model)**2 / sigma_fg**2
+        )
+
+        # Background: wide Gaussian centered at Yb
+        p_bg = 1.0 / np.sqrt(2 * np.pi * (Vb + sigma_fg**2)) * np.exp(
+            -0.5 * (logphi_data - Yb)**2 / (Vb + sigma_fg**2)
+        )
+
+        # Mixture likelihood and logL
+        p_mix = (1 - Pb) * p_fg + Pb * p_bg
+
+        # To Deal with numerical issues, clip p_mix to avoid log(0)
+        p_mix = np.clip(p_mix, 1e-300, None)
+        logL_data = np.sum(np.log(p_mix))
+
+        # Normalization integral
+        norm_term = self.lfnorm(qlf_params)
+
+        return -2.0 * logL_data + 2.0 * norm_term
+
 
 
     def _lnprob_with_bad_points(self, theta):
@@ -875,17 +943,17 @@ class lf:
             Returns -np.inf if the log prior is not finite.
         """
 
-        print("theta = ", theta)
+        # print("theta = ", theta)
         lp = self._lnprior_with_bad_points(theta)
         if not np.isfinite(lp):
             return -np.inf
-        return lp
+        return lp - self.neglnlike_with_bad_points(theta)
     
     def run_mcmc_with_bad_points(self):
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 100
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
         self.mcmc_start_with_bp = self.bf.x
-        print("shape = ", np.array([self.mcmc_start_with_bp + 1e-4*np.random.randn(self.bf.x.size) for i
+        print("shape = ", np.array([self.mcmc_start_with_bp + 1e-2*np.random.randn(self.bf.x.size) for i
                        in range(self.nwalkers_with_bp)]).shape)
         pos_with_bp = np.hstack((np.array([self.mcmc_start_with_bp + 1e-4*np.random.randn(self.bf.x.size) for i
                        in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
@@ -898,8 +966,72 @@ class lf:
         self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
                                                      self._lnprob_with_bad_points)
         
-        self.sampler_with_bp.run_mcmc(pos_with_bp, 1000)
+        self.sampler_with_bp.run_mcmc(pos_with_bp, 30000)
         self.samples_with_bp = self.sampler_with_bp.chain[:, 500:, :].reshape((-1, self.ndim_with_bp))
+
+        # Print parameter medians and 1-sigma intervals
+        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        for i, name in enumerate(param_names):
+            vals = percentiles(self.samples_with_bp[:, i])
+            print(f"{name}: median = {vals[2]:.4f}, -1σ = {vals[0]:.4f}, +1σ = {vals[1]:.4f}")
+
+        # Plot all samples for each parameter as histograms and overlay the median
+        import matplotlib.pyplot as plt
+        import corner
+
+        fig, axes = plt.subplots(1, self.ndim_with_bp, figsize=(18, 4))
+        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+
+        for i, name in enumerate(param_names):
+            ax = axes[i]
+            data = self.samples_with_bp[:, i]
+            ax.hist(data, bins=30, color='skyblue', alpha=0.7, label='Samples')
+            median = np.median(data)
+            ax.axvline(median, color='red', linestyle='--', label='Median')
+            ax.set_title(name)
+            ax.legend(fontsize=8)
+
+        plt.tight_layout()
+        plt.savefig("mcmc_checking_with_bad_points.png")
+
+        # Plot MCMC corner plot for all parameters with bad points
+
+        fig = corner.corner(
+            self.samples_with_bp,
+            labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$'],
+            show_titles=True,
+            title_kwargs={"fontsize": 12},
+            quantiles=[0.16, 0.5, 0.84],
+        )
+        fig.savefig("mcmc_checking_corner_with_bad_points.png")
+
+        # Plot MCMC chains for all parameters with bad points
+        fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
+        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        for i, name in enumerate(param_names):
+            ax = axes[i]
+            for walker in range(self.nwalkers_with_bp):
+                # ax.plot(self.sampler_with_bp.chain[walker, :, i], color='k', alpha=0.1)
+                ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
+            median = np.median(self.samples_with_bp[:, i])
+            ax.axhline(median, color='red', linestyle='--', label='Median')
+            ax.set_ylabel(name)
+            if i == 0:
+                ax.legend(fontsize=8)
+        axes[-1].set_xlabel('step')
+        plt.tight_layout()
+        plt.savefig("mcmc_checking_chains_with_bad_points.png")
+
+        # Print autocorrelation time and acceptance rate for the sampler with bad points
+        try:
+            tau = self.sampler_with_bp.get_autocorr_time()
+            print("Autocorrelation time (per parameter):", tau)
+        except Exception as e:
+            print("Could not compute autocorrelation time:", e)
+
+        acceptance_fraction = self.sampler_with_bp.acceptance_fraction
+        print("Mean acceptance fraction:", np.mean(acceptance_fraction))
+        print("Acceptance fraction per walker:", acceptance_fraction)
 
         import sys
         sys.exit("\nQuitting for testing purposes\n")
@@ -1116,8 +1248,9 @@ class lf:
                         v += selmap.volarr[i]*selmap.p[i]*selmap.dm[i]
                     else:
                         v += selmap.volarr[i]*selmap.p[i]*selmap.dm
-
-        return v
+        print("v = ", v, " for selmap sid = ", selmap.sid, " mrange = ", mrange, " zrange = ", zrange)
+        print("v.shape = ", np.shape(v))
+        return float(v)
 
     def totBinVol(self, m, mbins, selmaps):
         """
