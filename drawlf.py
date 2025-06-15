@@ -75,7 +75,33 @@ def lfsample(theta, n, mlims):
     return np.random.choice(sample, n)
     
 def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
-    # print("In drawlf.py plot_posterior_sample_lfs")
+    """
+    Plot the posterior sample LFs in the given magnitude range.
+
+    Parameters
+    ----------
+    - lf : object
+        The luminosity function object containing the samples and methods.
+    - ax : matplotlib.axes.Axes
+        The axes on which to plot the posterior sample LFs.
+    - maglims : tuple
+        A tuple containing the minimum and maximum magnitudes for the plot.
+    - kwargs : dict
+        Additional keyword arguments for plotting, such as color and line width.
+    
+    Returns
+    -------
+    - f : matplotlib.collections.PolyCollection
+        The filled area representing the posterior sample LFs.
+
+    Notes
+    -----
+    - This function samples the luminosity function using the provided samples
+      and computes the log10 of the phi values for the given magnitudes.
+    - It fills the area between the 15.87th and 84.13th percentiles of the
+      log10phi values, providing a visual representation of the uncertainty
+      in the luminosity function.
+    """
 
     nmags = 100
     mags = np.linspace(*maglims, num=nmags)
@@ -83,11 +109,11 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     print('\n\n\n\nc= ', kwargs['c'], '\n\n\n\n')
     nsample = 1000
     rsample = lf.samples[np.random.randint(len(lf.samples), size=nsample)]
+    rsample = rsample[:, :4]  # Ensure we only take the first 4 parameters
     # print("rsample= ", rsample)
     phi = np.zeros((nsample, nmags))
     
     for i, theta in enumerate(rsample):
-        #Made a change here. from phi[i] = lf.log10phi(theta, mags) to phi[i] = lf.log10phi(lf,theta, mags)
         phi[i] = lf.log10phi(theta, mags)
         # phi[i] = lf.log10phi(lf, theta, mags)
 
@@ -120,17 +146,35 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     print("\n\n\n\nup= ", up)
     print("\n\n\n\ndown= ", down)
     f = ax.fill_between(mags, down, y2=up, color='#ffbf00', alpha=0.7)
-    # f = ax.fill_between(mags, down, y2=up, color=kwargs['c'])
+    # f = ax.fill_between(mags, down, y2=up, color=kwargs['c'], alpha=0.7)
 
     return f
 
 def plot_bestfit_lf(lf, ax, mags, **kwargs):
-    # print("In drawlf.py plot_bestfit_lf")
+    """
+    Plot the best fit luminosity function (LF) on the given axes.
+
+    Parameters
+    ----------
+    - lf : object
+        The luminosity function object containing the samples and methods.
+    - ax : matplotlib.axes.Axes
+        The axes on which to plot the best fit LF.
+    - mags : array-like
+        An array of magnitudes at which to evaluate the LF.
+    - kwargs : dict
+        Additional keyword arguments for plotting, such as line width,
+        color, and zorder.
+
+    Returns
+    -------
+    - bf : matplotlib.lines.Line2D
+        The line object representing the best fit LF.
+    """
 
     bf = np.median(lf.samples, axis=0)
     phi_fit = lf.log10phi(bf, mags)
     bf, = ax.plot(mags, phi_fit, lw=1.5, c='#ffbf00', zorder=kwargs['zorder'])
-    # bf, = ax.plot(mags, phi_fit, lw=1.5, c=kwargs['c'], zorder=kwargs['zorder'])
     return bf 
 
 def binVol(self, selmap, mrange, zrange):
@@ -479,8 +523,10 @@ def savedata(data):
 
     return
 
-def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=True, c2=None, c3=None):
+def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=True, c2=None, c3=None, includes_bad_points=False):
     # print("In drawlf.py render")
+    # show_individual_fit, lf
+    # Everything else is not given this time
 
     """
 
@@ -497,14 +543,14 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         # indf = plot_posterior_sample_lfs(lf, ax, (-34.0, -12.0), lw=1,
                                     #    c='#ffbf00', alpha=0.1, zorder=2) 
         indf = plot_posterior_sample_lfs(lf, ax, xlim, lw=1,
-                                       c='blue', alpha=0.1, zorder=2) 
+                                        alpha=0.1, zorder=2) 
         # plot_bestfit_lf(lf, ax, mag_plot, lw=2,
         #                      c='#ffbf00', zorder=3, label='This work')
 
         # indbf = plot_bestfit_lf(lf, ax, mag_plot, lw=2,
                             #  c='#ffbf00', zorder=3)
         indbf = plot_bestfit_lf(lf, ax, np.linspace(*xlim, num=200), lw=2,
-                             c='red', zorder=3)
+                              zorder=3)
         
         # if z_plot < 4.5:
         #     plot_giallongo_z4p25(lf, ax, mag_plot)
@@ -741,7 +787,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
     else:
         return 
 
-def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_fit=True):
+def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_fit=True, includes_bad_points=False):
     # print("In drawlf.py draw")
 
     """
@@ -758,7 +804,7 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     ax.tick_params('both', which='minor', length=3, width=1)
 
     render(ax, lf, composite=composite, showMockSample=showMockSample,
-           show_individual_fit=show_individual_fit)
+           show_individual_fit=show_individual_fit, includes_bad_points=includes_bad_points)
 
     # ax.set_xlim(-12.0, -34.0)
     # ax.set_ylim(-16.0, 0.0)

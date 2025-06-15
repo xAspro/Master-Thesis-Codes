@@ -3,6 +3,8 @@ print("In individual.py")
 
 import numpy as np
 import scipy.optimize as op
+from scipy.stats import beta as beta_dist
+from scipy.stats import lognorm
 import emcee
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -885,18 +887,44 @@ class lf:
             The log prior probability. Returns 0.0 if theta is within the prior bounds,
             and -np.inf if theta is outside the prior bounds.
         """
-        # print("In _lnprior_with_bad_points")
-        if (np.all(theta[:4] < self.prior_max_values) and
-            np.all(theta[:4] > self.prior_min_values)):
+        tag = self.prior_tag
+        # print("\n\ntheta = ", theta)
+        # print("3 * self.prior_max_values = ", 3 * self.prior_max_values)
+        # print("self.prior_min_values / 3 = ", self.prior_min_values / 3)
+
+        # print("np.all(theta[:4] < 3 * self.prior_max_values) = ",
+        #       np.all(theta[:4] < 3 * self.prior_max_values))
+        # print("np.all(theta[:4] > self.prior_min_values / 3) = ",
+        #       np.all(theta[:4] > self.prior_min_values / 3))
+        
+        # Modifying the prior to allow for a wider range of values
+        # for Checking / Testing purposes
+        n = 1.5
+        if (np.all(theta[:4] < np.maximum(self.prior_max_values / n, n * self.prior_max_values)) and
+            np.all(theta[:4] > np.minimum(self.prior_min_values / n, n * self.prior_min_values))):
+            # print("Prior is satisfied for theta[:4] = ", theta[:4])
             Pb, Yb, Vb = theta[4], theta[5], theta[6]
             if (0.0 <= Pb < 1.0 and 0.0 < Vb < 50 and -20 < Yb < 20):
-                # return - np.log(Pb) - np.log(Vb)
-                # return - np.log(1 + Pb) - np.log(1 + Vb)
-                # print(f"\nPb = {Pb:.4f}\tYb = {Yb:.4f}\tVb = {Vb:.4f}")
-                # print(f"Returning np.log(1 - Pb): {np.log(1 - Pb):.4f} \t- np.log(1 + Vb): {- np.log(1 + Vb):.4f}\t total: {np.log(1 - Pb) - np.log(1 + Vb):.4f}")
-                return np.log(1 - Pb) - np.log(1 + Vb)    # Likelihood cant be negative
-                # return 0.0
+                if tag == 1:
+                    import sys
+                    sys.exit("Model 1 is too strong. Not using it anymore!")
+                    return - np.log(Pb) - np.log(Vb)
+                elif tag == 2:
+                    return - np.log(1 + Pb) - np.log(1 + Vb)
+                elif tag == 3:
+                    # print(f"\nPb = {Pb:.4f}\tYb = {Yb:.4f}\tVb = {Vb:.4f}")
+                    # print(f"Returning np.log(1 - Pb): {np.log(1 - Pb):.4f} \t- np.log(1 + Vb): {- np.log(1 + Vb):.4f}\t total: {np.log(1 - Pb) - np.log(1 + Vb):.4f}")
+                    return np.log(1 - Pb) - np.log(1 + Vb)    # Likelihood cant be negative
+                elif tag == 4:
+                    return 0.0
+                elif tag == 5:
+                    # Prior: Pb ~ Beta(2,6), Yb ~ flat, Vb ~ lognormal(mu=2, sigma=1)
+                    prior_pb = beta_dist.pdf(Pb, a=2, b=6)
+                    prior_vb = lognorm.pdf(Vb, s=1, scale=np.exp(2))
+                    return np.log(prior_pb) + np.log(prior_vb)
+                    
 
+        # print("Returning -np.inf for theta = ", theta)
         return -np.inf
 
     def neglnlike_with_bad_points(self, theta):
@@ -957,7 +985,8 @@ class lf:
             return -np.inf
         return lp - self.neglnlike_with_bad_points(theta)
     
-    def run_mcmc_with_bad_points(self, dirname=''):
+    def run_mcmc_with_bad_points(self, dirname='', prior_tag=4):
+        self.prior_tag = prior_tag
 
         self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 50
         n_steps, n_burn = 50000, 5000
@@ -1002,7 +1031,7 @@ class lf:
             ax.legend(fontsize=8)
 
         plt.tight_layout()
-        plt.savefig(f"{dirname}mcmc_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
 
         # Plot MCMC corner plot for all parameters with bad points
 
@@ -1013,7 +1042,8 @@ class lf:
             title_kwargs={"fontsize": 12},
             quantiles=[0.16, 0.5, 0.84],
         )
-        fig.savefig(f"{dirname}mcmc_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
+        fig.suptitle(f"Prior Model: {prior_tag}", fontsize=16)
+        fig.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
 
         # Plot MCMC chains for all parameters with bad points
         fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
@@ -1030,7 +1060,7 @@ class lf:
                 ax.legend(fontsize=8)
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        plt.savefig(f"{dirname}mcmc_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
 
 
         # Plot MCMC chains for each parameter separately and save
@@ -1045,7 +1075,7 @@ class lf:
             ax.set_xlabel('step')
             ax.legend(fontsize=8)
             plt.tight_layout()
-            plt.savefig(f"{dirname}mcmc_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
+            plt.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
             plt.close(fig)
 
         # Print autocorrelation time and acceptance rate for the sampler with bad points

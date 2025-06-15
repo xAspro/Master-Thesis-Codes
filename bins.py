@@ -120,10 +120,11 @@ method = 'Nelder-Mead'
 
 # zls = [(3.4, 3.5)]
 
-# zls = [(0.4, 0.6)]
+zls = [(0.4, 0.6)]
+# zls = [(2.6, 2.7)]
 
 # zls = [(4.1, 4.7)]
-zls = [(5.5, 6.5)]
+# zls = [(5.5, 6.5)]
 
 # Just for checking reduced zls
 # zls = [(0.1,0.4), (0.4, 0.6), (0.6, 0.8)]
