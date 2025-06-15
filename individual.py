@@ -837,10 +837,18 @@ class lf:
     def find_Pb_Yb_Vb(self):
         Pb = np.random.uniform(0.0, 1.0, size=self.nwalkers_with_bp)
         mean = self.bf.x[0]
-        log10_Yb = np.random.normal(loc=mean, scale=1, size=self.nwalkers_with_bp)
-        Yb = 10.0**log10_Yb
-        log10_Vb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
-        Vb = 10.0**log10_Vb
+        print("mean = ", mean)
+        # log10_Yb = np.random.normal(loc=mean, scale=1, size=self.nwalkers_with_bp)
+        # Yb = 10.0**log10_Yb
+        # log10_Vb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
+        # Vb = 10.0**log10_Vb
+
+        Yb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
+
+        # Hand picking alpha and beta for gamma distribution
+        # to get mode around 10 and mean around 20
+        alpha, beta = 2, 10
+        Vb = np.random.gamma(shape=alpha, scale=beta, size=self.nwalkers_with_bp)
 
         # print("\nStatistics of Yb and Vb for testing purposes")
         # print("Yb mean = ", np.mean(Yb), "\tYb std = ", np.std(Yb))
@@ -881,10 +889,13 @@ class lf:
         if (np.all(theta[:4] < self.prior_max_values) and
             np.all(theta[:4] > self.prior_min_values)):
             Pb, Yb, Vb = theta[4], theta[5], theta[6]
-            if (0.0 <= Pb < 1.0 and 0.0 < Vb):
+            if (0.0 <= Pb < 1.0 and 0.0 < Vb < 50 and -20 < Yb < 20):
                 # return - np.log(Pb) - np.log(Vb)
                 # return - np.log(1 + Pb) - np.log(1 + Vb)
-                return 0.0
+                # print(f"\nPb = {Pb:.4f}\tYb = {Yb:.4f}\tVb = {Vb:.4f}")
+                # print(f"Returning np.log(1 - Pb): {np.log(1 - Pb):.4f} \t- np.log(1 + Vb): {- np.log(1 + Vb):.4f}\t total: {np.log(1 - Pb) - np.log(1 + Vb):.4f}")
+                return np.log(1 - Pb) - np.log(1 + Vb)    # Likelihood cant be negative
+                # return 0.0
 
         return -np.inf
 
@@ -946,15 +957,17 @@ class lf:
             return -np.inf
         return lp - self.neglnlike_with_bad_points(theta)
     
-    def run_mcmc_with_bad_points(self):
+    def run_mcmc_with_bad_points(self, dirname=''):
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 100
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 50
+        n_steps, n_burn = 50000, 5000
         self.mcmc_start_with_bp = self.bf.x
         print("shape = ", np.array([self.mcmc_start_with_bp + 1e-2*np.random.randn(self.bf.x.size) for i
                        in range(self.nwalkers_with_bp)]).shape)
-        pos_with_bp = np.hstack((np.array([self.mcmc_start_with_bp + 1e-4*np.random.randn(self.bf.x.size) for i
+        pos_with_bp = np.hstack((np.array([self.mcmc_start_with_bp + 1e-2*np.random.randn(self.bf.x.size) for i
                        in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
-        # print("pos_with_bp = ", pos_with_bp)
+        
+        print("pos_with_bp = ", pos_with_bp)
         # import sys
         # sys.exit("\nQuitting for testing purposes\n")
 
@@ -963,8 +976,8 @@ class lf:
         self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
                                                      self._lnprob_with_bad_points)
         
-        self.sampler_with_bp.run_mcmc(pos_with_bp, 50000, progress=True)
-        self.samples_with_bp = self.sampler_with_bp.chain[:, 500:, :].reshape((-1, self.ndim_with_bp))
+        self.sampler_with_bp.run_mcmc(pos_with_bp, n_steps, progress=True)
+        self.samples_with_bp = self.sampler_with_bp.chain[:, n_burn:, :].reshape((-1, self.ndim_with_bp))
 
         # Print parameter medians and 1-sigma intervals
         param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
@@ -989,7 +1002,7 @@ class lf:
             ax.legend(fontsize=8)
 
         plt.tight_layout()
-        plt.savefig(f"mcmc_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}mcmc_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
 
         # Plot MCMC corner plot for all parameters with bad points
 
@@ -1000,7 +1013,7 @@ class lf:
             title_kwargs={"fontsize": 12},
             quantiles=[0.16, 0.5, 0.84],
         )
-        fig.savefig(f"mcmc_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
+        fig.savefig(f"{dirname}mcmc_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
 
         # Plot MCMC chains for all parameters with bad points
         fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
@@ -1017,7 +1030,23 @@ class lf:
                 ax.legend(fontsize=8)
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        plt.savefig(f"mcmc_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}mcmc_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
+
+
+        # Plot MCMC chains for each parameter separately and save
+        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        for i, name in enumerate(param_names):
+            fig, ax = plt.subplots(figsize=(12, 3))
+            for walker in range(self.nwalkers_with_bp):
+                ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
+            median = np.median(self.samples_with_bp[:, i])
+            ax.axhline(median, color='red', linestyle='--', label='Median')
+            ax.set_ylabel(name)
+            ax.set_xlabel('step')
+            ax.legend(fontsize=8)
+            plt.tight_layout()
+            plt.savefig(f"{dirname}mcmc_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
+            plt.close(fig)
 
         # Print autocorrelation time and acceptance rate for the sampler with bad points
         try:
