@@ -23,6 +23,7 @@ cosmo = {'omega_M_0':0.3,
 import gammapi
 import rtg
 import corner
+import drawlf
 from pathos.multiprocessing import ProcessingPool as Pool
 
 def getqlums(lumfile, zlims=None):
@@ -512,6 +513,9 @@ class lf:
         `zlims` is provided during initialization.
     - maps : list
         List of selection map objects corresponding to the surveys used in the analysis.
+    - logphi_data : ndarray
+        Logarithm (base 10) of the quasar luminosity function for each Quasar data, 
+        computed from the selection maps.
 
     Notes
     -----
@@ -595,6 +599,30 @@ class lf:
         # this redshift bin.  
         samples = set(np.unique(self.sid))
         self.maps = [x for x in self.maps if x.sid in samples]
+
+        # Estimate pointwise data phi using 1 / V_eff from selection maps
+        mbins = np.arange(-30.9, -17.3, 0.6)  # standard binning
+        selmaps = self.maps
+        # print("mbins shape = ", mbins.shape)
+        # print("selmaps shape = ", len(selmaps))
+        # print("self.M1450 shape = ", self.M1450.shape)
+        
+        Veff = np.array([drawlf.totBinVol(self, m, mbins, selmaps) for m in self.M1450])
+        # print("Veff shape = ", Veff.shape)
+        mask = Veff > 0
+
+        if not np.all(mask):
+            print("Warning: Some Veff values are zero or negative. Masking these points.")
+            print("Veff values: ", Veff)
+            print("Corresponding M1450 values:", self.M1450[~mask])
+            print("Indices with bad Veff:", np.where(~mask)[0])
+
+            import sys
+            sys.exit("Exiting due to zero or negative Veff values in neglnlike_with_bad_points.")
+            logphi_model = logphi_model[mask]
+            Veff = Veff[mask]
+
+        self.logphi_data = np.log10(1.0 / Veff)  # from phi = 1/Veff
         
         return
 
@@ -866,37 +894,6 @@ class lf:
 
         logphi_model = self.log10phi(qlf_params, self.M1450)    # Mpc^-3 mag^-1
 
-        # Estimate pointwise data phi using 1 / V_eff from selection maps
-        mbins = np.arange(-30.9, -17.3, 0.6)  # standard binning
-        selmaps = self.maps
-        # print("mbins shape = ", mbins.shape)
-        # print("selmaps shape = ", len(selmaps))
-        # print("self.M1450 shape = ", self.M1450.shape)
-
-        import drawlf
-
-        V = [drawlf.totBinVol(self, m, mbins, selmaps) for m in self.M1450]
-        # print("V shape = ", np.array(V).shape)
-        
-        Veff = np.array([drawlf.totBinVol(self, m, mbins, selmaps) for m in self.M1450])
-        # print("Veff shape = ", Veff.shape)
-        mask = Veff > 0
-        
-
-        if not np.all(mask):
-            print("Warning: Some Veff values are zero or negative. Masking these points.")
-            print("Veff values: ", Veff)
-            print("Corresponding M1450 values:", self.M1450[~mask])
-            print("Indices with bad Veff:", np.where(~mask)[0])
-
-            import sys
-            sys.exit("Exiting due to zero or negative Veff values in neglnlike_with_bad_points.")
-            logphi_model = logphi_model[mask]
-            Veff = Veff[mask]
-
-
-
-        logphi_data = np.log10(1.0 / Veff)  # from phi = 1/Veff
 
         # Test Case! Checking! Later will get better sigma_fg
         sigma_fg = 0.3
@@ -904,12 +901,12 @@ class lf:
 
         # Foreground: match to model
         p_fg = 1.0 / (np.sqrt(2 * np.pi) * sigma_fg) * np.exp(
-            -0.5 * (logphi_data - logphi_model)**2 / sigma_fg**2
+            -0.5 * (self.logphi_data - logphi_model)**2 / sigma_fg**2
         )
 
         # Background: wide Gaussian centered at Yb
         p_bg = 1.0 / np.sqrt(2 * np.pi * (Vb + sigma_fg**2)) * np.exp(
-            -0.5 * (logphi_data - Yb)**2 / (Vb + sigma_fg**2)
+            -0.5 * (self.logphi_data - Yb)**2 / (Vb + sigma_fg**2)
         )
 
         # Mixture likelihood and logL
@@ -966,7 +963,7 @@ class lf:
         self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
                                                      self._lnprob_with_bad_points)
         
-        self.sampler_with_bp.run_mcmc(pos_with_bp, 30000)
+        self.sampler_with_bp.run_mcmc(pos_with_bp, 3000, progress=True)
         self.samples_with_bp = self.sampler_with_bp.chain[:, 500:, :].reshape((-1, self.ndim_with_bp))
 
         # Print parameter medians and 1-sigma intervals
@@ -1250,7 +1247,7 @@ class lf:
                         v += selmap.volarr[i]*selmap.p[i]*selmap.dm
         print("v = ", v, " for selmap sid = ", selmap.sid, " mrange = ", mrange, " zrange = ", zrange)
         print("v.shape = ", np.shape(v))
-        return float(v)
+        return v
 
     def totBinVol(self, m, mbins, selmaps):
         """
