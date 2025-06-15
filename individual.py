@@ -758,6 +758,9 @@ class lf:
         self.prior_max_values = np.where(half > double, half, double)
         assert(np.all(self.prior_min_values < self.prior_max_values))
 
+        self.prior_min_values = np.array([-7.9247152, -8.90048553, -1.24158352, -0.30304404]) - 0.2
+        self.prior_max_values = np.array([-7.9247152, -8.90048553, -1.24158352, -0.30304404]) + 0.2
+
         return
 
     def _lnprior(self, theta):
@@ -896,15 +899,19 @@ class lf:
         #       np.all(theta[:4] < 3 * self.prior_max_values))
         # print("np.all(theta[:4] > self.prior_min_values / 3) = ",
         #       np.all(theta[:4] > self.prior_min_values / 3))
+
+        alpha, beta = theta[2:4]
+        if alpha > beta:
+            return -np.inf  # Constraint From visuals, CHECK THIS LATER!!!
         
         # Modifying the prior to allow for a wider range of values
         # for Checking / Testing purposes
-        n = 1.5
+        n = 1
         if (np.all(theta[:4] < np.maximum(self.prior_max_values / n, n * self.prior_max_values)) and
             np.all(theta[:4] > np.minimum(self.prior_min_values / n, n * self.prior_min_values))):
             # print("Prior is satisfied for theta[:4] = ", theta[:4])
             Pb, Yb, Vb = theta[4], theta[5], theta[6]
-            if (0.0 <= Pb < 1.0 and 0.0 < Vb < 50 and -20 < Yb < 20):
+            if (0.0 <= Pb < 1.0 and 2 < Vb < 50 and -20 < Yb < 20):
                 if tag == 1:
                     import sys
                     sys.exit("Model 1 is too strong. Not using it anymore!")
@@ -921,6 +928,11 @@ class lf:
                     # Prior: Pb ~ Beta(2,6), Yb ~ flat, Vb ~ lognormal(mu=2, sigma=1)
                     prior_pb = beta_dist.pdf(Pb, a=2, b=6)
                     prior_vb = lognorm.pdf(Vb, s=1, scale=np.exp(2))
+                    return np.log(prior_pb) + np.log(prior_vb)
+                elif tag == 6:
+                    # Prior: Pb ~ Beta(2,6), Yb ~ flat, Vb ~ lognormal(mu=2, sigma=0.5)
+                    prior_pb = beta_dist.pdf(Pb, a=2, b=6)
+                    prior_vb = lognorm.pdf(Vb, s=0.5, scale=np.exp(2))
                     return np.log(prior_pb) + np.log(prior_vb)
                     
 
@@ -988,7 +1000,7 @@ class lf:
     def run_mcmc_with_bad_points(self, dirname='', prior_tag=4):
         self.prior_tag = prior_tag
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 50
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
         n_steps, n_burn = 50000, 5000
         self.mcmc_start_with_bp = self.bf.x
         print("shape = ", np.array([self.mcmc_start_with_bp + 1e-2*np.random.randn(self.bf.x.size) for i
@@ -1089,8 +1101,27 @@ class lf:
         print("Mean acceptance fraction:", np.mean(acceptance_fraction))
         print("Acceptance fraction per walker:", acceptance_fraction)
 
+
+        samples_4d = self.samples_with_bp[:, :4]
+
+        bins = 20
+        hist, edges = np.histogramdd(samples_4d, bins=bins)
+
+        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
+
+        map_params = []
+        for i in range(4):
+            # Bin edges for this dimension
+            bin_edges = edges[i]
+            # Center of the bin
+            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
+            map_params.append(center)
+        map_params = np.array(map_params)
+        print("MAP (marginalized over nuisance):", map_params)
+
         import sys
-        sys.exit("\nQuitting for testing purposes\n")
+        import datetime
+        sys.exit(f"\nQuitting for testing purposes\nprior tag = {self.prior_tag}\nTime right now = {datetime.now()}\n")
         return
 
 

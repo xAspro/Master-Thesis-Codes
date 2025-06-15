@@ -119,29 +119,6 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
 
     up = np.percentile(phi, 15.87, axis=0)
     down = np.percentile(phi, 84.13, axis=0)
-    # print("\n\nlf.__dict__= ", lf.__dict__)
-    # Assuming `lf` is your object
-    # for key, value in lf.__dict__.items():
-    #     print(f"\n'{key}' : \t{value}")
-    # print('\n\n\n\nlf.samples= ', lf.samples)
-    # print("\n\n\n\nphi= ", phi)
-
-    # L1 = int(len(phi)/10)
-    # L2 = int(len(phi[0])/10)
-
-    # cnt1, cnt2 = L1, L2
-    # for i in range(len(phi)):
-    #     cnt1 -= 1
-    #     if cnt1 == 0:
-    #         cnt1 = L1
-    #         cnt2 = L2
-    #         print("[", end=' ')
-    #         for j in range(len(phi[i])):
-    #             cnt2 -= 1
-    #             if cnt2 == 0:
-    #                 cnt2 = L2
-    #                 print(phi[i][j], end=' ')
-    #         print("]")
         
     print("\n\n\n\nup= ", up)
     print("\n\n\n\ndown= ", down)
@@ -172,7 +149,7 @@ def plot_bestfit_lf(lf, ax, mags, **kwargs):
         The line object representing the best fit LF.
     """
 
-    bf = np.median(lf.samples, axis=0)
+    bf = np.median(lf.samples[:, :4], axis=0)
     phi_fit = lf.log10phi(bf, mags)
     bf, = ax.plot(mags, phi_fit, lw=1.5, c='#ffbf00', zorder=kwargs['zorder'])
     return bf 
@@ -264,7 +241,37 @@ def totBinVol_all(lf, m, mbins, selmaps):
 
 
 def get_lf(lf, sid, z_plot, special='None'):
-    # print("In drawlf.py get_lf")
+    """
+    Calculates the luminosity function (LF) along with its errors for a
+    given sample ID (sid), using Gehrels formula from astropy.stats.
+
+    Parameters
+    ----------
+    - lf : object
+        The luminosity function object containing the data and methods.
+    - sid : int
+        The sample ID for which to calculate the LF.
+    - z_plot : float
+        The redshift at which to plot the LF.
+    - special : str, optional
+        A special case identifier for specific binning or comparison
+
+    Returns
+    -------
+    - mags : array
+        The magnitudes at which the LF is calculated.
+    - left : array
+        The left bin edges for the LF.
+    - right : array
+        The right bin edges for the LF. 
+    - logphi : array
+        The logarithm of the LF values.
+    - uperr : array
+        The upper error bars for the LF.
+    - downerr : array
+        The lower error bars for the LF.
+
+    """
     
     # Bin data.  This is only for visualisation and to compare
     # with reported binned values.  
@@ -327,7 +334,39 @@ def get_lf(lf, sid, z_plot, special='None'):
 
 
 def get_lf_all(lf, sid, z_plot, special='None'):
-    # print("In drawlf.py get_lf_all")
+    """
+    Calculates the luminosity function (LF) along with its errors for a
+    given sample ID (sid), using Gehrels formula from astropy.stats.
+    This function is similar to get_lf but operates on all data points,
+    including those that may not be selected in the current sample.
+
+    Parameters
+    ----------
+    - lf : object
+        The luminosity function object containing the data and methods.
+    - sid : int
+        The sample ID for which to calculate the LF.
+    - z_plot : float
+        The redshift at which to plot the LF.
+    - special : str, optional
+        A special case identifier for specific binning or comparison.
+
+    Returns
+    -------
+    - mags : array
+        The magnitudes at which the LF is calculated.
+    - left : array
+        The left bin edges for the LF.
+    - right : array
+        The right bin edges for the LF.
+    - logphi : array
+        The logarithm of the LF values.
+    - uperr : array
+        The upper error bars for the LF.
+    - downerr : array
+        The lower error bars for the LF.
+
+    """
 
     # Bin data.  This is only for visualisation and to compare
     # with reported binned values.  
@@ -524,6 +563,39 @@ def savedata(data):
     return
 
 def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=True, c2=None, c3=None, includes_bad_points=False):
+    """
+    CHECK!!!! Entering the details upto bins.py point.
+
+    Adds the posterior sample LFs and best fit LF to the given axes.
+
+    Parameters
+    ----------
+    - ax : matplotlib.axes.Axes
+        The axes on which to plot the luminosity function.
+    - lf : object
+        The luminosity function object containing the samples and methods.
+    - composite : object, optional
+        A composite luminosity function object to plot alongside the main LF.
+    - showMockSample : bool, optional
+        Whether to show a mock sample of the luminosity function.
+    - show_individual_fit : bool, optional
+        Whether to show the individual fit of the luminosity function.
+    - c2 : object, optional
+        A second composite luminosity function object to plot.
+    - c3 : object, optional
+        A third composite luminosity function object to plot.
+    - includes_bad_points : bool, optional
+        Whether to include bad point statistics in the plot.
+
+    Returns
+    -------
+    - None
+
+    Notes
+    -----
+    - This function does not return any value, but modifies the axes 
+      to include the luminosity function plots.
+    """
     # print("In drawlf.py render")
     # show_individual_fit, lf
     # Everything else is not given this time
@@ -563,6 +635,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
             
 
     if composite is not None:
+        # CHECK!!! This is not used when calling from bins.py
+        # Will be used for other cases like lfgs
 
         nmags = 200 
         mags = np.linspace(-34.0, -12.0, num=nmags)
@@ -583,6 +657,9 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
 
     if c2 is not None: 
+        # CHECK!!! This is not used when calling from bins.py
+        # Will be used for other cases like lfgs
+
         nmags = 200 
         mags = np.linspace(-34.0, -12.0, num=nmags)
         bf = np.median(c2.samples, axis=0)
@@ -602,6 +679,9 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
 
     if c3 is not None: 
+        # CHECK!!! This is not used when calling from bins.py
+        # Will be used for other cases like lfgs
+        
         nmags = 200 
         mags = np.linspace(-34.0, -12.0, num=nmags)
         bf = np.median(c3.samples, axis=0)
@@ -788,12 +868,27 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         return 
 
 def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_fit=True, includes_bad_points=False):
-    # print("In drawlf.py draw")
-
     """
+    Draws the luminosity function (LF) plot for a given LF object.
 
-    Plot data, best fit LF, and posterior LFs.
+    Parameters
+    ----------
+    - lf : object
+        The luminosity function object containing the data and methods.
+    - composite : object, optional
+        A composite luminosity function object to plot alongside the main LF.
+    - dirname : str, optional
+        The directory where the plot will be saved.
+    - showMockSample : bool, optional
+        Whether to show a mock sample of the luminosity function.
+    - show_individual_fit : bool, optional
+        Whether to show the individual fit of the luminosity function.
+    - includes_bad_points : bool, optional
+        Whether to include bad point statistics in the plot.
 
+    Returns
+    -------
+    - None
     """
 
     z_plot = lf.z.mean() 
