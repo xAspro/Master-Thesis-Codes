@@ -123,17 +123,17 @@ method = 'Nelder-Mead'
 # zls = [(0.4, 0.6)]
 
 # zls = [(4.1, 4.7)]
-zls = [(5.5, 6.5)]
+# zls = [(5.5, 6.5)]
 
 # Just for checking reduced zls
 # zls = [(0.1,0.4), (0.4, 0.6), (0.6, 0.8)]
 
-# zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
-#        (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),
-#        (2.4, 2.5), (2.5, 2.6), (2.6, 2.7), (2.7, 2.8), (2.8, 2.9),
-#        (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
-#        (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5)
-#     ]
+zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
+       (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),
+       (2.4, 2.5), (2.5, 2.6), (2.6, 2.7), (2.7, 2.8), (2.8, 2.9),
+       (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
+       (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5)
+    ]
 
 
 
@@ -196,7 +196,7 @@ for i, zl in enumerate(zls):
     print()
     
 
-    drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
+    # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
 
     # Print all attributes of the object as a dictionary
     # print()
@@ -223,6 +223,8 @@ for i, zl in enumerate(zls):
     # mosaic.draw(lfs)
 
 end_time = time.time()
+
+sys.exit("End of Bins.py Program")
 
 print()
 print()

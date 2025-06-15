@@ -948,7 +948,7 @@ class lf:
     
     def run_mcmc_with_bad_points(self):
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 100
         self.mcmc_start_with_bp = self.bf.x
         print("shape = ", np.array([self.mcmc_start_with_bp + 1e-2*np.random.randn(self.bf.x.size) for i
                        in range(self.nwalkers_with_bp)]).shape)
@@ -963,7 +963,7 @@ class lf:
         self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
                                                      self._lnprob_with_bad_points)
         
-        self.sampler_with_bp.run_mcmc(pos_with_bp, 3000, progress=True)
+        self.sampler_with_bp.run_mcmc(pos_with_bp, 50000, progress=True)
         self.samples_with_bp = self.sampler_with_bp.chain[:, 500:, :].reshape((-1, self.ndim_with_bp))
 
         # Print parameter medians and 1-sigma intervals
@@ -989,7 +989,7 @@ class lf:
             ax.legend(fontsize=8)
 
         plt.tight_layout()
-        plt.savefig("mcmc_checking_with_bad_points.png")
+        plt.savefig(f"mcmc_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
 
         # Plot MCMC corner plot for all parameters with bad points
 
@@ -1000,7 +1000,7 @@ class lf:
             title_kwargs={"fontsize": 12},
             quantiles=[0.16, 0.5, 0.84],
         )
-        fig.savefig("mcmc_checking_corner_with_bad_points.png")
+        fig.savefig(f"mcmc_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
 
         # Plot MCMC chains for all parameters with bad points
         fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
@@ -1017,7 +1017,7 @@ class lf:
                 ax.legend(fontsize=8)
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        plt.savefig("mcmc_checking_chains_with_bad_points.png")
+        plt.savefig(f"mcmc_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
 
         # Print autocorrelation time and acceptance rate for the sampler with bad points
         try:
