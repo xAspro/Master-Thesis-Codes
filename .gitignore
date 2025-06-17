@@ -34,3 +34,4 @@ bins_lfs.npy
 bins_lfs_old_data.npy
 bins_lfs_old_data.npy
 *.pbs
+sync_to_cluster.sh

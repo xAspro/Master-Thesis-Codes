@@ -120,8 +120,9 @@ method = 'Nelder-Mead'
 
 # zls = [(3.4, 3.5)]
 
-zls = [(0.4, 0.6)]
+# zls = [(0.4, 0.6)]
 # zls = [(2.6, 2.7)]
+zls = [(3.7, 4.1)]
 
 # zls = [(4.1, 4.7)]
 # zls = [(5.5, 6.5)]
@@ -182,7 +183,7 @@ for i, zl in enumerate(zls):
 
     assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
     
-    lfi.run_mcmc_with_bad_points(dirname=curr_date_time)
+    # lfi.run_mcmc_with_bad_points(dirname=curr_date_time)
 
     print("Running MCMC")
     lfi.run_mcmc()
@@ -197,7 +198,7 @@ for i, zl in enumerate(zls):
     print()
     
 
-    # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
+    drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
 
     # Print all attributes of the object as a dictionary
     # print()
@@ -225,12 +226,14 @@ for i, zl in enumerate(zls):
 
 end_time = time.time()
 
-sys.exit("End of Bins.py Program")
+
 
 print()
 print()
 elapsed_time = end_time - start_time
 print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
+
+sys.exit("End of Bins.py Program")
 
 print("\n\n\nlfs:", lfs)
 

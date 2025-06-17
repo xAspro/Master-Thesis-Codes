@@ -106,7 +106,7 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     nmags = 100
     mags = np.linspace(*maglims, num=nmags)
     print("\n\n\n\nmags= ", mags,'\n\n\n\n')
-    print('\n\n\n\nc= ', kwargs['c'], '\n\n\n\n')
+    # print('\n\n\n\nc= ', kwargs['c'], '\n\n\n\n')
     nsample = 1000
     rsample = lf.samples[np.random.randint(len(lf.samples), size=nsample)]
     rsample = rsample[:, :4]  # Ensure we only take the first 4 parameters

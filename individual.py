@@ -758,8 +758,9 @@ class lf:
         self.prior_max_values = np.where(half > double, half, double)
         assert(np.all(self.prior_min_values < self.prior_max_values))
 
-        self.prior_min_values = np.array([-7.9247152, -8.90048553, -1.24158352, -0.30304404]) - 0.2
-        self.prior_max_values = np.array([-7.9247152, -8.90048553, -1.24158352, -0.30304404]) + 0.2
+        # MAP value for zls = (0.4, 0.6)
+        # self.prior_min_values = np.array([-7.9247152, -8.90048553, -1.24158352, -0.30304404]) - 0.2
+        # self.prior_max_values = np.array([-7.9247152, -8.90048553, -1.24158352, -0.30304404]) + 0.2
 
         return
 
@@ -900,9 +901,9 @@ class lf:
         # print("np.all(theta[:4] > self.prior_min_values / 3) = ",
         #       np.all(theta[:4] > self.prior_min_values / 3))
 
-        alpha, beta = theta[2:4]
-        if alpha > beta:
-            return -np.inf  # Constraint From visuals, CHECK THIS LATER!!!
+        # alpha, beta = theta[2:4]
+        # if alpha > beta:
+        #     return -np.inf  # Constraint From visuals, CHECK THIS LATER!!!
         
         # Modifying the prior to allow for a wider range of values
         # for Checking / Testing purposes
@@ -997,7 +998,14 @@ class lf:
             return -np.inf
         return lp - self.neglnlike_with_bad_points(theta)
     
-    def run_mcmc_with_bad_points(self, dirname='', prior_tag=4):
+    def run_mcmc_with_bad_points(self, dirname='', prior_tag=6):
+        # CHECKKKKK!!! THE LATEST PLOT mcmc_4_checking_corner_with_bad_points_3.877.png in
+        # QLF/2025-06-16 01:35:04 , has very nice result... but... it seems like alpha and beta can switch around
+        # Look at its joint distribution! That means I need to somehow make alpha stick to bright end and beta to the faint end. 
+        # Hmmm... Look at the QLF estimation itself. Maybe in that function I can make alpha and beta stick to the bright and faint ends respectively.
+
+
+
         self.prior_tag = prior_tag
 
         self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
@@ -1120,7 +1128,7 @@ class lf:
         print("MAP (marginalized over nuisance):", map_params)
 
         import sys
-        import datetime
+        from datetime import datetime
         sys.exit(f"\nQuitting for testing purposes\nprior tag = {self.prior_tag}\nTime right now = {datetime.now()}\n")
         return
 
