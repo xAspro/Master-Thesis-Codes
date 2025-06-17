@@ -199,6 +199,7 @@ for i, zl in enumerate(zls):
     
 
     drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
+    print("Drawn the LF for this bin.")
 
     # Print all attributes of the object as a dictionary
     # print()
