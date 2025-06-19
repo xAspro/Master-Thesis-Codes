@@ -1194,9 +1194,6 @@ class lf:
         uperr = np.log10(nlims[1]) - logphi 
         downerr = logphi - np.log10(nlims[0])
 
-        print("uperr = ", uperr)
-        print("downerr = ", downerr)
-
         log_err = 0.5 * (uperr + downerr)
 
         mask = np.isfinite(logphi)
@@ -1233,7 +1230,7 @@ class lf:
             
             if beta > 0:
                 return -np.inf
-            print("Returning 0 for prior tag 1")
+            # print("Returning 0 for prior tag 1")
             return 0
         
         elif self.prior_tag == 2:
@@ -1261,33 +1258,33 @@ class lf:
         func_params = params[:4]
         Pb, Yb, Vb = params[4:]
 
-        print("func_params = ", func_params)
-        print("Pb = ", Pb, "\tYb = ", Yb, "\tVb = ", Vb)
-        print("self.data.logphi = ", self.data.logphi)
-        print("self.data.mag = ", self.data.mag)
-        print("self.data.log_err = ", self.data.log_err)
+        # print("func_params = ", func_params)
+        # print("Pb = ", Pb, "\tYb = ", Yb, "\tVb = ", Vb)
+        # print("self.data.logphi = ", self.data.logphi)
+        # print("self.data.mag = ", self.data.mag)
+        # print("self.data.log_err = ", self.data.log_err)
 
         epsilon = 1e-10  # Small value to prevent division by zero
         safe_sig2 = self.data.log_err**2 + epsilon
         safe_Vb = Vb + epsilon
 
-        print("safe_sig2 = ", safe_sig2)
-        print("safe_Vb = ", safe_Vb)
+        # print("safe_sig2 = ", safe_sig2)
+        # print("safe_Vb = ", safe_Vb)
 
         logforeground_model = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip(((self.data.logphi - self.log10phi(func_params, self.data.mag)))**2 / safe_sig2, -1e10, 1e10))
         logbackground_model = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((self.data.logphi - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
 
-        print("logforeground_model = ", logforeground_model)
-        print("logbackground_model = ", logbackground_model)
+        # print("logforeground_model = ", logforeground_model)
+        # print("logbackground_model = ", logbackground_model)
 
         a = np.log(1 - Pb) + logforeground_model
         b = np.log(Pb) + logbackground_model
 
-        print("a = ", a)
-        print("b = ", b)
+        # print("a = ", a)
+        # print("b = ", b)
 
         lnL = np.sum(np.logaddexp(a, b))
-        print("lnL = ", lnL)
+        # print("lnL = ", lnL)
         # import sys
         # sys.exit("\nQuitting for testing purposes\n")
         return lnL
@@ -1306,7 +1303,7 @@ class lf:
     def run_mcmc_with_bad_points(self, ncores, dirname='', prior_tag=1):
         self.prior_tag = prior_tag
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 24
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 100
         self.mcmc_start = self.bf.x 
 
         pos_with_bp = np.hstack((np.array([self.bf.x 
@@ -1324,7 +1321,7 @@ class lf:
         self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
                                             lnposterior_pickable, pool=pool)
         print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
-        self.sampler_with_bp.run_mcmc(pos_with_bp, 1000, progress=True)
+        self.sampler_with_bp.run_mcmc(pos_with_bp, 30000, progress=True)
 
         self.samples_with_bp = self.sampler_with_bp.chain[:, 500:, :].reshape((-1, self.ndim_with_bp))
 
