@@ -264,7 +264,8 @@ def percentiles(x):
 
     return [u, l, c] 
 
-LFData = namedtuple("LFData", ["mag", "mag_err", "logphi", "uperr", "downerr", "log_err"])
+LFData = namedtuple("LFData", ["sid","mag", "mag_err", "logphi", "uperr", 
+                               "downerr", "log_err", "is_bad"])
 
 class selmap:
     """
@@ -610,6 +611,13 @@ class lf:
         # this redshift bin.  
         samples = set(np.unique(self.sid))
         self.maps = [x for x in self.maps if x.sid in samples]
+
+
+        self.sid = self.sid_all
+        self.z = self.z_all
+        self.M1450 = self.M1450_all
+        self.p = self.p_all
+        self.area = self.area_all
 
         return
 
@@ -1144,69 +1152,95 @@ class lf:
     #     sys.exit(f"\nQuitting for testing purposes\nprior tag = {self.prior_tag}\nTime right now = {datetime.now()}\n")
     #     return
 
-    def get_qlf_data(self, sid):
+    def get_qlf_data(self):
 
-        m = self.M1450[self.sid == sid]
-        selmaps = [x for x in self.maps if x.sid == sid]
+        data = []
+        for sid in np.unique(self.sid):
+            if sid==6:
+                # Glikman's sample needs wider bins.
+                mbins = np.array([-26.0, -25.0, -24.0, -23.0, -22.0, -21])
+            elif sid == 7:
+                mbins = np.array([-23.5, -21.5, -20.5, -19.5, -18.5])
+            elif sid == 10 or sid == 18:
+                mbins = np.arange(-30.9, -17.3, 1.8)
+            else:
+                mbins = np.arange(-30.9, -13.3, 0.6)
 
-        if sid==6:
-            # Glikman's sample needs wider bins.
-            mbins = np.array([-26.0, -25.0, -24.0, -23.0, -22.0, -21])
-        elif sid == 7:
-            mbins = np.array([-23.5, -21.5, -20.5, -19.5, -18.5])
-        elif sid == 10 or sid == 18:
-            mbins = np.arange(-30.9, -17.3, 1.8)
-        else:
-            mbins = np.arange(-30.9, -13.3, 0.6)
-        
-        Veff = np.array([drawlf.totBinVol(self, mi, mbins, selmaps) for mi in m])
-        print("Veff shape = ", Veff.shape)
-        mask = Veff > 0
+            
 
-        print("mask shape = ", mask.shape)
-        print("m shape = ", m.shape)
-        print("Veff shape = ", Veff.shape)
+            m = self.M1450[self.sid == sid]
+            selmaps = [x for x in self.maps if x.sid == sid]
+            
+            Veff = np.array([drawlf.totBinVol(self, mi, mbins, selmaps) for mi in m])
+            print("Veff shape = ", Veff.shape)
+            mask = Veff > 0
 
-        Veff = Veff[mask]
-        m = m[mask]
+            print("mask shape = ", mask.shape)
+            print("m shape = ", m.shape)
+            print("Veff shape = ", Veff.shape)
 
-        # Estimates the number density of quasars in the given magnitude range
-        # using the effective volume (Veff) for each bin.
-        h, edges = np.histogram(m, bins=mbins, weights=1.0/Veff)
+            Veff = Veff[mask]
+            m = m[mask]
 
-        logphi = np.log10(h)
-        mag = 0.5 * (edges[1:] + edges[:-1])
-        mag_err = 0.5 * (edges[1:] - edges[:-1])
+            # Estimates the number density of quasars in the given magnitude range
+            # using the effective volume (Veff) for each bin.
+            h, edges = np.histogram(m, bins=mbins, weights=1.0/Veff)
+
+            logphi = np.log10(h)
+            mag = 0.5 * (edges[1:] + edges[:-1])
+            mag_err = 0.5 * (edges[1:] - edges[:-1])
 
 
-        # Calculate errorbars on our binned LF.  These have been estimated
-        # using Equations 1 and 2 of Gehrels 1986 (ApJ 303 336), as
-        # implemented in astropy.stats.poisson_conf_interval.  The
-        # interval='frequentist-confidence' option to that astropy function is
-        # exactly equal to the Gehrels formulas, although the documentation
-        # does not say so.
+            # Calculate errorbars on our binned LF.  These have been estimated
+            # using Equations 1 and 2 of Gehrels 1986 (ApJ 303 336), as
+            # implemented in astropy.stats.poisson_conf_interval.  The
+            # interval='frequentist-confidence' option to that astropy function is
+            # exactly equal to the Gehrels formulas, although the documentation
+            # does not say so.
 
-        # Estimates the number density of quasars in the given magnitude range
-        # without using the effective volume (Veff) for each bin.
-        n, _ = np.histogram(m, bins=mbins)
-        nlims = pci(n,interval='frequentist-confidence')
-        nlims *= h/n 
-        uperr = np.log10(nlims[1]) - logphi 
-        downerr = logphi - np.log10(nlims[0])
+            # Estimates the number density of quasars in the given magnitude range
+            # without using the effective volume (Veff) for each bin.
+            n, _ = np.histogram(m, bins=mbins)
+            nlims = pci(n,interval='frequentist-confidence')
+            nlims *= h/n 
+            uperr = np.log10(nlims[1]) - logphi 
+            downerr = logphi - np.log10(nlims[0])
 
-        log_err = 0.5 * (uperr + downerr)
+            log_err = 0.5 * (uperr + downerr)
 
-        mask = np.isfinite(logphi)
-        logphi = logphi[mask]
-        uperr = uperr[mask]
-        downerr = downerr[mask]
-        log_err = log_err[mask]
-        mag = mag[mask]
-        mag_err = mag_err[mask]
+            mask = np.isfinite(logphi)
+            logphi = logphi[mask]
+            uperr = uperr[mask]
+            downerr = downerr[mask]
+            log_err = log_err[mask]
+            mag = mag[mask]
+            mag_err = mag_err[mask]
 
-        self.data = LFData(logphi=logphi, uperr=uperr, downerr=downerr,
-                           log_err=log_err, mag=mag, mag_err=mag_err)
-        
+            sid_arr = np.full_like(logphi, sid, dtype=int)
+
+            data.append(LFData(sid=sid_arr, logphi=logphi, uperr=uperr, downerr=downerr,
+                           log_err=log_err, mag=mag, mag_err=mag_err, is_bad=np.zeros_like(sid_arr, dtype=bool)))
+
+
+        all_sid = np.concatenate([d.sid for d in data])
+        all_logphi = np.concatenate([d.logphi for d in data])
+        all_uperr = np.concatenate([d.uperr for d in data])
+        all_downerr = np.concatenate([d.downerr for d in data])
+        all_log_err = np.concatenate([d.log_err for d in data])
+        all_mag = np.concatenate([d.mag for d in data])
+        all_mag_err = np.concatenate([d.mag_err for d in data])
+
+        self.data = LFData(
+            sid=all_sid,
+            logphi=all_logphi,
+            uperr=all_uperr,
+            downerr=all_downerr,
+            log_err=all_log_err,
+            mag=all_mag,
+            mag_err=all_mag_err,
+            is_bad=np.zeros_like(all_sid, dtype=bool)  # Initialize is_bad as False
+        )
+
         return
     
     def _lnprior_with_bad_points(self, params):
@@ -1216,7 +1250,9 @@ class lf:
         if self.prior_tag == 1:
             if Pb < 0 or Pb > 1:
                 return -np.inf
-            if Vb <= 0:
+            if Vb <= 0 or Vb > 1e10:
+                return -np.inf
+            if Yb < -1e10 or Yb > 1e10:
                 return -np.inf
             
             if logphi < -20 or logphi > 0:
@@ -1287,6 +1323,15 @@ class lf:
         # print("lnL = ", lnL)
         # import sys
         # sys.exit("\nQuitting for testing purposes\n")
+        if np.isnan(lnL):
+            print("NaN detected in likelihood calculation!")
+            print("zmean = ", np.mean(self.z))
+            print("Params = ", params)
+            print("logforeground_model = ", logforeground_model)
+            print("logbackground_model = ", logbackground_model)
+            print("a = ", a)
+            print("b = ", b)
+            print("lnL = ", lnL)
         return lnL
     
     def _lnposterior_with_bad_points(self, params):
@@ -1303,25 +1348,28 @@ class lf:
     def run_mcmc_with_bad_points(self, ncores, dirname='', prior_tag=1):
         self.prior_tag = prior_tag
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 100
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
         self.mcmc_start = self.bf.x 
 
         pos_with_bp = np.hstack((np.array([self.bf.x 
                     + 1e-2*np.random.randn(self.bf.x.size) for i 
                     in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
         
-        self.get_qlf_data(sid=13)  # Assuming sid=1 for testing purposes
+        self.get_qlf_data()
 
         print("\n\n\tNumber of cores available for MCMC: ", ncores)
 
-        pool = Pool(ncores)
+        if ncores <= 1:
+            pool = None
+        else:
+            pool = Pool(ncores)
         print("Using multiprocessing pool with {} cores...\n\n\n".format(ncores))
 
         lnposterior_pickable = dill.loads(dill.dumps(self._lnposterior_with_bad_points))
         self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
                                             lnposterior_pickable, pool=pool)
         print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
-        self.sampler_with_bp.run_mcmc(pos_with_bp, 30000, progress=True)
+        self.sampler_with_bp.run_mcmc(pos_with_bp, 60000, progress=True)
 
         self.samples_with_bp = self.sampler_with_bp.chain[:, 500:, :].reshape((-1, self.ndim_with_bp))
 
@@ -1346,7 +1394,7 @@ class lf:
             ax.legend(fontsize=8)
 
         plt.tight_layout()
-        plt.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
 
         # Plot MCMC corner plot for all parameters with bad points
 
@@ -1358,7 +1406,7 @@ class lf:
             quantiles=[0.16, 0.5, 0.84],
         )
         fig.suptitle(f"Prior Model: {prior_tag}", fontsize=16)
-        fig.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
+        fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
 
         # Plot MCMC chains for all parameters with bad points
         fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
@@ -1375,7 +1423,7 @@ class lf:
                 ax.legend(fontsize=8)
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        plt.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
 
 
         # Plot MCMC chains for each parameter separately and save
@@ -1390,7 +1438,7 @@ class lf:
             ax.set_xlabel('step')
             ax.legend(fontsize=8)
             plt.tight_layout()
-            plt.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
+            plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
             plt.close(fig)
 
         # Print autocorrelation time and acceptance rate for the sampler with bad points
@@ -1422,11 +1470,33 @@ class lf:
         map_params = np.array(map_params)
         print("MAP (marginalized over nuisance):", map_params)
 
-        import sys
-        from datetime import datetime
-        sys.exit(f"\nQuitting for testing purposes\nprior tag = {self.prior_tag}\nTime right now = {datetime.now()}\n")
+        # import sys
+        # from datetime import datetime
+        # sys.exit(f"\nQuitting for testing purposes\nprior tag = {self.prior_tag}\nTime right now = {datetime.now()}\n")
         
+        self.samples = self.samples_with_bp[:, :4]
         return
+    
+    def marginalise_and_find_MAP(self):
+        samples_4d = self.samples_with_bp[:, :4]
+
+        bins = 20
+        hist, edges = np.histogramdd(samples_4d, bins=bins)
+
+        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
+
+        map_params = []
+        for i in range(4):
+            # Bin edges for this dimension
+            bin_edges = edges[i]
+            # Center of the bin
+            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
+            map_params.append(center)
+        self.map_params = np.array(map_params)
+        print("MAP (marginalized over nuisance):", self.map_params)
+
+
+
 
 
     def get_percentiles(self):

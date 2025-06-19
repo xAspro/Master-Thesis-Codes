@@ -119,11 +119,11 @@ method = 'Nelder-Mead'
 
 # zls = [(4.1, 4.7), (4.7, 5.5), (5.5, 6.5)]
 
-# zls = [(3.4, 3.5)]
+# zls = [(3.4, 3.5)] 
 
-# zls = [(0.4, 0.6)]
+zls = [(0.6, 0.8)]
 # zls = [(2.6, 2.7)]
-zls = [(3.7, 4.1)]
+# zls = [(3.7, 4.1)]
 
 # zls = [(4.1, 4.7)]
 # zls = [(5.5, 6.5)]
@@ -200,14 +200,8 @@ def main(cores):
         print()
         
 
-        # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
-        # print("Drawn the LF for this bin.")
-
-        # Print all attributes of the object as a dictionary
-        # print()
-        # print("lfi.__dict__:")
-        # print(lfi.__dict__)
-        # print()
+        drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
+        print("Drawn the LF for this bin.")
 
         
         # FOR SUMMARY (Fig 4)
@@ -216,11 +210,6 @@ def main(cores):
                 output = ([lfi.z.mean()] + list(zl) + lfi.phi_star
                         + lfi.M_star + lfi.alpha + lfi.beta)
                 f.write(('{:.3f}  '*len(output)).format(*output))
-                print()
-                # print()
-                # print()
-                # print("output:", output) 
-                # print(('{:.3f}  ' * len(output)).format(*output))
                 f.write('\n')
         
         lfs.append(lfi)
@@ -235,8 +224,6 @@ def main(cores):
     print()
     elapsed_time = end_time - start_time
     print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
-
-    sys.exit("End of Bins.py Program")
 
     print("\n\n\nlfs:", lfs)
 
