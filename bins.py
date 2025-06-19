@@ -18,7 +18,7 @@ import os
 start_time = time.time()
 curr_date_time = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")+"/"
 print("curr_date_time:", curr_date_time)
-# os.makedirs(curr_date_time, exist_ok=True)
+os.makedirs(curr_date_time, exist_ok=True)
 
 
 
@@ -139,7 +139,7 @@ zls = [(3.7, 4.1)]
 #     ]
 
 
-def main():
+def main(cores):
 
     lfs = [] 
 
@@ -185,10 +185,10 @@ def main():
 
         assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
         
-        # lfi.run_mcmc_with_bad_points(dirname=curr_date_time)
+        lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
 
         print("Running MCMC")
-        lfi.run_mcmc()
+        # lfi.run_mcmc(ncores=int(cores))
         print("lfi.bf.x:", lfi.bf.x)
         print("Getting percentiles")
         lfi.get_percentiles()
@@ -247,4 +247,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    cores = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+    main(cores)

@@ -29,26 +29,11 @@ import corner
 import drawlf
 
 import time
-import os
 
 from pathos.multiprocessing import ProcessingPool as Pool
-# import multiprocessing
-# from multiprocessing import Pool
-# from multiprocessing import get_context
 import dill
+from collections import namedtuple
 
-def get_cluster_core_count():
-    pbs_nodefile = os.environ.get("PBS_NODEFILE")
-    if pbs_nodefile and os.path.exists(pbs_nodefile):
-        with open(pbs_nodefile) as f:
-            lines = f.readlines()
-            ncores = len(lines)
-            print(f"Found {ncores} cores in PBS_NODEFILE")
-            return ncores
-    else:
-        ncores = min(multiprocessing.cpu_count(), 4)  # Default to 4 cores or less if fewer are available
-        print("Warning: PBS_NODEFILE not found or does not exist. Using default core count:", ncores)
-        return ncores
 
 def getqlums(lumfile, zlims=None):
 
@@ -278,6 +263,8 @@ def percentiles(x):
     c = np.median(x) 
 
     return [u, l, c] 
+
+LFData = namedtuple("LFData", ["mag", "mag_err", "logphi", "uperr", "downerr", "log_err"])
 
 class selmap:
     """
@@ -511,25 +498,25 @@ class lf:
     Attributes
     ----------
     - z : ndarray
-        Redshift of quasars in the current redshift bin.
+        Redshift of selected quasars in the current redshift bin.
     - M1450 : ndarray
-        Absolute magnitudes of quasars in the current redshift bin.
+        Absolute selected magnitudes of quasars in the current redshift bin.
     - p : ndarray
-        Selection probabilities of quasars in the current redshift bin.
+        Selection selected probabilities of quasars in the current redshift bin.
     - area : ndarray
-        Survey area corresponding to the quasars in the current redshift bin.
+        Survey area corresponding to the selected quasars in the current redshift bin.
     - sid : ndarray
-        Sample IDs of quasars in the current redshift bin.
+        Sample IDs of selected quasars in the current redshift bin.
     - z_all : ndarray
-        Redshift of all quasars (not limited to the current redshift bin).
+        Redshift of all quasars in the current redshift bin.
     - M1450_all : ndarray
-        Absolute magnitudes of all quasars (not limited to the current redshift bin).
+        Absolute magnitudes of all quasars in the current redshift bin.
     - p_all : ndarray
-        Selection probabilities of all quasars (not limited to the current redshift bin).
+        Selection probabilities of all quasars in the current redshift bin.
     - area_all : ndarray
-        Survey area corresponding to all quasars (not limited to the current redshift bin).
+        Survey area corresponding to all quasars in the current redshift bin.
     - sid_all : ndarray
-        Sample IDs of all quasars (not limited to the current redshift bin).
+        Sample IDs of all quasars in the current redshift bin.
     - zlims : list of float, optional
         The redshift limits for the quasar luminosities. If provided, it is used to filter data and set the `dz` attribute.
     - dz : float
@@ -624,30 +611,6 @@ class lf:
         samples = set(np.unique(self.sid))
         self.maps = [x for x in self.maps if x.sid in samples]
 
-        # Estimate pointwise data phi using 1 / V_eff from selection maps
-        mbins = np.arange(-30.9, -17.3, 0.6)  # standard binning
-        selmaps = self.maps
-        # print("mbins shape = ", mbins.shape)
-        # print("selmaps shape = ", len(selmaps))
-        # print("self.M1450 shape = ", self.M1450.shape)
-        
-        Veff = np.array([drawlf.totBinVol(self, m, mbins, selmaps) for m in self.M1450])
-        # print("Veff shape = ", Veff.shape)
-        mask = Veff > 0
-
-        if not np.all(mask):
-            print("Warning: Some Veff values are zero or negative. Masking these points.")
-            print("Veff values: ", Veff)
-            print("Corresponding M1450 values:", self.M1450[~mask])
-            print("Indices with bad Veff:", np.where(~mask)[0])
-
-            import sys
-            sys.exit("Exiting due to zero or negative Veff values in neglnlike_with_bad_points.")
-            logphi_model = logphi_model[mask]
-            Veff = Veff[mask]
-
-        self.logphi_data = np.log10(1.0 / Veff)  # from phi = 1/Veff
-        
         return
 
     def log10phi(self, theta, mag):
@@ -808,12 +771,6 @@ class lf:
 
         return -np.inf
     
-    def fake_cpu_work(self, x):
-        for _ in range(10000):
-            x = x * 1.0000001 / 1.0000001
-        return x
-
-    
     def _lnprob(self, theta):
         """
         Compute the log-probability of the QLF model given the parameters.
@@ -829,7 +786,6 @@ class lf:
             The log-probability of the QLF model given the parameters. Returns -np.inf
             if the log prior is not finite.
         """
-        # _ = self.fake_cpu_work(1)  # just to simulate CPU time
         time.sleep(0.01)  # Simulate some CPU time for testing purposes
         lp = self._lnprior(theta)
         
@@ -839,7 +795,7 @@ class lf:
         return lp - self.neglnlike(theta)
 
 
-    def run_mcmc(self):
+    def run_mcmc(self, ncores):
         """
         Run Markov Chain Monte Carlo (MCMC) sampling to estimate the posterior distribution
         of the QLF parameters.
@@ -848,7 +804,9 @@ class lf:
 
         Parameters
         ----------
-        None
+        - ncores : int
+            The number of CPU cores to use for parallel processing. This allows the MCMC
+            sampling to be performed in parallel, speeding up the computation.
 
         Returns
         -------
@@ -856,17 +814,10 @@ class lf:
 
         """
         
-        # ncores = get_cluster_core_count()
-        # print("\n\n\tNumber of cores available for MCMC: ", ncores)
-        # print()
-        self.ndim, self.nwalkers = self.bf.x.size, 24
+        self.ndim, self.nwalkers = self.bf.x.size, 100
         self.mcmc_start = self.bf.x 
         pos = [self.mcmc_start + 1e-4*np.random.randn(self.ndim) for i
                in range(self.nwalkers)]
-        
-        print("shape = ", np.array(pos).shape)
-
-        ncores = 2
 
         print("\n\n\tNumber of cores available for MCMC: ", ncores)
 
@@ -875,7 +826,6 @@ class lf:
 
         lnprob_pickable = dill.loads(dill.dumps(self._lnprob))
         self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
-                                            #  self._lnprob, pool=pool)
                                             lnprob_pickable, pool=pool)
         print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers, self.ndim))
         self.sampler.run_mcmc(pos, 3000, progress=True)
@@ -920,175 +870,464 @@ class lf:
 
         return np.array([Pb, Yb, Vb]).T
     
-    def _lnprior_with_bad_points(self, theta):
-        """
-        Checks if the parameters are within the prior bounds, including handling of bad points.
+    # def _lnprior_with_bad_points(self, theta):
+    #     """
+    #     Checks if the parameters are within the prior bounds, including handling of bad points.
 
-        Parameters
-        ----------
-        theta : ndarray
-            The parameter vector to be evaluated.
+    #     Parameters
+    #     ----------
+    #     theta : ndarray
+    #         The parameter vector to be evaluated.
 
-        Returns
-        -------
-        float
-            The log prior probability. Returns 0.0 if theta is within the prior bounds,
-            and -np.inf if theta is outside the prior bounds.
-        """
-        tag = self.prior_tag
-        # print("\n\ntheta = ", theta)
-        # print("3 * self.prior_max_values = ", 3 * self.prior_max_values)
-        # print("self.prior_min_values / 3 = ", self.prior_min_values / 3)
+    #     Returns
+    #     -------
+    #     float
+    #         The log prior probability. Returns 0.0 if theta is within the prior bounds,
+    #         and -np.inf if theta is outside the prior bounds.
+    #     """
+    #     tag = self.prior_tag
+    #     # print("\n\ntheta = ", theta)
+    #     # print("3 * self.prior_max_values = ", 3 * self.prior_max_values)
+    #     # print("self.prior_min_values / 3 = ", self.prior_min_values / 3)
 
-        # print("np.all(theta[:4] < 3 * self.prior_max_values) = ",
-        #       np.all(theta[:4] < 3 * self.prior_max_values))
-        # print("np.all(theta[:4] > self.prior_min_values / 3) = ",
-        #       np.all(theta[:4] > self.prior_min_values / 3))
+    #     # print("np.all(theta[:4] < 3 * self.prior_max_values) = ",
+    #     #       np.all(theta[:4] < 3 * self.prior_max_values))
+    #     # print("np.all(theta[:4] > self.prior_min_values / 3) = ",
+    #     #       np.all(theta[:4] > self.prior_min_values / 3))
 
-        # alpha, beta = theta[2:4]
-        # if alpha > beta:
-        #     return -np.inf  # Constraint From visuals, CHECK THIS LATER!!!
+    #     # alpha, beta = theta[2:4]
+    #     # if alpha > beta:
+    #     #     return -np.inf  # Constraint From visuals, CHECK THIS LATER!!!
         
-        # Modifying the prior to allow for a wider range of values
-        # for Checking / Testing purposes
-        n = 1
-        if (np.all(theta[:4] < np.maximum(self.prior_max_values / n, n * self.prior_max_values)) and
-            np.all(theta[:4] > np.minimum(self.prior_min_values / n, n * self.prior_min_values))):
-            # print("Prior is satisfied for theta[:4] = ", theta[:4])
-            Pb, Yb, Vb = theta[4], theta[5], theta[6]
-            if (0.0 <= Pb < 1.0 and 2 < Vb < 50 and -20 < Yb < 20):
-                if tag == 1:
-                    import sys
-                    sys.exit("Model 1 is too strong. Not using it anymore!")
-                    return - np.log(Pb) - np.log(Vb)
-                elif tag == 2:
-                    return - np.log(1 + Pb) - np.log(1 + Vb)
-                elif tag == 3:
-                    # print(f"\nPb = {Pb:.4f}\tYb = {Yb:.4f}\tVb = {Vb:.4f}")
-                    # print(f"Returning np.log(1 - Pb): {np.log(1 - Pb):.4f} \t- np.log(1 + Vb): {- np.log(1 + Vb):.4f}\t total: {np.log(1 - Pb) - np.log(1 + Vb):.4f}")
-                    return np.log(1 - Pb) - np.log(1 + Vb)    # Likelihood cant be negative
-                elif tag == 4:
-                    return 0.0
-                elif tag == 5:
-                    # Prior: Pb ~ Beta(2,6), Yb ~ flat, Vb ~ lognormal(mu=2, sigma=1)
-                    prior_pb = beta_dist.pdf(Pb, a=2, b=6)
-                    prior_vb = lognorm.pdf(Vb, s=1, scale=np.exp(2))
-                    return np.log(prior_pb) + np.log(prior_vb)
-                elif tag == 6:
-                    # Prior: Pb ~ Beta(2,6), Yb ~ flat, Vb ~ lognormal(mu=2, sigma=0.5)
-                    prior_pb = beta_dist.pdf(Pb, a=2, b=6)
-                    prior_vb = lognorm.pdf(Vb, s=0.5, scale=np.exp(2))
-                    return np.log(prior_pb) + np.log(prior_vb)
+    #     # Modifying the prior to allow for a wider range of values
+    #     # for Checking / Testing purposes
+    #     n = 1
+    #     if (np.all(theta[:4] < np.maximum(self.prior_max_values / n, n * self.prior_max_values)) and
+    #         np.all(theta[:4] > np.minimum(self.prior_min_values / n, n * self.prior_min_values))):
+    #         # print("Prior is satisfied for theta[:4] = ", theta[:4])
+    #         Pb, Yb, Vb = theta[4], theta[5], theta[6]
+    #         if (0.0 <= Pb < 1.0 and 2 < Vb < 50 and -20 < Yb < 20):
+    #             if tag == 1:
+    #                 import sys
+    #                 sys.exit("Model 1 is too strong. Not using it anymore!")
+    #                 return - np.log(Pb) - np.log(Vb)
+    #             elif tag == 2:
+    #                 return - np.log(1 + Pb) - np.log(1 + Vb)
+    #             elif tag == 3:
+    #                 # print(f"\nPb = {Pb:.4f}\tYb = {Yb:.4f}\tVb = {Vb:.4f}")
+    #                 # print(f"Returning np.log(1 - Pb): {np.log(1 - Pb):.4f} \t- np.log(1 + Vb): {- np.log(1 + Vb):.4f}\t total: {np.log(1 - Pb) - np.log(1 + Vb):.4f}")
+    #                 return np.log(1 - Pb) - np.log(1 + Vb)    # Likelihood cant be negative
+    #             elif tag == 4:
+    #                 return 0.0
+    #             elif tag == 5:
+    #                 # Prior: Pb ~ Beta(2,6), Yb ~ flat, Vb ~ lognormal(mu=2, sigma=1)
+    #                 prior_pb = beta_dist.pdf(Pb, a=2, b=6)
+    #                 prior_vb = lognorm.pdf(Vb, s=1, scale=np.exp(2))
+    #                 return np.log(prior_pb) + np.log(prior_vb)
+    #             elif tag == 6:
+    #                 # Prior: Pb ~ Beta(2,6), Yb ~ flat, Vb ~ lognormal(mu=2, sigma=0.5)
+    #                 prior_pb = beta_dist.pdf(Pb, a=2, b=6)
+    #                 prior_vb = lognorm.pdf(Vb, s=0.5, scale=np.exp(2))
+    #                 return np.log(prior_pb) + np.log(prior_vb)
                     
 
-        # print("Returning -np.inf for theta = ", theta)
-        return -np.inf
+    #     # print("Returning -np.inf for theta = ", theta)
+    #     return -np.inf
 
-    def neglnlike_with_bad_points(self, theta):
-        qlf_params = theta[:4]  # logphi_star, M_star, alpha, beta
-        Pb, Yb, Vb = theta[4:]  # mixture model parameters
+    # def neglnlike_with_bad_points(self, theta):
+    #     qlf_params = theta[:4]  # logphi_star, M_star, alpha, beta
+    #     Pb, Yb, Vb = theta[4:]  # mixture model parameters
 
-        logphi_model = self.log10phi(qlf_params, self.M1450)    # Mpc^-3 mag^-1
-
-
-        # Test Case! Checking! Later will get better sigma_fg
-        sigma_fg = 0.3
+    #     logphi_model = self.log10phi(qlf_params, self.M1450)    # Mpc^-3 mag^-1
 
 
-        # Foreground: match to model
-        p_fg = 1.0 / (np.sqrt(2 * np.pi) * sigma_fg) * np.exp(
-            -0.5 * (self.logphi_data - logphi_model)**2 / sigma_fg**2
-        )
-
-        # Background: wide Gaussian centered at Yb
-        p_bg = 1.0 / np.sqrt(2 * np.pi * (Vb + sigma_fg**2)) * np.exp(
-            -0.5 * (self.logphi_data - Yb)**2 / (Vb + sigma_fg**2)
-        )
-
-        # Mixture likelihood and logL
-        p_mix = (1 - Pb) * p_fg + Pb * p_bg
-
-        # To Deal with numerical issues, clip p_mix to avoid log(0)
-        p_mix = np.clip(p_mix, 1e-300, None)
-        logL_data = np.sum(np.log(p_mix))
-
-        # Normalization integral
-        norm_term = self.lfnorm(qlf_params)
-
-        return -2.0 * logL_data + 2.0 * norm_term
+    #     # Test Case! Checking! Later will get better sigma_fg
+    #     sigma_fg = 0.3
 
 
+    #     # Foreground: match to model
+    #     p_fg = 1.0 / (np.sqrt(2 * np.pi) * sigma_fg) * np.exp(
+    #         -0.5 * (self.logphi_data - logphi_model)**2 / sigma_fg**2
+    #     )
 
-    def _lnprob_with_bad_points(self, theta):
-        """
-        Compute the log-probability of the QLF model given the parameters,
-        including handling of bad points.
+    #     # Background: wide Gaussian centered at Yb
+    #     p_bg = 1.0 / np.sqrt(2 * np.pi * (Vb + sigma_fg**2)) * np.exp(
+    #         -0.5 * (self.logphi_data - Yb)**2 / (Vb + sigma_fg**2)
+    #     )
 
-        Parameters
-        ----------
-        theta : ndarray
-            The parameter vector to be evaluated.
+    #     # Mixture likelihood and logL
+    #     p_mix = (1 - Pb) * p_fg + Pb * p_bg
 
-        Returns
-        -------
-        float
-            The log-probability of the QLF model given the parameters.
-            Returns -np.inf if the log prior is not finite.
-        """
+    #     # To Deal with numerical issues, clip p_mix to avoid log(0)
+    #     p_mix = np.clip(p_mix, 1e-300, None)
+    #     logL_data = np.sum(np.log(p_mix))
 
-        # print("theta = ", theta)
-        lp = self._lnprior_with_bad_points(theta)
-        if not np.isfinite(lp):
-            return -np.inf
-        return lp - self.neglnlike_with_bad_points(theta)
+    #     # Normalization integral
+    #     norm_term = self.lfnorm(qlf_params)
+
+    #     return -2.0 * logL_data + 2.0 * norm_term
+
+
+
+    # def _lnprob_with_bad_points(self, theta):
+    #     """
+    #     Compute the log-probability of the QLF model given the parameters,
+    #     including handling of bad points.
+
+    #     Parameters
+    #     ----------
+    #     theta : ndarray
+    #         The parameter vector to be evaluated.
+
+    #     Returns
+    #     -------
+    #     float
+    #         The log-probability of the QLF model given the parameters.
+    #         Returns -np.inf if the log prior is not finite.
+    #     """
+
+    #     # print("theta = ", theta)
+    #     lp = self._lnprior_with_bad_points(theta)
+    #     if not np.isfinite(lp):
+    #         return -np.inf
+    #     return lp - self.neglnlike_with_bad_points(theta)
     
-    def run_mcmc_with_bad_points(self, dirname='', prior_tag=6):
-        # CHECKKKKK!!! THE LATEST PLOT mcmc_4_checking_corner_with_bad_points_3.877.png in
-        # QLF/2025-06-16 01:35:04 , has very nice result... but... it seems like alpha and beta can switch around
-        # Look at its joint distribution! That means I need to somehow make alpha stick to bright end and beta to the faint end. 
-        # Hmmm... Look at the QLF estimation itself. Maybe in that function I can make alpha and beta stick to the bright and faint ends respectively.
+    # def run_mcmc_with_bad_points(self, dirname='', prior_tag=6):
+    #     # CHECKKKKK!!! THE LATEST PLOT mcmc_4_checking_corner_with_bad_points_3.877.png in
+    #     # QLF/2025-06-16 01:35:04 , has very nice result... but... it seems like alpha and beta can switch around
+    #     # Look at its joint distribution! That means I need to somehow make alpha stick to bright end and beta to the faint end. 
+    #     # Hmmm... Look at the QLF estimation itself. Maybe in that function I can make alpha and beta stick to the bright and faint ends respectively.
 
 
-        ncores = get_cluster_core_count()
-        print("\n\n\tNumber of cores available for MCMC with bad points: ", ncores)
-        print()
-        self.prior_tag = prior_tag
+    #     ncores = get_cluster_core_count()
+    #     print("\n\n\tNumber of cores available for MCMC with bad points: ", ncores)
+    #     print()
+    #     self.prior_tag = prior_tag
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
-        n_steps, n_burn = 50000, 5000
-        self.mcmc_start_with_bp = self.bf.x
-        print("shape = ", np.array([self.mcmc_start_with_bp + 1e-2*np.random.randn(self.bf.x.size) for i
-                       in range(self.nwalkers_with_bp)]).shape)
-        pos_with_bp = np.hstack((np.array([self.mcmc_start_with_bp + 1e-2*np.random.randn(self.bf.x.size) for i
-                       in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
+    #     self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
+    #     n_steps, n_burn = 50000, 5000
+    #     self.mcmc_start_with_bp = self.bf.x
+    #     print("shape = ", np.array([self.mcmc_start_with_bp + 1e-2*np.random.randn(self.bf.x.size) for i
+    #                    in range(self.nwalkers_with_bp)]).shape)
+    #     pos_with_bp = np.hstack((np.array([self.mcmc_start_with_bp + 1e-2*np.random.randn(self.bf.x.size) for i
+    #                    in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
         
-        print("pos_with_bp = ", pos_with_bp)
+    #     print("pos_with_bp = ", pos_with_bp)
+    #     # import sys
+    #     # sys.exit("\nQuitting for testing purposes\n")
+
+    #     print("shape = ", pos_with_bp.shape)
+
+    #     if ncores <= 1:
+    #         pool = None
+    #     else:
+    #         pool = multiprocessing.get_context("fork").Pool(processes=ncores)
+
+    #     print(f"Master PID = {os.getpid()}")
+    #     if pool is not None:
+    #         print(f"Using multiprocessing pool with {ncores} cores")
+    #     else:
+    #         print("Running on a single core (no multiprocessing pool)")
+
+    #     try:
+    #         self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
+    #                                                     self._lnprob_with_bad_points, pool=pool)
+    #         self.sampler_with_bp.run_mcmc(pos_with_bp, n_steps, progress=True)
+    #     finally:
+    #         if pool is not None:
+    #             pool.close()
+    #             pool.join()
+
+    #     self.samples_with_bp = self.sampler_with_bp.chain[:, n_burn:, :].reshape((-1, self.ndim_with_bp))
+
+    #     # Print parameter medians and 1-sigma intervals
+    #     param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+    #     for i, name in enumerate(param_names):
+    #         vals = percentiles(self.samples_with_bp[:, i])
+    #         print(f"{name}: median = {vals[2]:.4f}, -1σ = {vals[0]:.4f}, +1σ = {vals[1]:.4f}")
+
+    #     # Plot all samples for each parameter as histograms and overlay the median
+    #     import matplotlib.pyplot as plt
+    #     import corner
+
+    #     fig, axes = plt.subplots(1, self.ndim_with_bp, figsize=(18, 4))
+    #     param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+
+    #     for i, name in enumerate(param_names):
+    #         ax = axes[i]
+    #         data = self.samples_with_bp[:, i]
+    #         ax.hist(data, bins=30, color='skyblue', alpha=0.7, label='Samples')
+    #         median = np.median(data)
+    #         ax.axvline(median, color='red', linestyle='--', label='Median')
+    #         ax.set_title(name)
+    #         ax.legend(fontsize=8)
+
+    #     plt.tight_layout()
+    #     plt.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
+
+    #     # Plot MCMC corner plot for all parameters with bad points
+
+    #     fig = corner.corner(
+    #         self.samples_with_bp,
+    #         labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$'],
+    #         show_titles=True,
+    #         title_kwargs={"fontsize": 12},
+    #         quantiles=[0.16, 0.5, 0.84],
+    #     )
+    #     fig.suptitle(f"Prior Model: {prior_tag}", fontsize=16)
+    #     fig.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
+
+    #     # Plot MCMC chains for all parameters with bad points
+    #     fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
+    #     param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+    #     for i, name in enumerate(param_names):
+    #         ax = axes[i]
+    #         for walker in range(self.nwalkers_with_bp):
+    #             # ax.plot(self.sampler_with_bp.chain[walker, :, i], color='k', alpha=0.1)
+    #             ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
+    #         median = np.median(self.samples_with_bp[:, i])
+    #         ax.axhline(median, color='red', linestyle='--', label='Median')
+    #         ax.set_ylabel(name)
+    #         if i == 0:
+    #             ax.legend(fontsize=8)
+    #     axes[-1].set_xlabel('step')
+    #     plt.tight_layout()
+    #     plt.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
+
+
+    #     # Plot MCMC chains for each parameter separately and save
+    #     param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+    #     for i, name in enumerate(param_names):
+    #         fig, ax = plt.subplots(figsize=(12, 3))
+    #         for walker in range(self.nwalkers_with_bp):
+    #             ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
+    #         median = np.median(self.samples_with_bp[:, i])
+    #         ax.axhline(median, color='red', linestyle='--', label='Median')
+    #         ax.set_ylabel(name)
+    #         ax.set_xlabel('step')
+    #         ax.legend(fontsize=8)
+    #         plt.tight_layout()
+    #         plt.savefig(f"{dirname}mcmc_{self.prior_tag}_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
+    #         plt.close(fig)
+
+    #     # Print autocorrelation time and acceptance rate for the sampler with bad points
+    #     try:
+    #         tau = self.sampler_with_bp.get_autocorr_time()
+    #         print("Autocorrelation time (per parameter):", tau)
+    #     except Exception as e:
+    #         print("Could not compute autocorrelation time:", e)
+
+    #     acceptance_fraction = self.sampler_with_bp.acceptance_fraction
+    #     print("Mean acceptance fraction:", np.mean(acceptance_fraction))
+    #     print("Acceptance fraction per walker:", acceptance_fraction)
+
+
+    #     samples_4d = self.samples_with_bp[:, :4]
+
+    #     bins = 20
+    #     hist, edges = np.histogramdd(samples_4d, bins=bins)
+
+    #     max_idx = np.unravel_index(np.argmax(hist), hist.shape)
+
+    #     map_params = []
+    #     for i in range(4):
+    #         # Bin edges for this dimension
+    #         bin_edges = edges[i]
+    #         # Center of the bin
+    #         center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
+    #         map_params.append(center)
+    #     map_params = np.array(map_params)
+    #     print("MAP (marginalized over nuisance):", map_params)
+
+    #     import sys
+    #     from datetime import datetime
+    #     sys.exit(f"\nQuitting for testing purposes\nprior tag = {self.prior_tag}\nTime right now = {datetime.now()}\n")
+    #     return
+
+    def get_qlf_data(self, sid):
+
+        m = self.M1450[self.sid == sid]
+        selmaps = [x for x in self.maps if x.sid == sid]
+
+        if sid==6:
+            # Glikman's sample needs wider bins.
+            mbins = np.array([-26.0, -25.0, -24.0, -23.0, -22.0, -21])
+        elif sid == 7:
+            mbins = np.array([-23.5, -21.5, -20.5, -19.5, -18.5])
+        elif sid == 10 or sid == 18:
+            mbins = np.arange(-30.9, -17.3, 1.8)
+        else:
+            mbins = np.arange(-30.9, -13.3, 0.6)
+        
+        Veff = np.array([drawlf.totBinVol(self, mi, mbins, selmaps) for mi in m])
+        print("Veff shape = ", Veff.shape)
+        mask = Veff > 0
+
+        print("mask shape = ", mask.shape)
+        print("m shape = ", m.shape)
+        print("Veff shape = ", Veff.shape)
+
+        Veff = Veff[mask]
+        m = m[mask]
+
+        # Estimates the number density of quasars in the given magnitude range
+        # using the effective volume (Veff) for each bin.
+        h, edges = np.histogram(m, bins=mbins, weights=1.0/Veff)
+
+        logphi = np.log10(h)
+        mag = 0.5 * (edges[1:] + edges[:-1])
+        mag_err = 0.5 * (edges[1:] - edges[:-1])
+
+
+        # Calculate errorbars on our binned LF.  These have been estimated
+        # using Equations 1 and 2 of Gehrels 1986 (ApJ 303 336), as
+        # implemented in astropy.stats.poisson_conf_interval.  The
+        # interval='frequentist-confidence' option to that astropy function is
+        # exactly equal to the Gehrels formulas, although the documentation
+        # does not say so.
+
+        # Estimates the number density of quasars in the given magnitude range
+        # without using the effective volume (Veff) for each bin.
+        n, _ = np.histogram(m, bins=mbins)
+        nlims = pci(n,interval='frequentist-confidence')
+        nlims *= h/n 
+        uperr = np.log10(nlims[1]) - logphi 
+        downerr = logphi - np.log10(nlims[0])
+
+        print("uperr = ", uperr)
+        print("downerr = ", downerr)
+
+        log_err = 0.5 * (uperr + downerr)
+
+        mask = np.isfinite(logphi)
+        logphi = logphi[mask]
+        uperr = uperr[mask]
+        downerr = downerr[mask]
+        log_err = log_err[mask]
+        mag = mag[mask]
+        mag_err = mag_err[mask]
+
+        self.data = LFData(logphi=logphi, uperr=uperr, downerr=downerr,
+                           log_err=log_err, mag=mag, mag_err=mag_err)
+        
+        return
+    
+    def _lnprior_with_bad_points(self, params):
+        logphi, M_star, alpha, beta = params[:4]
+        Pb, Yb, Vb = params[4:]
+
+        if self.prior_tag == 1:
+            if Pb < 0 or Pb > 1:
+                return -np.inf
+            if Vb <= 0:
+                return -np.inf
+            
+            if logphi < -20 or logphi > 0:
+                return -np.inf
+            
+            if M_star < -50 or M_star > 0:
+                return -np.inf
+            
+            if alpha < -7 or alpha > beta:
+                return -np.inf
+            
+            if beta > 0:
+                return -np.inf
+            print("Returning 0 for prior tag 1")
+            return 0
+        
+        elif self.prior_tag == 2:
+            if Pb < 0 or Pb > 1:
+                return -np.inf
+            if Vb <= 0:
+                return -np.inf
+            
+            if logphi < -20 or logphi > 0:
+                return -np.inf
+            
+            if M_star < -50 or M_star > 0:
+                return -np.inf
+            
+            if alpha < -7 or alpha > beta:
+                return -np.inf
+            
+            if beta > 0:
+                return -np.inf
+            # print("Returning 0 for prior tag 2")
+            return - np.log(1 + Pb) - np.log(1 + Vb) 
+        
+    
+    def _lnlikelihood_with_bad_points(self, params):
+        func_params = params[:4]
+        Pb, Yb, Vb = params[4:]
+
+        print("func_params = ", func_params)
+        print("Pb = ", Pb, "\tYb = ", Yb, "\tVb = ", Vb)
+        print("self.data.logphi = ", self.data.logphi)
+        print("self.data.mag = ", self.data.mag)
+        print("self.data.log_err = ", self.data.log_err)
+
+        epsilon = 1e-10  # Small value to prevent division by zero
+        safe_sig2 = self.data.log_err**2 + epsilon
+        safe_Vb = Vb + epsilon
+
+        print("safe_sig2 = ", safe_sig2)
+        print("safe_Vb = ", safe_Vb)
+
+        logforeground_model = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip(((self.data.logphi - self.log10phi(func_params, self.data.mag)))**2 / safe_sig2, -1e10, 1e10))
+        logbackground_model = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((self.data.logphi - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
+
+        print("logforeground_model = ", logforeground_model)
+        print("logbackground_model = ", logbackground_model)
+
+        a = np.log(1 - Pb) + logforeground_model
+        b = np.log(Pb) + logbackground_model
+
+        print("a = ", a)
+        print("b = ", b)
+
+        lnL = np.sum(np.logaddexp(a, b))
+        print("lnL = ", lnL)
         # import sys
         # sys.exit("\nQuitting for testing purposes\n")
+        return lnL
+    
+    def _lnposterior_with_bad_points(self, params):
+        lp = self._lnprior_with_bad_points(params)
+        if not np.isfinite(lp):
+            return -np.inf
 
-        print("shape = ", pos_with_bp.shape)
+        ll = self._lnlikelihood_with_bad_points(params)
+        if not np.isfinite(ll):
+            return -np.inf
 
-        if ncores <= 1:
-            pool = None
-        else:
-            pool = multiprocessing.get_context("fork").Pool(processes=ncores)
+        return lp + ll
 
-        print(f"Master PID = {os.getpid()}")
-        if pool is not None:
-            print(f"Using multiprocessing pool with {ncores} cores")
-        else:
-            print("Running on a single core (no multiprocessing pool)")
+    def run_mcmc_with_bad_points(self, ncores, dirname='', prior_tag=1):
+        self.prior_tag = prior_tag
 
-        try:
-            self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
-                                                        self._lnprob_with_bad_points, pool=pool)
-            self.sampler_with_bp.run_mcmc(pos_with_bp, n_steps, progress=True)
-        finally:
-            if pool is not None:
-                pool.close()
-                pool.join()
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 24
+        self.mcmc_start = self.bf.x 
 
-        self.samples_with_bp = self.sampler_with_bp.chain[:, n_burn:, :].reshape((-1, self.ndim_with_bp))
+        pos_with_bp = np.hstack((np.array([self.bf.x 
+                    + 1e-2*np.random.randn(self.bf.x.size) for i 
+                    in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
+        
+        self.get_qlf_data(sid=13)  # Assuming sid=1 for testing purposes
+
+        print("\n\n\tNumber of cores available for MCMC: ", ncores)
+
+        pool = Pool(ncores)
+        print("Using multiprocessing pool with {} cores...\n\n\n".format(ncores))
+
+        lnposterior_pickable = dill.loads(dill.dumps(self._lnposterior_with_bad_points))
+        self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
+                                            lnposterior_pickable, pool=pool)
+        print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
+        self.sampler_with_bp.run_mcmc(pos_with_bp, 1000, progress=True)
+
+        self.samples_with_bp = self.sampler_with_bp.chain[:, 500:, :].reshape((-1, self.ndim_with_bp))
+
 
         # Print parameter medians and 1-sigma intervals
         param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
@@ -1097,9 +1336,6 @@ class lf:
             print(f"{name}: median = {vals[2]:.4f}, -1σ = {vals[0]:.4f}, +1σ = {vals[1]:.4f}")
 
         # Plot all samples for each parameter as histograms and overlay the median
-        import matplotlib.pyplot as plt
-        import corner
-
         fig, axes = plt.subplots(1, self.ndim_with_bp, figsize=(18, 4))
         param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
 
@@ -1192,8 +1428,8 @@ class lf:
         import sys
         from datetime import datetime
         sys.exit(f"\nQuitting for testing purposes\nprior tag = {self.prior_tag}\nTime right now = {datetime.now()}\n")
+        
         return
-
 
 
     def get_percentiles(self):
