@@ -829,7 +829,8 @@ class lf:
             The log-probability of the QLF model given the parameters. Returns -np.inf
             if the log prior is not finite.
         """
-        _ = self.fake_cpu_work(1)  # just to simulate CPU time
+        # _ = self.fake_cpu_work(1)  # just to simulate CPU time
+        time.sleep(0.01)  # Simulate some CPU time for testing purposes
         lp = self._lnprior(theta)
         
         if not np.isfinite(lp):
@@ -865,7 +866,7 @@ class lf:
         
         print("shape = ", np.array(pos).shape)
 
-        ncores = 4
+        ncores = 2
 
         print("\n\n\tNumber of cores available for MCMC: ", ncores)
 
@@ -877,7 +878,7 @@ class lf:
                                             #  self._lnprob, pool=pool)
                                             lnprob_pickable, pool=pool)
         print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers, self.ndim))
-        self.sampler.run_mcmc(pos, 30000, progress=True)
+        self.sampler.run_mcmc(pos, 3000, progress=True)
 
         self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
         
