@@ -8,7 +8,8 @@ from scipy.stats import lognorm
 import emcee
 import matplotlib as mpl
 mpl.use('Agg') 
-mpl.rcParams['text.usetex'] = True 
+# mpl.rcParams['text.usetex'] = True 
+mpl.rcParams['text.usetex'] = False
 mpl.rcParams['font.family'] = 'serif'
 mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '16'
@@ -26,7 +27,28 @@ import gammapi
 import rtg
 import corner
 import drawlf
+
+import time
+import os
+
 from pathos.multiprocessing import ProcessingPool as Pool
+# import multiprocessing
+# from multiprocessing import Pool
+# from multiprocessing import get_context
+import dill
+
+def get_cluster_core_count():
+    pbs_nodefile = os.environ.get("PBS_NODEFILE")
+    if pbs_nodefile and os.path.exists(pbs_nodefile):
+        with open(pbs_nodefile) as f:
+            lines = f.readlines()
+            ncores = len(lines)
+            print(f"Found {ncores} cores in PBS_NODEFILE")
+            return ncores
+    else:
+        ncores = min(multiprocessing.cpu_count(), 4)  # Default to 4 cores or less if fewer are available
+        print("Warning: PBS_NODEFILE not found or does not exist. Using default core count:", ncores)
+        return ncores
 
 def getqlums(lumfile, zlims=None):
 
@@ -786,6 +808,12 @@ class lf:
 
         return -np.inf
     
+    def fake_cpu_work(self, x):
+        for _ in range(10000):
+            x = x * 1.0000001 / 1.0000001
+        return x
+
+    
     def _lnprob(self, theta):
         """
         Compute the log-probability of the QLF model given the parameters.
@@ -801,13 +829,14 @@ class lf:
             The log-probability of the QLF model given the parameters. Returns -np.inf
             if the log prior is not finite.
         """
-
+        _ = self.fake_cpu_work(1)  # just to simulate CPU time
         lp = self._lnprior(theta)
         
         if not np.isfinite(lp):
             return -np.inf
 
         return lp - self.neglnlike(theta)
+
 
     def run_mcmc(self):
         """
@@ -825,17 +854,31 @@ class lf:
         None
 
         """
-        self.ndim, self.nwalkers = self.bf.x.size, 100
+        
+        # ncores = get_cluster_core_count()
+        # print("\n\n\tNumber of cores available for MCMC: ", ncores)
+        # print()
+        self.ndim, self.nwalkers = self.bf.x.size, 24
         self.mcmc_start = self.bf.x 
         pos = [self.mcmc_start + 1e-4*np.random.randn(self.ndim) for i
                in range(self.nwalkers)]
         
         print("shape = ", np.array(pos).shape)
-        
-        self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
-                                             self._lnprob)
 
-        self.sampler.run_mcmc(pos, 1000)
+        ncores = 4
+
+        print("\n\n\tNumber of cores available for MCMC: ", ncores)
+
+        pool = Pool(ncores)
+        print("Using multiprocessing pool with {} cores...\n\n\n".format(ncores))
+
+        lnprob_pickable = dill.loads(dill.dumps(self._lnprob))
+        self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
+                                            #  self._lnprob, pool=pool)
+                                            lnprob_pickable, pool=pool)
+        print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers, self.ndim))
+        self.sampler.run_mcmc(pos, 30000, progress=True)
+
         self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
         
         return
@@ -1005,7 +1048,9 @@ class lf:
         # Hmmm... Look at the QLF estimation itself. Maybe in that function I can make alpha and beta stick to the bright and faint ends respectively.
 
 
-
+        ncores = get_cluster_core_count()
+        print("\n\n\tNumber of cores available for MCMC with bad points: ", ncores)
+        print()
         self.prior_tag = prior_tag
 
         self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
@@ -1022,10 +1067,26 @@ class lf:
 
         print("shape = ", pos_with_bp.shape)
 
-        self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
-                                                     self._lnprob_with_bad_points)
-        
-        self.sampler_with_bp.run_mcmc(pos_with_bp, n_steps, progress=True)
+        if ncores <= 1:
+            pool = None
+        else:
+            pool = multiprocessing.get_context("fork").Pool(processes=ncores)
+
+        print(f"Master PID = {os.getpid()}")
+        if pool is not None:
+            print(f"Using multiprocessing pool with {ncores} cores")
+        else:
+            print("Running on a single core (no multiprocessing pool)")
+
+        try:
+            self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
+                                                        self._lnprob_with_bad_points, pool=pool)
+            self.sampler_with_bp.run_mcmc(pos_with_bp, n_steps, progress=True)
+        finally:
+            if pool is not None:
+                pool.close()
+                pool.join()
+
         self.samples_with_bp = self.sampler_with_bp.chain[:, n_burn:, :].reshape((-1, self.ndim_with_bp))
 
         # Print parameter medians and 1-sigma intervals

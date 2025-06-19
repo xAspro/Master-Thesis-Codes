@@ -5,7 +5,8 @@ import numpy as np
 import emcee
 import matplotlib as mpl
 mpl.use('Agg') 
-mpl.rcParams['text.usetex'] = True 
+# mpl.rcParams['text.usetex'] = True 
+mpl.rcParams['text.usetex'] = False
 mpl.rcParams['font.family'] = 'serif'
 mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '16'
@@ -311,6 +312,7 @@ def get_lf(lf, sid, z_plot, special='None'):
     right = h[1][1:] - mags
 
     phi = nums
+    # phi = np.where(phi==0, 1e-150, phi)  # Avoid log10(0)
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
     # print( 'sid=', sid )
@@ -326,6 +328,7 @@ def get_lf(lf, sid, z_plot, special='None'):
     # does not say so.
     n = np.histogram(m, bins=bins)[0]
     nlims = pci(n,interval='frequentist-confidence')
+    # nlims = np.where(nlims==0, 1e-150, nlims)
     nlims *= phi/n 
     uperr = np.log10(nlims[1]) - logphi 
     downerr = logphi - np.log10(nlims[0])
@@ -407,6 +410,7 @@ def get_lf_all(lf, sid, z_plot, special='None'):
     right = h[1][1:] - mags
 
     phi = nums
+    # phi = np.where(phi==0, 1e-150, phi)  # Avoid log10(0)
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
     # Calculate errorbars on our binned LF.  These have been estimated
@@ -417,6 +421,7 @@ def get_lf_all(lf, sid, z_plot, special='None'):
     # does not say so.
     n = np.histogram(m, bins=bins)[0]
     nlims = pci(n,interval='frequentist-confidence')
+    # nlims = np.where(nlims==0, 1e-150, nlims)
     nlims *= phi/n 
     uperr = np.log10(nlims[1]) - logphi 
     downerr = logphi - np.log10(nlims[0])
@@ -463,6 +468,7 @@ def get_lf_sample(lf, sid, z_plot):
     right = h[1][1:] - mags
 
     phi = nums
+    # phi = np.where(phi==0, 1e-150, phi)  # Avoid log10(0)
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
     # Calculate errorbars on our binned LF.  These have been estimated
@@ -473,6 +479,7 @@ def get_lf_sample(lf, sid, z_plot):
     # does not say so.
     n = np.histogram(m, bins=bins)[0]
     nlims = pci(n,interval='frequentist-confidence')
+    # nlims = np.where(nlims==0, 1e-150, nlims)  # Avoid log10(0)
     nlims *= phi/n 
     uperr = np.log10(nlims[1]) - logphi 
     downerr = logphi - np.log10(nlims[0])
@@ -813,6 +820,13 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         # logphi = logphi[mask]
         # and so on.
         # If I do this, I need to do the same for rejected bins as well.
+        print("mags= ", mags)
+        print("left= ", left)
+        print("right= ", right)
+        
+        print("logphi= ", logphi)
+        print("uperr= ", uperr)
+        print("downerr= ", downerr)
         ax.scatter(mags, logphi, c=cs[i], edgecolor='None', zorder=4, s=20, label=dsl(i))
         ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
                     xerr=np.vstack((left, right)), 
@@ -922,13 +936,13 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     plotfile = dirname+'lf_z{0:.3f}.pdf'.format(z_plot)
 
     plt.savefig(plotfile, bbox_inches='tight')
-    plt.savefig(plotfile.replace('.pdf', '.png'), bbox_inches='tight')
+    # plt.savefig(plotfile.replace('.pdf', '.png'), bbox_inches='tight')
 
     plt.close('all') 
 
     # letting the user know where the plot was saved
     print("saved the figure in ", plotfile)
-    print("saved the figure in ", plotfile.replace('.pdf', '.png'))
+    # print("saved the figure in ", plotfile.replace('.pdf', '.png'))
     print("command executed in drawlf.py")
 
     return 

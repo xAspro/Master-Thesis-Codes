@@ -14,10 +14,11 @@ import datetime
 import os
 
 
+
 start_time = time.time()
 curr_date_time = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")+"/"
 print("curr_date_time:", curr_date_time)
-os.makedirs(curr_date_time, exist_ok=True)
+# os.makedirs(curr_date_time, exist_ok=True)
 
 
 
@@ -138,127 +139,112 @@ zls = [(3.7, 4.1)]
 #     ]
 
 
+def main():
 
-lfs = [] 
+    lfs = [] 
 
-# Notes down the parameters for it to be later used in summary files.
-WRITE_PARAMS2 = True
-if WRITE_PARAMS2: 
-    with open('bins.dat', 'w') as f:
-        f.write('# zmean zmin  zmax  phi_star  phi_star_err    M_star  M_star_err        alpha  alpha_err        beta    beta_err\n')
-
-for i, zl in enumerate(zls):
-
-    lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
-
-    print( 'z =', zl)
-    print( '{:d} quasars in this bin.'.format(lfi.z.size))
-    print( 'sids (samples): '+'  '.join(['{:2d}'.format(int(x)) for x in np.unique(lfi.sid)]))
-    print( 'sids (maps): '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps]))
-    print( ' ')
-    
-    g = (np.log10(1.e-6), -25.0, -3.0, -1.5)      # Initial guess for log10(phi_star), M_star, alpha, beta
-    b = lfi.bestfit(g, method=method)
-
-    print("\n\n\n\n\n\n\nb:\n", b)
-    print("\n\n\n\n\n\n")
-
-    zmin, zmax = zl 
-    
-    if zmin < 0.3:
-        lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -10.0])
-    else:
-        lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -4.0])
-
-    if zmin > 5.4:
-        # Special priors for z = 6 data.
-        lfi.prior_max_values = np.array([-4.0, -20.0, -4.0, 0.0])
-
-        # Change result of optimize.minimize so that emcee works.
-        lfi.bf.x[2] = -5.0
-    elif zmin < 0.3:
-        lfi.prior_max_values = np.array([-1.0, -15.0, 0.0, 15.0])
-    else:
-        lfi.prior_max_values = np.array([-4.0, -20.0, 0.0, 0.0])
-
-    assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
-    
-    # lfi.run_mcmc_with_bad_points(dirname=curr_date_time)
-
-    print("Running MCMC")
-    lfi.run_mcmc()
-    print("lfi.bf.x:", lfi.bf.x)
-    print("Getting percentiles")
-    lfi.get_percentiles()
-    print("lfi.phi_star:", lfi.phi_star)
-    print("lfi.M_star:", lfi.M_star)
-    print("lfi.alpha:", lfi.alpha)
-    print("lfi.beta:", lfi.beta)
-    print("\nEND!")
-    print()
-    
-
-    drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
-    print("Drawn the LF for this bin.")
-
-    # Print all attributes of the object as a dictionary
-    # print()
-    # print("lfi.__dict__:")
-    # print(lfi.__dict__)
-    # print()
-
-    
-    # FOR SUMMARY (Fig 4)
+    # Notes down the parameters for it to be later used in summary files.
+    WRITE_PARAMS2 = True
     if WRITE_PARAMS2: 
-        with open('bins.dat', 'a') as f:
-            output = ([lfi.z.mean()] + list(zl) + lfi.phi_star
-                    + lfi.M_star + lfi.alpha + lfi.beta)
-            f.write(('{:.3f}  '*len(output)).format(*output))
-            print()
-            # print()
-            # print()
-            # print("output:", output) 
-            # print(('{:.3f}  ' * len(output)).format(*output))
-            f.write('\n')
-    
-    lfs.append(lfi)
+        with open('bins.dat', 'w') as f:
+            f.write('# zmean zmin  zmax  phi_star  phi_star_err    M_star  M_star_err        alpha  alpha_err        beta    beta_err\n')
 
-    # mosaic.draw(lfs)
+    for i, zl in enumerate(zls):
 
-end_time = time.time()
+        lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
+
+        print( 'z =', zl)
+        print( '{:d} quasars in this bin.'.format(lfi.z.size))
+        print( 'sids (samples): '+'  '.join(['{:2d}'.format(int(x)) for x in np.unique(lfi.sid)]))
+        print( 'sids (maps): '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps]))
+        print( ' ')
+        
+        g = (np.log10(1.e-6), -25.0, -3.0, -1.5)      # Initial guess for log10(phi_star), M_star, alpha, beta
+        b = lfi.bestfit(g, method=method)
+
+        print("\n\n\n\n\n\n\nb:\n", b)
+        print("\n\n\n\n\n\n")
+
+        zmin, zmax = zl 
+        
+        if zmin < 0.3:
+            lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -10.0])
+        else:
+            lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -4.0])
+
+        if zmin > 5.4:
+            # Special priors for z = 6 data.
+            lfi.prior_max_values = np.array([-4.0, -20.0, -4.0, 0.0])
+
+            # Change result of optimize.minimize so that emcee works.
+            lfi.bf.x[2] = -5.0
+        elif zmin < 0.3:
+            lfi.prior_max_values = np.array([-1.0, -15.0, 0.0, 15.0])
+        else:
+            lfi.prior_max_values = np.array([-4.0, -20.0, 0.0, 0.0])
+
+        assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
+        
+        # lfi.run_mcmc_with_bad_points(dirname=curr_date_time)
+
+        print("Running MCMC")
+        lfi.run_mcmc()
+        print("lfi.bf.x:", lfi.bf.x)
+        print("Getting percentiles")
+        lfi.get_percentiles()
+        print("lfi.phi_star:", lfi.phi_star)
+        print("lfi.M_star:", lfi.M_star)
+        print("lfi.alpha:", lfi.alpha)
+        print("lfi.beta:", lfi.beta)
+        print("\nEND!")
+        print()
+        
+
+        # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True)
+        # print("Drawn the LF for this bin.")
+
+        # Print all attributes of the object as a dictionary
+        # print()
+        # print("lfi.__dict__:")
+        # print(lfi.__dict__)
+        # print()
+
+        
+        # FOR SUMMARY (Fig 4)
+        if WRITE_PARAMS2: 
+            with open('bins.dat', 'a') as f:
+                output = ([lfi.z.mean()] + list(zl) + lfi.phi_star
+                        + lfi.M_star + lfi.alpha + lfi.beta)
+                f.write(('{:.3f}  '*len(output)).format(*output))
+                print()
+                # print()
+                # print()
+                # print("output:", output) 
+                # print(('{:.3f}  ' * len(output)).format(*output))
+                f.write('\n')
+        
+        lfs.append(lfi)
+
+        # mosaic.draw(lfs)
+
+    end_time = time.time()
 
 
 
-print()
-print()
-elapsed_time = end_time - start_time
-print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
+    print()
+    print()
+    elapsed_time = end_time - start_time
+    print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
 
-sys.exit("End of Bins.py Program")
+    sys.exit("End of Bins.py Program")
 
-print("\n\n\nlfs:", lfs)
+    print("\n\n\nlfs:", lfs)
 
-np.save('bins_lfs.npy', lfs)
+    np.save('bins_lfs.npy', lfs)
 
-print(type(lfs))
-print(dir(lfs))
+    print(type(lfs))
+    print(dir(lfs))
 
-# np.save('bins_lfs_old_data.npy', lfs)
 
-# with open('bins_lfs.npy', 'w') as f:
-#     f.write(lfs)
-
-# with open('bins_lfs.dat', 'x') as f:
-#     f.write(','.join(map(str, lfs))) 
-
-# print("Written to bins_lfs.dat")
-# print("Done with bins.py")
-
-# else:
-#     lfs = []
-
-#     with open('bins_lfs.dat', 'r') as f:
-#         for line in f:
-#             lfs.append(line.strip())
-
-#     print("lfs:", lfs)
+if __name__ == "__main__":
+    main()
