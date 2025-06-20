@@ -544,7 +544,6 @@ def plot_giallongo_z4p25(lf, ax, mags):
 
 def savedata(data):
     # print("\n\nIn drawlf.py savedata\n")
-    print("\n\n\n\ndata= ", data)
     zlims = data[0]
     if zlims == (0.1, 0.4):
     # if zlims == (5.5, 6.5):
@@ -557,12 +556,9 @@ def savedata(data):
 
     with open('datapoints.dat', 'a') as f:
         for cnt in range(1, len(data)):
-            print("cnt= ", cnt)
-            print("data[cnt]= ", data[cnt])
             for d in data[cnt]:
                 if isinstance(d, str):
                     continue
-                print("d= ", d)
                 f.write('{:6.2f} {:6.2f}   {:25s} {:7d}  {:7.3f}   {:<7.3f}   {:7.3f}  {:7.3f}  {:7.3f}  {:7.3f}\n'.format(zlims[0], zlims[1], data[cnt][0], d[0], d[1], d[2], d[3], d[4], d[5], d[6]))
 
 

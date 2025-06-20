@@ -373,25 +373,25 @@ class selmap:
             self.p_all = self.p_all/corr
             select = ((self.z_all>=z_min) & (self.z_all<z_max))
 
-        if sample_id == 13: 
-            select = ((((self.z_all>=0.0) & (self.z_all<0.2) & (self.m_all<=-20.7)) | 
-                       ((self.z_all>=0.2) & (self.z_all<0.4) & (self.m_all<=-20.4)) | 
-                       ((self.z_all>=0.4) & (self.z_all<0.6) & (self.m_all<=-21.3)) | 
-                       ((self.z_all>=0.6) & (self.z_all<0.8) & (self.m_all<=-23.1)) | 
-                       ((self.z_all>=0.8) & (self.z_all<1.0) & (self.m_all<=-23.7)) |
-                       ((self.z_all>=1.0) & (self.z_all<1.2)) |
-                       ((self.z_all>=1.2) & (self.z_all<1.4) & (self.m_all<=-24.3)) |
-                       ((self.z_all>=1.4) & (self.z_all<1.6)) |
-                       ((self.z_all>=1.6) & (self.z_all<1.8) & (self.m_all<=-24.9)) |
-                       ((self.z_all>=1.8) & (self.z_all<2.2))) |
-                      ((self.z_all>=3.5) & (self.z_all<4.7) & (self.m_all<=-26.1)))
+        # if sample_id == 13: 
+        #     select = ((((self.z_all>=0.0) & (self.z_all<0.2) & (self.m_all<=-20.7)) | 
+        #                ((self.z_all>=0.2) & (self.z_all<0.4) & (self.m_all<=-20.4)) | 
+        #                ((self.z_all>=0.4) & (self.z_all<0.6) & (self.m_all<=-21.3)) | 
+        #                ((self.z_all>=0.6) & (self.z_all<0.8) & (self.m_all<=-23.1)) | 
+        #                ((self.z_all>=0.8) & (self.z_all<1.0) & (self.m_all<=-23.7)) |
+        #                ((self.z_all>=1.0) & (self.z_all<1.2)) |
+        #                ((self.z_all>=1.2) & (self.z_all<1.4) & (self.m_all<=-24.3)) |
+        #                ((self.z_all>=1.4) & (self.z_all<1.6)) |
+        #                ((self.z_all>=1.6) & (self.z_all<1.8) & (self.m_all<=-24.9)) |
+        #                ((self.z_all>=1.8) & (self.z_all<2.2))) |
+        #               ((self.z_all>=3.5) & (self.z_all<4.7) & (self.m_all<=-26.1)))
 
-        if sample_id == 15: 
-            select = (((self.z_all>=0.4) & (self.z_all<0.6)) | 
-                      ((self.z_all>=0.6) & (self.z_all<0.8) & (self.m_all<=-20.7)) | 
-                      ((self.z_all>=0.8) & (self.z_all<1.2) & (self.m_all<=-21.9)) |
-                      ((self.z_all>=1.2) & (self.z_all<1.8) & (self.m_all<=-22.5)) |
-                      ((self.z_all>=1.8) & (self.z_all<2.2) & (self.m_all<=-23.1)))
+        # if sample_id == 15: 
+        #     select = (((self.z_all>=0.4) & (self.z_all<0.6)) | 
+        #               ((self.z_all>=0.6) & (self.z_all<0.8) & (self.m_all<=-20.7)) | 
+        #               ((self.z_all>=0.8) & (self.z_all<1.2) & (self.m_all<=-21.9)) |
+        #               ((self.z_all>=1.2) & (self.z_all<1.8) & (self.m_all<=-22.5)) |
+        #               ((self.z_all>=1.8) & (self.z_all<2.2) & (self.m_all<=-23.1)))
             
         if sample_id == 8:
             # Restrict McGreer's samples to faint quasars to avoid
@@ -852,11 +852,15 @@ class lf:
         Pb = np.random.uniform(0.0, 1.0, size=self.nwalkers_with_bp)
 
         mean = self.bf.x[0]
-        Yb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
+        Yb = np.random.normal(loc=mean, scale=2, size=self.nwalkers_with_bp)
+
+        # # Hand picking alpha and beta for gamma distribution
+        # # to get mean around 10 and Variance around 20
+        # alpha, beta = 5, 2
 
         # Hand picking alpha and beta for gamma distribution
-        # to get mode around 10 and mean around 20
-        alpha, beta = 2, 10
+        # to get mean around 2 and Variance around 2
+        alpha, beta = 2, 1
         Vb = np.random.gamma(shape=alpha, scale=beta, size=self.nwalkers_with_bp)
 
         print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
@@ -955,12 +959,15 @@ class lf:
         logphi, M_star, alpha, beta = params[:4]
         Pb, Yb, Vb = params[4:]
 
+        if np.any(params[:4] < self.prior_min_values) or np.any(params[:4] > self.prior_max_values):
+            return -np.inf
+
         if self.prior_tag == 1:
             if Pb < 0 or Pb > 1:
                 return -np.inf
-            if Vb <= 0 or Vb > 1e5:
+            if Vb <= 0 or Vb > 10:
                 return -np.inf
-            if Yb < -1e5 or Yb > 1e5:
+            if Yb < -20 or Yb > 0:
                 return -np.inf
             
             if logphi < -20 or logphi > 0:
@@ -1027,17 +1034,27 @@ class lf:
 
         return lp + ll
 
-    def run_mcmc_with_bad_points(self, ncores, dirname='', prior_tag=1):
-        self.prior_tag = prior_tag
+    def run_mcmc_with_bad_points(self, ncores, dirname='', prior_tag=1, run_counter=0):
+        if run_counter == 3:
+            print("Skipping MCMC run with bad points for run_counter = 3")
+            return
+        if run_counter == 0:
+            self.prior_tag = prior_tag
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 15
-        self.mcmc_start = self.bf.x 
+            self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 25
+            self.mcmc_start = self.bf.x 
+            # If due to one bad point in the faint end, if the best fit has beta > 0,
+            # manually setting the guess for beta to be negative.
+            if self.bf.x[3] > 0:
+                self.mcmc_start[3] = -2.0
 
-        pos_with_bp = np.hstack((np.array([self.bf.x 
-                    + 1e-2*np.random.randn(self.bf.x.size) for i 
-                    in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
-        
-        self.get_qlf_data()
+            # self.mcmc_start = [-5.7, -21.3, -2.74, -1.0]
+
+            pos_with_bp = np.hstack((np.array([self.bf.x 
+                        + 1e-2*np.random.randn(self.bf.x.size) for i 
+                        in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
+            
+            self.get_qlf_data()
 
         # print("Len of self.data = ", len(self.data.logphi))
         # import sys
@@ -1056,26 +1073,48 @@ class lf:
             pool = Pool(ncores)
             print("Using parallel processing with {} cores...\n\n\n".format(ncores))
 
-        lnposterior_pickable = dill.loads(dill.dumps(self._lnposterior_with_bad_points))
-        self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
-                                            lnposterior_pickable, pool=pool)
-        print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
+        if run_counter == 0:
+            lnposterior_pickable = dill.loads(dill.dumps(self._lnposterior_with_bad_points))
+            self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
+                                                lnposterior_pickable, pool=pool)
+            print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
 
 
-        DISCARD = 10000
+            DISCARD = 1000
 
-        self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
-        self.sampler_with_bp.reset()
-        self.sampler_with_bp.run_mcmc(None, 30000, progress=True)
+            self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
+            self.sampler_with_bp.reset()
+            self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
+        
+        else:
+            print("Continuing MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
+            self.sampler_with_bp.run_mcmc(None, self.sampler_with_bp.get_chain().shape[0], progress=True)
 
         self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
 
 
-        # # Print parameter medians and 1-sigma intervals
-        # param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
-        # for i, name in enumerate(param_names):
-        #     vals = percentiles(self.samples_with_bp[:, i])
-        #     print(f"{name}: median = {vals[2]:.4f}, -1σ = {vals[0]:.4f}, +1σ = {vals[1]:.4f}")
+        # Print autocorrelation time and acceptance rate for the sampler with bad points
+
+        from emcee.autocorr import AutocorrError
+        try:
+            tau = self.sampler_with_bp.get_autocorr_time()
+        except AutocorrError as e:
+            print("Could not compute reliable autocorrelation time:", e)
+            tau = e.tau 
+            warning_msg = str(e)
+
+        print("Autocorrelation time (per parameter):", tau)
+        print("tau:", tau)
+        acceptance_fraction = self.sampler_with_bp.acceptance_fraction
+        print("Mean acceptance fraction:", np.mean(acceptance_fraction))
+        print("Acceptance fraction per walker:", acceptance_fraction)
+
+
+        # Print parameter medians and 1-sigma intervals
+        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        for i, name in enumerate(param_names):
+            vals = percentiles(self.samples_with_bp[:, i])
+            print(f"{name}: median = {vals[2]:.4f}, -1σ = {vals[0]:.4f}, +1σ = {vals[1]:.4f}")
 
         # # Plot all samples for each parameter as histograms and overlay the median
         # fig, axes = plt.subplots(1, self.ndim_with_bp, figsize=(18, 4))
@@ -1094,35 +1133,36 @@ class lf:
         # # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
         # plt.savefig(f"{dirname}1d_posterior_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
 
-        # # Plot MCMC corner plot for all parameters with bad points
+        # Plot MCMC corner plot for all parameters with bad points
 
-        # fig = corner.corner(
-        #     self.samples_with_bp,
-        #     labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$'],
-        #     show_titles=True,
-        #     title_kwargs={"fontsize": 12},
-        #     quantiles=[0.16, 0.5, 0.84],
-        # )
-        # fig.suptitle(f"Prior Model: {prior_tag}", fontsize=16)
-        # # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
-        # plt.savefig(f"{dirname}Corner_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
+        fig = self.corner_quantile(
+            self.samples_with_bp,
+            central_fraction=0.8,
+            labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$'],
+            show_titles=True,
+            title_kwargs={"fontsize": 12},
+            quantiles=[0.16, 0.5, 0.84],
+        )
+        fig.suptitle(f"Prior Model: {prior_tag}", fontsize=16)
+        # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}Corner_{np.mean(self.z)}_{self.prior_tag}_with_bad_points_{run_counter}.png")
 
-        # # Plot MCMC chains for all parameters with bad points
-        # fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
-        # param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
-        # for i, name in enumerate(param_names):
-        #     ax = axes[i]
-        #     for walker in range(self.nwalkers_with_bp):
-        #         ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
-        #     median = np.median(self.samples_with_bp[:, i])
-        #     ax.axhline(median, color='red', linestyle='--', label='Median')
-        #     ax.set_ylabel(name)
-        #     if i == 0:
-        #         ax.legend(fontsize=8)
-        # axes[-1].set_xlabel('step')
-        # plt.tight_layout()
-        # # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
-        # plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
+        # Plot MCMC chains for all parameters with bad points
+        fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
+        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        for i, name in enumerate(param_names):
+            ax = axes[i]
+            for walker in range(self.nwalkers_with_bp):
+                ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
+            median = np.median(self.samples_with_bp[:, i])
+            ax.axhline(median, color='red', linestyle='--', label='Median')
+            ax.set_ylabel(name)
+            if i == 0:
+                ax.legend(fontsize=8)
+        axes[-1].set_xlabel('step')
+        plt.tight_layout()
+        # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
 
 
         # # Plot MCMC chains for each parameter separately and save
@@ -1141,16 +1181,22 @@ class lf:
         #     plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_Individual_{i}_with_bad_points.png")
         #     plt.close(fig)
 
-        # # Print autocorrelation time and acceptance rate for the sampler with bad points
-        # try:
-        #     tau = self.sampler_with_bp.get_autocorr_time()
-        #     print("Autocorrelation time (per parameter):", tau)
-        # except Exception as e:
-        #     print("Could not compute autocorrelation time:", e)
 
-        # acceptance_fraction = self.sampler_with_bp.acceptance_fraction
-        # print("Mean acceptance fraction:", np.mean(acceptance_fraction))
-        # print("Acceptance fraction per walker:", acceptance_fraction)
+        if np.any(np.isnan(tau)):
+            print("Warning: Autocorrelation time contains NaN values. This may indicate convergence issues.")
+            with open(f"{dirname}nan_flagged", "w") as f:
+                f.write("Autocorrelation time contains NaN values. MCMC flagged as problematic.\n")
+            import sys
+            sys.exit("Exiting due to NaN in autocorrelation time.")
+
+        print("\n\n\n\ntau = ", tau)
+        print("self.sampler_with_bp.get_chain().shape[0] = ", self.sampler_with_bp.get_chain().shape[0])
+        print("tau < self.sampler_with_bp.get_chain().shape[0] / 50 = ", tau < self.sampler_with_bp.get_chain().shape[0] / 50)
+        print("tau < self.sampler_with_bp.get_chain().shape[0] / 50 = ", np.any(tau < self.sampler_with_bp.get_chain().shape[0] / 50))
+        if np.any(tau < self.sampler_with_bp.get_chain().shape[0] / 50):
+            print("Warning: Autocorrelation time contains NaN values. This may indicate convergence issues.")
+            print("Running the mcmc again and increasing the number of steps...")
+            return self.run_mcmc_with_bad_points(ncores, dirname, prior_tag, run_counter + 1)
 
 
         samples_4d = self.samples_with_bp[:, :4]
@@ -1178,6 +1224,16 @@ class lf:
         self.marginalise_and_find_MAP()
 
         return
+    
+
+    def corner_quantile(self, samples, central_fraction=0.8, **kwargs):
+        lower_q = (1 - central_fraction) / 2
+        upper_q = 1 - lower_q
+        bounds = [
+            (np.quantile(samples[:, i], lower_q), np.quantile(samples[:, i], upper_q))
+            for i in range(samples.shape[1])
+        ]
+        return corner.corner(samples, range=bounds, **kwargs)
     
     def marginalise_and_find_MAP(self):
         samples_4d = self.samples_with_bp[:, :4]
