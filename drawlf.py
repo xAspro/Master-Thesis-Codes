@@ -106,7 +106,7 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
 
     nmags = 100
     mags = np.linspace(*maglims, num=nmags)
-    print("\n\n\n\nmags= ", mags,'\n\n\n\n')
+    # print("\n\n\n\nmags= ", mags,'\n\n\n\n')
     # print('\n\n\n\nc= ', kwargs['c'], '\n\n\n\n')
     nsample = 1000
     rsample = lf.samples[np.random.randint(len(lf.samples), size=nsample)]
@@ -121,8 +121,8 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     up = np.percentile(phi, 15.87, axis=0)
     down = np.percentile(phi, 84.13, axis=0)
         
-    print("\n\n\n\nup= ", up)
-    print("\n\n\n\ndown= ", down)
+    # print("\n\n\n\nup= ", up)
+    # print("\n\n\n\ndown= ", down)
     f = ax.fill_between(mags, down, y2=up, color='#ffbf00', alpha=0.7)
     # f = ax.fill_between(mags, down, y2=up, color=kwargs['c'], alpha=0.7)
 
@@ -278,6 +278,8 @@ def get_lf(lf, sid, z_plot, special='None'):
     # with reported binned values.  
     m = lf.M1450[lf.sid==sid]
 
+    print("\n\n\n\n\t\tm= ", m, "\n\n\n\n")
+
     selmaps = [x for x in lf.maps if x.sid == sid]
 
     if sid==6:
@@ -375,6 +377,8 @@ def get_lf_all(lf, sid, z_plot, special='None'):
     # with reported binned values.  
 
     m = lf.M1450_all[lf.sid_all==sid]
+
+    print("\n\n\n\n\t\tm= ", m, "\n\n\n\n")
 
     selmaps = [x for x in lf.maps if x.sid == sid]
 
@@ -574,45 +578,45 @@ def find_bad_points(lf):
 
     epsilon = 1e-10  # To avoid division by zero or log(0) issues
 
-    func_params = lf.map_params()
-    Pb = np.median(lf.samples[:, 4])
-    Yb = np.median(lf.samples[:, 5])
-    safe_Vb = np.median(lf.samples[:, 6]) + epsilon
+    func_params = lf.map_params
+    Pb = np.median(lf.samples_with_bp[:, 4])
+    Yb = np.median(lf.samples_with_bp[:, 5])
+    safe_Vb = np.median(lf.samples_with_bp[:, 6]) + epsilon
 
     updated_data = []
-    for data in lf.data:
-        sid = data.sid
-        logphi = data.logphi
-        uperr = data.uperr
-        downerr = data.downerr
-        mag = data.mag
+    print("lf.data= ", lf.data)
 
-        # Despite using the symmetric errors for QLF estimation,
-        # we still use only the asymmetric errors for plotting.
+    data = lf.data
+    sid = data.sid
+    mag = data.mag
+    logphi = data.logphi
+    log_err = data.log_err
 
-        safe_sig2 = lf.data.log_err**2 + epsilon
+    # Despite using the symmetric errors for QLF estimation,
+    # we still use only the asymmetric errors for plotting.
 
-        log_p_fg = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip(((lf.data.logphi - lf.log10phi(func_params, lf.data.mag)))**2 / safe_sig2, -1e10, 1e10))
-        log_p_bg = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((lf.data.logphi - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
+    safe_sig2 = lf.data.log_err**2 + epsilon
 
-        log_numerator = np.log(Pb) + log_p_bg
-        log_denominator = np.logaddexp(np.log(1 - Pb) + log_p_fg, np.log(Pb) + log_p_bg)
+    log_p_fg = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip(((lf.data.logphi - lf.log10phi(func_params, lf.data.mag)))**2 / safe_sig2, -1e10, 1e10))
+    log_p_bg = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((lf.data.logphi - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
 
-        log_bad_prob = log_numerator - log_denominator
+    log_numerator = np.log(Pb) + log_p_bg
+    log_denominator = np.logaddexp(np.log(1 - Pb) + log_p_fg, np.log(Pb) + log_p_bg)
 
-        is_bad = log_bad_prob > -0.69  # This is equivalent to 50% in linear scale
+    log_bad_prob = log_numerator - log_denominator
 
-        if is_bad:
-            print(f"\nBad point found: sid={sid}, mag={mag}, logphi={logphi}, bad_prob={log_bad_prob}")
-            print("p_fg= ", log_p_fg)
-            print("p_bg= ", log_p_bg)
-            print("numerator= ", log_numerator)
-            print("denominator= ", log_denominator)
-            print("Pb= ", Pb)
+    is_bad = log_bad_prob > -0.69  # This is equivalent to 50% in linear scale
 
-        updated_data = data._replace(is_bad=is_bad)
+    for i in range(len(sid)):
+        if is_bad[i]:
+            print(f"\nBad point found: sid={sid[i]}, mag={mag[i]}, logphi={logphi[i]}, bad_prob={log_bad_prob[i]}")
+            print("p_fg= ", log_p_fg[i])
+            print("p_bg= ", log_p_bg[i])
+            print("numerator= ", log_numerator[i])
+            print("denominator= ", log_denominator[i])
+            print("Pb= ", Pb[i])
 
-    lf.data = updated_data
+    lf.data = lf.data._replace(is_bad=is_bad)
 
     return
 
@@ -867,13 +871,14 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         # logphi = logphi[mask]
         # and so on.
         # If I do this, I need to do the same for rejected bins as well.
-        print("mags= ", mags)
-        print("left= ", left)
-        print("right= ", right)
+
+        # print("mags= ", mags)
+        # print("left= ", left)
+        # print("right= ", right)
         
-        print("logphi= ", logphi)
-        print("uperr= ", uperr)
-        print("downerr= ", downerr)
+        # print("logphi= ", logphi)
+        # print("uperr= ", uperr)
+        # print("downerr= ", downerr)
         ax.scatter(mags, logphi, c=cs[i], edgecolor='None', zorder=4, s=20, label=dsl(i))
         ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
                     xerr=np.vstack((left, right)), 
@@ -891,7 +896,20 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         # print( mags_all[logphi_all!=logphi])
         # print( logphi_all[logphi_all!=logphi])
 
-        select = (logphi_all!=logphi)
+        select = (logphi_all==logphi)
+        print("select= ", select)
+        select = (mags_all==mags)
+        print("select= ", select)
+        select = (left_all==left)
+        print("select= ", select)
+        select = (right_all==right)
+        print("select= ", select)
+        select = (uperr_all==uperr)
+        print("select= ", select)
+        select = (downerr_all==downerr)
+        print("select= ", select)
+        import sys
+        sys.exit(0)
         mags_all = mags_all[select]
         left_all = left_all[select]
         right_all = right_all[select]
@@ -923,6 +941,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         for sid in sids_unique:
             i = int(sid)
             mask2 = (lf.data.sid == i) & mask
+            print("mask2= ", mask2)
             mags, left, right, logphi, uperr, downerr = lf.data.mag[mask2], \
                 lf.data.left[mask2], lf.data.right[mask2], \
                 lf.data.logphi[mask2], lf.data.uperr[mask2], \
@@ -977,6 +996,29 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     -------
     - None
     """
+
+    # Print if all arrays are the same; if not, print which ones differ
+    arrays = [
+        ('logphi_all', getattr(lf, 'logphi_all', None), getattr(lf, 'logphi', None)),
+        ('mags_all', getattr(lf, 'mags_all', None), getattr(lf, 'mags', None)),
+        ('left_all', getattr(lf, 'left_all', None), getattr(lf, 'left', None)),
+        ('right_all', getattr(lf, 'right_all', None), getattr(lf, 'right', None)),
+        ('uperr_all', getattr(lf, 'uperr_all', None), getattr(lf, 'uperr', None)),
+        ('downerr_all', getattr(lf, 'downerr_all', None), getattr(lf, 'downerr', None)),
+    ]
+
+    all_same = all(np.array_equal(a, b) for _, a, b in arrays if a is not None and b is not None)
+    if all_same:
+        print("All *_all arrays are the same as their counterparts.")
+    else:
+        for name, arr_all, arr in arrays:
+            if arr_all is not None and arr is not None:
+                if np.array_equal(arr_all, arr):
+                    print(f"{name} is the same as its counterpart.")
+                else:
+                    print(f"{name} differs from its counterpart.")
+                    print(f"{name}: {arr_all}")
+                    print(f"{name.replace('_all','')}: {arr}")
 
     z_plot = lf.z.mean() 
     
