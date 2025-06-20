@@ -14,6 +14,23 @@ import datetime
 import os
 
 
+#NOTES!!!!!!!
+
+# - McGreer SDSS DR7 and S82 data were partially removed from the QLF estimate because it overlaps with the Yang et al. 2016 data.
+#   Only the faint end McGreer’s DR7 sample (M1450 > –26.73) was kept, explicitly to avoid any 
+#   double‑counting of the 99 Yang et al. quasars (all of which are M1450 <= –26.73).
+# - Also McGreer’s S82 sample was partially removed because it overlaps with the Yang et al. 2016 data.
+#   Only the faint end McGreer’s S82 sample (M1450 > –26.73) was kept, explicitly to avoid any
+#   double‑counting of the 99 Yang et al. quasars (all of which are M1450 <= –26.73).  
+
+# - Ross et al. 2013 sample is not used in the QLF estimate.
+# - Low‑redshift (z < 0.6) SDSS DR7 & 2SLAQ samples were not used in the QLF estimate.
+#   They had high contamination from low‑redshift galaxies and stars.
+#     ~ Maybe Richards et al. 2006 (where z < 0.6 are removed) - SDSS
+#     ~ Maybe Croom et al. 2009 (where z < 0.6 are removed) - 2dF
+
+# Need to look at sid = 8, (1, 13, 15)
+
 
 start_time = time.time()
 curr_date_time = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")+"/"
@@ -131,13 +148,16 @@ method = 'Nelder-Mead'
 # Just for checking reduced zls
 # zls = [(0.1,0.4), (0.4, 0.6), (0.6, 0.8)]
 
-zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
-       (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),
-       (2.4, 2.5), (2.5, 2.6), (2.6, 2.7), (2.7, 2.8), (2.8, 2.9),
-       (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
-       (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5)
-    ]
+# zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
+#        (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),
+#        (2.4, 2.5), (2.5, 2.6), (2.6, 2.7), (2.7, 2.8), (2.8, 2.9),
+#        (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
+#        (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5)
+#     ]
 
+# zls =[(0.1, 0.4)]
+
+zls = [(2.2, 2.4)]
 
 def main(cores):
 

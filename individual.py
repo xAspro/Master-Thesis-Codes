@@ -116,25 +116,25 @@ def getqlums(lumfile, zlims=None):
 
     select = None
 
-    if sid == 13: 
-        select = ((((z_all>=0.0) & (z_all<0.2) & (mag_all<=-20.7)) |
-                   ((z_all>=0.2) & (z_all<0.4) & (mag_all<=-20.3)) |
-                   ((z_all>=0.4) & (z_all<0.6) & (mag_all<=-21.3)) |
-                   ((z_all>=0.6) & (z_all<0.8) & (mag_all<=-23.1)) | 
-                   ((z_all>=0.8) & (z_all<1.0) & (mag_all<=-23.7)) |
-                   ((z_all>=1.0) & (z_all<1.2)) |
-                   ((z_all>=1.2) & (z_all<1.4) & (mag_all<=-24.3)) |
-                   ((z_all>=1.4) & (z_all<1.6)) |
-                   ((z_all>=1.6) & (z_all<1.8) & (mag_all<=-24.9)) |
-                   ((z_all>=1.8) & (z_all<2.2))) |
-                  ((z_all>=3.5) & (z_all<4.7) & (mag_all<=-26.1)))
+    # if sid == 13: 
+    #     select = ((((z_all>=0.0) & (z_all<0.2) & (mag_all<=-20.7)) |
+    #                ((z_all>=0.2) & (z_all<0.4) & (mag_all<=-20.3)) |
+    #                ((z_all>=0.4) & (z_all<0.6) & (mag_all<=-21.3)) |
+    #                ((z_all>=0.6) & (z_all<0.8) & (mag_all<=-23.1)) | 
+    #                ((z_all>=0.8) & (z_all<1.0) & (mag_all<=-23.7)) |
+    #                ((z_all>=1.0) & (z_all<1.2)) |
+    #                ((z_all>=1.2) & (z_all<1.4) & (mag_all<=-24.3)) |
+    #                ((z_all>=1.4) & (z_all<1.6)) |
+    #                ((z_all>=1.6) & (z_all<1.8) & (mag_all<=-24.9)) |
+    #                ((z_all>=1.8) & (z_all<2.2))) |
+    #               ((z_all>=3.5) & (z_all<4.7) & (mag_all<=-26.1)))
         
-    if sid == 15: 
-        select = (((z_all>=0.4) & (z_all<0.6)) |
-                  ((z_all>=0.6) & (z_all<0.8) & (mag_all<=-20.7)) | 
-                  ((z_all>=0.8) & (z_all<1.2) & (mag_all<=-21.9)) |
-                  ((z_all>=1.2) & (z_all<1.8) & (mag_all<=-22.5)) |
-                  ((z_all>=1.8) & (z_all<2.2) & (mag_all<=-23.1)))
+    # if sid == 15: 
+    #     select = (((z_all>=0.4) & (z_all<0.6)) |
+    #               ((z_all>=0.6) & (z_all<0.8) & (mag_all<=-20.7)) | 
+    #               ((z_all>=0.8) & (z_all<1.2) & (mag_all<=-21.9)) |
+    #               ((z_all>=1.2) & (z_all<1.8) & (mag_all<=-22.5)) |
+    #               ((z_all>=1.8) & (z_all<2.2) & (mag_all<=-23.1)))
 
     if sid == 8:
         select = (mag_all > -26.73)
@@ -850,35 +850,14 @@ class lf:
     
     def find_Pb_Yb_Vb(self):
         Pb = np.random.uniform(0.0, 1.0, size=self.nwalkers_with_bp)
-        mean = self.bf.x[0]
-        print("mean = ", mean)
-        # log10_Yb = np.random.normal(loc=mean, scale=1, size=self.nwalkers_with_bp)
-        # Yb = 10.0**log10_Yb
-        # log10_Vb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
-        # Vb = 10.0**log10_Vb
 
+        mean = self.bf.x[0]
         Yb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
 
         # Hand picking alpha and beta for gamma distribution
         # to get mode around 10 and mean around 20
         alpha, beta = 2, 10
         Vb = np.random.gamma(shape=alpha, scale=beta, size=self.nwalkers_with_bp)
-
-        # print("\nStatistics of Yb and Vb for testing purposes")
-        # print("Yb mean = ", np.mean(Yb), "\tYb std = ", np.std(Yb))
-        # print("Vb mean = ", np.mean(Vb), "\tVb std = ", np.std(Vb))
-        # print("Pb mean = ", np.mean(Pb), "\tPb std = ", np.std(Pb))
-        # print("\n\n")
-        # print("log10_Yb mean = ", np.mean(log10_Yb),
-        #       "\tlog10_Yb std = ", np.std(log10_Yb))
-        # print("log10_Vb mean = ", np.mean(log10_Vb),
-        #       "\tlog10_Vb std = ", np.std(log10_Vb))
-
-        # print("Mean = ", mean),
-        
-        # import sys
-
-        # sys.exit("\nQuiting for testing purposes\n")
 
         print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
 
@@ -904,12 +883,7 @@ class lf:
             selmaps = [x for x in self.maps if x.sid == sid]
             
             Veff = np.array([drawlf.totBinVol(self, mi, mbins, selmaps) for mi in m])
-            print("Veff shape = ", Veff.shape)
             mask = Veff > 0
-
-            print("mask shape = ", mask.shape)
-            print("m shape = ", m.shape)
-            print("Veff shape = ", Veff.shape)
 
             Veff = Veff[mask]
             m = m[mask]
@@ -962,6 +936,8 @@ class lf:
         all_mag = np.concatenate([d.mag for d in data])
         all_mag_err = np.concatenate([d.mag_err for d in data])
 
+        print("\n\nlen(all_sid) = ", len(all_sid))
+
         self.data = LFData(
             sid=all_sid,
             logphi=all_logphi,
@@ -982,9 +958,9 @@ class lf:
         if self.prior_tag == 1:
             if Pb < 0 or Pb > 1:
                 return -np.inf
-            if Vb <= 0 or Vb > 1e10:
+            if Vb <= 0 or Vb > 1e5:
                 return -np.inf
-            if Yb < -1e10 or Yb > 1e10:
+            if Yb < -1e5 or Yb > 1e5:
                 return -np.inf
             
             if logphi < -20 or logphi > 0:
@@ -1063,6 +1039,10 @@ class lf:
         
         self.get_qlf_data()
 
+        # print("Len of self.data = ", len(self.data.logphi))
+        # import sys
+        # sys.exit()
+
         print("\n\n\tNumber of cores available for MCMC: ", ncores)
 
         # print("len(self.sid) = ", len(self.sid))
@@ -1071,9 +1051,10 @@ class lf:
 
         if ncores <= 1:
             pool = None
+            print("Not using parallel processing...\n\n\n")
         else:
             pool = Pool(ncores)
-        print("Using multiprocessing pool with {} cores...\n\n\n".format(ncores))
+            print("Using parallel processing with {} cores...\n\n\n".format(ncores))
 
         lnposterior_pickable = dill.loads(dill.dumps(self._lnposterior_with_bad_points))
         self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
@@ -1090,86 +1071,86 @@ class lf:
         self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
 
 
-        # Print parameter medians and 1-sigma intervals
-        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
-        for i, name in enumerate(param_names):
-            vals = percentiles(self.samples_with_bp[:, i])
-            print(f"{name}: median = {vals[2]:.4f}, -1σ = {vals[0]:.4f}, +1σ = {vals[1]:.4f}")
+        # # Print parameter medians and 1-sigma intervals
+        # param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        # for i, name in enumerate(param_names):
+        #     vals = percentiles(self.samples_with_bp[:, i])
+        #     print(f"{name}: median = {vals[2]:.4f}, -1σ = {vals[0]:.4f}, +1σ = {vals[1]:.4f}")
 
-        # Plot all samples for each parameter as histograms and overlay the median
-        fig, axes = plt.subplots(1, self.ndim_with_bp, figsize=(18, 4))
-        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        # # Plot all samples for each parameter as histograms and overlay the median
+        # fig, axes = plt.subplots(1, self.ndim_with_bp, figsize=(18, 4))
+        # param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
 
-        for i, name in enumerate(param_names):
-            ax = axes[i]
-            data = self.samples_with_bp[:, i]
-            ax.hist(data, bins=30, color='skyblue', alpha=0.7, label='Samples')
-            median = np.median(data)
-            ax.axvline(median, color='red', linestyle='--', label='Median')
-            ax.set_title(name)
-            ax.legend(fontsize=8)
+        # for i, name in enumerate(param_names):
+        #     ax = axes[i]
+        #     data = self.samples_with_bp[:, i]
+        #     ax.hist(data, bins=30, color='skyblue', alpha=0.7, label='Samples')
+        #     median = np.median(data)
+        #     ax.axvline(median, color='red', linestyle='--', label='Median')
+        #     ax.set_title(name)
+        #     ax.legend(fontsize=8)
 
-        plt.tight_layout()
-        # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
-        plt.savefig(f"{dirname}1d_posterior_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
+        # plt.tight_layout()
+        # # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
+        # plt.savefig(f"{dirname}1d_posterior_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
 
-        # Plot MCMC corner plot for all parameters with bad points
+        # # Plot MCMC corner plot for all parameters with bad points
 
-        fig = corner.corner(
-            self.samples_with_bp,
-            labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$'],
-            show_titles=True,
-            title_kwargs={"fontsize": 12},
-            quantiles=[0.16, 0.5, 0.84],
-        )
-        fig.suptitle(f"Prior Model: {prior_tag}", fontsize=16)
-        # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
-        plt.savefig(f"{dirname}Corner_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
+        # fig = corner.corner(
+        #     self.samples_with_bp,
+        #     labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$'],
+        #     show_titles=True,
+        #     title_kwargs={"fontsize": 12},
+        #     quantiles=[0.16, 0.5, 0.84],
+        # )
+        # fig.suptitle(f"Prior Model: {prior_tag}", fontsize=16)
+        # # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
+        # plt.savefig(f"{dirname}Corner_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
 
-        # Plot MCMC chains for all parameters with bad points
-        fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
-        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
-        for i, name in enumerate(param_names):
-            ax = axes[i]
-            for walker in range(self.nwalkers_with_bp):
-                ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
-            median = np.median(self.samples_with_bp[:, i])
-            ax.axhline(median, color='red', linestyle='--', label='Median')
-            ax.set_ylabel(name)
-            if i == 0:
-                ax.legend(fontsize=8)
-        axes[-1].set_xlabel('step')
-        plt.tight_layout()
-        # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
-        plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
+        # # Plot MCMC chains for all parameters with bad points
+        # fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
+        # param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        # for i, name in enumerate(param_names):
+        #     ax = axes[i]
+        #     for walker in range(self.nwalkers_with_bp):
+        #         ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
+        #     median = np.median(self.samples_with_bp[:, i])
+        #     ax.axhline(median, color='red', linestyle='--', label='Median')
+        #     ax.set_ylabel(name)
+        #     if i == 0:
+        #         ax.legend(fontsize=8)
+        # axes[-1].set_xlabel('step')
+        # plt.tight_layout()
+        # # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
+        # plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
 
 
-        # Plot MCMC chains for each parameter separately and save
-        param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
-        for i, name in enumerate(param_names):
-            fig, ax = plt.subplots(figsize=(12, 3))
-            for walker in range(self.nwalkers_with_bp):
-                ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
-            median = np.median(self.samples_with_bp[:, i])
-            ax.axhline(median, color='red', linestyle='--', label='Median')
-            ax.set_ylabel(name)
-            ax.set_xlabel('step')
-            ax.legend(fontsize=8)
-            plt.tight_layout()
-            # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
-            plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_Individual_{i}_with_bad_points.png")
-            plt.close(fig)
+        # # Plot MCMC chains for each parameter separately and save
+        # param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        # for i, name in enumerate(param_names):
+        #     fig, ax = plt.subplots(figsize=(12, 3))
+        #     for walker in range(self.nwalkers_with_bp):
+        #         ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
+        #     median = np.median(self.samples_with_bp[:, i])
+        #     ax.axhline(median, color='red', linestyle='--', label='Median')
+        #     ax.set_ylabel(name)
+        #     ax.set_xlabel('step')
+        #     ax.legend(fontsize=8)
+        #     plt.tight_layout()
+        #     # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
+        #     plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_Individual_{i}_with_bad_points.png")
+        #     plt.close(fig)
 
-        # Print autocorrelation time and acceptance rate for the sampler with bad points
-        try:
-            tau = self.sampler_with_bp.get_autocorr_time()
-            print("Autocorrelation time (per parameter):", tau)
-        except Exception as e:
-            print("Could not compute autocorrelation time:", e)
+        # # Print autocorrelation time and acceptance rate for the sampler with bad points
+        # try:
+        #     tau = self.sampler_with_bp.get_autocorr_time()
+        #     print("Autocorrelation time (per parameter):", tau)
+        # except Exception as e:
+        #     print("Could not compute autocorrelation time:", e)
 
-        acceptance_fraction = self.sampler_with_bp.acceptance_fraction
-        print("Mean acceptance fraction:", np.mean(acceptance_fraction))
-        print("Acceptance fraction per walker:", acceptance_fraction)
+        # acceptance_fraction = self.sampler_with_bp.acceptance_fraction
+        # print("Mean acceptance fraction:", np.mean(acceptance_fraction))
+        # print("Acceptance fraction per walker:", acceptance_fraction)
 
 
         samples_4d = self.samples_with_bp[:, :4]

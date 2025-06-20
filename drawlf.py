@@ -278,7 +278,9 @@ def get_lf(lf, sid, z_plot, special='None'):
     # with reported binned values.  
     m = lf.M1450[lf.sid==sid]
 
-    print("\n\n\n\n\t\tm= ", m, "\n\n\n\n")
+    m = lf.M1450_all[lf.sid_all==sid] 
+
+    # print("\n\n\n\n\t\tm= ", m, "\n\n\n\n")
 
     selmaps = [x for x in lf.maps if x.sid == sid]
 
@@ -300,6 +302,8 @@ def get_lf(lf, sid, z_plot, special='None'):
         bins = np.arange(-30.9, -13.3, 0.6)
 
     v1 = np.array([totBinVol(lf, x, bins, selmaps) for x in m])
+
+    # v1 = np.array([totBinVol_all(lf, x, bins, selmaps) for x in m])
 
     v1_nonzero = v1[np.where(v1>0.0)]
     m = m[np.where(v1>0.0)]
@@ -378,7 +382,7 @@ def get_lf_all(lf, sid, z_plot, special='None'):
 
     m = lf.M1450_all[lf.sid_all==sid]
 
-    print("\n\n\n\n\t\tm= ", m, "\n\n\n\n")
+    # print("\n\n\n\n\t\tm= ", m, "\n\n\n\n")
 
     selmaps = [x for x in lf.maps if x.sid == sid]
 
@@ -540,7 +544,7 @@ def plot_giallongo_z4p25(lf, ax, mags):
 
 def savedata(data):
     # print("\n\nIn drawlf.py savedata\n")
-    # print("data= ", data)
+    print("\n\n\n\ndata= ", data)
     zlims = data[0]
     if zlims == (0.1, 0.4):
     # if zlims == (5.5, 6.5):
@@ -552,22 +556,13 @@ def savedata(data):
 
 
     with open('datapoints.dat', 'a') as f:
-        # f.write('{:6.2f} {:6.2f}   '.format(zlims[0], zlims[1]))
-        # for cnt in range(1, len(data)):
-        #     for d in data[cnt]:
-        #         if isinstance(d, str):
-        #             if cnt == 1:
-        #                 f.write('{:20s}'.format(d))
-        #             else:
-        #                 f.write('{:25s}'.format(d))
-        #             continue
-        #         print()
-        #         print("d= ", d)
-        #         f.write('{:7.2f} {:7.2f} {:7.2f} {:7.2f} {:7.2f} {:7.2f}\n{:20s}'.format(d[0], d[1], d[2], d[3], d[4], d[5],''))
         for cnt in range(1, len(data)):
+            print("cnt= ", cnt)
+            print("data[cnt]= ", data[cnt])
             for d in data[cnt]:
                 if isinstance(d, str):
                     continue
+                print("d= ", d)
                 f.write('{:6.2f} {:6.2f}   {:25s} {:7d}  {:7.3f}   {:<7.3f}   {:7.3f}  {:7.3f}  {:7.3f}  {:7.3f}\n'.format(zlims[0], zlims[1], data[cnt][0], d[0], d[1], d[2], d[3], d[4], d[5], d[6]))
 
 
@@ -606,10 +601,19 @@ def find_bad_points(lf):
     log_bad_prob = log_numerator - log_denominator
 
     is_bad = log_bad_prob > -0.69  # This is equivalent to 50% in linear scale
+    print("log_bad_prob= ", log_bad_prob, "\texp(log_bad_prob)= ", np.exp(log_bad_prob))
 
     for i in range(len(sid)):
         if is_bad[i]:
             print(f"\nBad point found: sid={sid[i]}, mag={mag[i]}, logphi={logphi[i]}, bad_prob={log_bad_prob[i]}")
+            print("p_fg= ", log_p_fg[i])
+            print("p_bg= ", log_p_bg[i])
+            print("numerator= ", log_numerator[i])
+            print("denominator= ", log_denominator[i])
+            print("Pb= ", Pb)
+
+        else:
+            print(f"\n\nGood point: sid={sid[i]}, mag={mag[i]}, logphi={logphi[i]}, bad_prob={log_bad_prob[i]}")
             print("p_fg= ", log_p_fg[i])
             print("p_bg= ", log_p_bg[i])
             print("numerator= ", log_numerator[i])
@@ -828,7 +832,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
                 return x.label
         return
 
-    sids = np.unique(lf.sid)
+    sids = [x.sid for x in lf.maps]
+    sids = np.unique(sids)
     
     bad_data_set = False
     if bad_data_set:
@@ -859,7 +864,17 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         data.append([])
         data[cnt].append(dsl(i))
         for j in range(len(mags[mask])):
+            # print(f"\nj = {j} out of {len(mags[mask])}")
+            # print("mags[mask][j]= ", mags[mask][j])
+            # print("logphi[mask][j]= ", logphi[mask][j])
+            # print("right[mask][j]= ", right[mask][j])
+            # print("left[mask][j]= ", left[mask][j])
+            # print("uperr[mask][j]= ", uperr[mask][j])
+            # print("downerr[mask][j]= ", downerr[mask][j])
             data[cnt].append([1, mags[mask][j], logphi[mask][j], right[mask][j], left[mask][j], uperr[mask][j], downerr[mask][j]])
+
+        # print("data[cnt]= ", data[cnt])
+        # print("data= ", data)
 
 
         # For some reason, the omitted data are not actually omitted. 
@@ -896,8 +911,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         # print( mags_all[logphi_all!=logphi])
         # print( logphi_all[logphi_all!=logphi])
 
-        # select = (logphi_all==logphi)
-        # print("select= ", select)
+        select = (logphi_all!=logphi)
+        print("select= ", select)
         # select = (mags_all==mags)
         # print("select= ", select)
         # select = (left_all==left)
@@ -910,16 +925,22 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         # print("select= ", select)
         # import sys
         # sys.exit(0)
-        # mags_all = mags_all[select]
-        # left_all = left_all[select]
-        # right_all = right_all[select]
-        # logphi_all = logphi_all[select]
-        # uperr_all  = uperr_all[select]
-        # downerr_all = downerr_all[select]
+        mags_all = mags_all[select]
+        left_all = left_all[select]
+        right_all = right_all[select]
+        logphi_all = logphi_all[select]
+        uperr_all  = uperr_all[select]
+        downerr_all = downerr_all[select]
 
         mask = logphi_all > -100.0
 
         for j in range(len(mags_all[mask])):
+            print("mags_all[mask][j]= ", mags_all[mask][j])
+            print("logphi_all[mask][j]= ", logphi_all[mask][j])
+            print("right_all[mask][j]= ", right_all[mask][j])
+            print("left_all[mask][j]= ", left_all[mask][j])
+            print("uperr_all[mask][j]= ", uperr_all[mask][j])
+            print("downerr_all[mask][j]= ", downerr_all[mask][j])
             data[cnt].append([0, mags_all[mask][j], logphi_all[mask][j], right_all[mask][j], left_all[mask][j], uperr_all[mask][j], downerr_all[mask][j]])
 
         if mags_all.any(): 
@@ -931,9 +952,14 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
                        zorder=4, s=16, label=dsl(i)+' (rejected bin)')
             
     if includes_bad_points:
+        print("\n\n\n\n\n\n\t\tIncluding bad points in the plot")
+        print("len(lf.data.sid)= ", len(lf.data.sid))
+        print("lf.data= ", lf.data)
+        print("lf.data.is_bad= ", lf.data.is_bad)
         find_bad_points(lf)
-        # print("lf.data= ", lf.data)
-        # print("lf.data.is_bad= ", lf.data.is_bad)
+        print("len(lf.data.sid)= ", len(lf.data.sid))
+        print("lf.data= ", lf.data)
+        print("lf.data.is_bad= ", lf.data.is_bad)
         mask = lf.data.is_bad
         sids_unique = np.unique(lf.data.sid[mask])
         print("sids_unique= ", sids_unique)
@@ -946,14 +972,14 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
                 lf.data.logphi[mask2], lf.data.uperr[mask2], lf.data.downerr[mask2]
             
             
-            print( mags[logphi>-100.0])
-            print( logphi[logphi>-100.0])
+            print(mags[logphi>-100.0])
+            print(logphi[logphi>-100.0])
             ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
                         xerr=mag_err, 
                         yerr=np.vstack((uperr, downerr)),
                         marker='x', markersize=6,
                         fmt='None', zorder=5)
-            ax.scatter(mags, logphi, c='#ffffff', marker='x', edgecolor=cs[i], zorder=5, s=16, label=dsl(i)+' erroneous bin')
+            ax.scatter(mags, logphi, c="#ff0000", edgecolor=cs[i], zorder=5, s=16, label=dsl(i)+' erroneous bin')
 
 
     savedata(data)
@@ -995,7 +1021,7 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     -------
     - None
     """
-    
+
 
     z_plot = lf.z.mean() 
     
