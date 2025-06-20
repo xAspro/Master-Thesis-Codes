@@ -20,6 +20,9 @@ cosmo = {'omega_M_0':0.3,
 from numpy.polynomial import Chebyshev as T
 from numpy.polynomial.polynomial import polyval
 
+from pathos.multiprocessing import ProcessingPool as Pool
+import dill
+
 def getselfn(selfile):
     """
     Reads selection map.
@@ -453,34 +456,15 @@ class lf:
                         at the given data points.
         """
 
-        # print("self: ", self)
-        # print("\ntheta: ", theta,"\n")
-
         params = self.getparams(theta)
-        # print("\nparams: ", params,"\n")
 
         log10phi_star = self.atz(z, params[0])
-        # print("\nlog10phi_star: ", log10phi_star,"\n")
-        # print('\nlen(log10phi_star): ', len(log10phi_star),'\n')
         M_star = self.atz(z, params[1])
-        # print("\nM_star: ", M_star,"\n")
-        # print('\nlen(M_star): ', len(M_star),'\n')
         alpha = self.atz(z, params[2])
-        # print("\nalpha: ", alpha,"\n")
-        # print('\nlen(alpha): ', len(alpha),'\n')
-        # print('\nz: ', z,'\n')
-        # print('\nlen(z): ', len(z),'\n')
-        # print('\nparams[3]: ', params[3],'\n')
-        # print('\nlen(params[3]): ', len(params[3]),'\n')
-        # beta = self.atz(z, params[3])
         beta = self.atz_beta(z, params[3])
-        # beta = self.atz_beta2(z, params[3])
-        # print("\nbeta: ", beta,"\n")
-        # print('\nlen(beta): ', len(beta),'\n')
-        
         phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(mag-M_star)) +
                                      10.0**(0.4*(beta+1)*(mag-M_star)))
-        # print("\nphi: ", phi,"\n")
+
         return np.log10(phi)
 
     def lfnorm(self, theta):
@@ -518,13 +502,6 @@ class lf:
 
         logphi = self.log10phi(theta, self.M1450, self.z) # Mpc^-3 mag^-1
         logphi /= np.log10(np.e) # Convert to base e 
-        # print('\n\nlogphi: ', logphi)
-        # print('size of logphi: ', logphi.size)
-        # print('shape of logphi: ', logphi.shape)
-
-        # print('\n\nsize of self.z: ', self.z.size)
-        # print('shape of self.z: ', self.z.shape)
-
 
         return -2.0*logphi.sum() + 2.0*self.lfnorm(theta)
 
@@ -616,6 +593,152 @@ class lf:
         self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
 
         return
+
+    def find_Pb_Yb_Vb(self):
+        Pb = np.random.uniform(0.0, 1.0, size=self.nwalkers_with_bp)
+        mean = self.bf.x[0]
+        print("mean = ", mean)
+        # log10_Yb = np.random.normal(loc=mean, scale=1, size=self.nwalkers_with_bp)
+        # Yb = 10.0**log10_Yb
+        # log10_Vb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
+        # Vb = 10.0**log10_Vb
+
+        Yb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
+
+        # Hand picking alpha and beta for gamma distribution
+        # to get mode around 10 and mean around 20
+        alpha, beta = 2, 10
+        Vb = np.random.gamma(shape=alpha, scale=beta, size=self.nwalkers_with_bp)
+
+        # print("\nStatistics of Yb and Vb for testing purposes")
+        # print("Yb mean = ", np.mean(Yb), "\tYb std = ", np.std(Yb))
+        # print("Vb mean = ", np.mean(Vb), "\tVb std = ", np.std(Vb))
+        # print("Pb mean = ", np.mean(Pb), "\tPb std = ", np.std(Pb))
+        # print("\n\n")
+        # print("log10_Yb mean = ", np.mean(log10_Yb),
+        #       "\tlog10_Yb std = ", np.std(log10_Yb))
+        # print("log10_Vb mean = ", np.mean(log10_Vb),
+        #       "\tlog10_Vb std = ", np.std(log10_Vb))
+
+        # print("Mean = ", mean),
+        
+        # import sys
+
+        # sys.exit("\nQuiting for testing purposes\n")
+
+        print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
+
+        return np.array([Pb, Yb, Vb]).T
+    
+    def _lnprior_with_bad_points(self, params):
+        logphi, M_star, alpha, beta = params[:4]
+        Pb, Yb, Vb = params[4:]
+
+        if self.prior_tag == 1:
+            if Pb < 0 or Pb > 1:
+                return -np.inf
+            if Vb <= 0 or Vb > 1e10:
+                return -np.inf
+            if Yb < -1e10 or Yb > 1e10:
+                return -np.inf
+            
+            if logphi < -20 or logphi > 0:
+                return -np.inf
+            
+            if M_star < -50 or M_star > 0:
+                return -np.inf
+            
+            if alpha < -7 or alpha > beta:
+                return -np.inf
+            
+            if beta > 0:
+                return -np.inf
+            # print("Returning 0 for prior tag 1")
+            return 0
+        
+        elif self.prior_tag == 2:
+            if Pb < 0 or Pb > 1:
+                return -np.inf
+            if Vb <= 0:
+                return -np.inf
+            
+            if logphi < -20 or logphi > 0:
+                return -np.inf
+            
+            if M_star < -50 or M_star > 0:
+                return -np.inf
+            
+            if alpha < -7 or alpha > beta:
+                return -np.inf
+            
+            if beta > 0:
+                return -np.inf
+            # print("Returning 0 for prior tag 2")
+            return - np.log(1 + Pb) - np.log(1 + Vb) 
+        
+    
+    def _lnlikelihood_with_bad_points(self, params):
+        func_params = params[:4]
+        Pb, Yb, Vb = params[4:]
+
+        epsilon = 1e-10  # Small value to prevent division by zero
+        safe_sig2 = self.data.log_err**2 + epsilon
+        safe_Vb = Vb + epsilon
+
+        logforeground_model = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip(((self.data.logphi - self.log10phi(func_params, self.data.mag)))**2 / safe_sig2, -1e10, 1e10))
+        logbackground_model = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((self.data.logphi - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
+
+        a = np.log(1 - Pb) + logforeground_model
+        b = np.log(Pb) + logbackground_model
+
+        lnL = np.sum(np.logaddexp(a, b))
+        
+        return lnL
+    
+    def _lnposterior_with_bad_points(self, params):
+        lp = self._lnprior_with_bad_points(params)
+        if not np.isfinite(lp):
+            return -np.inf
+
+        ll = self._lnlikelihood_with_bad_points(params)
+        if not np.isfinite(ll):
+            return -np.inf
+
+        return lp + ll
+    
+    def run_mcmc_with_bad_points(self, ncores):
+        self.prior_tag = 1
+        self.function_tag = 1
+
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 100
+        self.mcmc_start = self.bf.x 
+        
+        pos_with_bp = np.hstack((np.array([self.bf.x 
+                    + 1e-2*np.random.randn(self.bf.x.size) for i 
+                    in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
+        
+        if ncores <= 1:
+            pool = None
+        else:
+            pool = Pool(ncores)
+        print("Using multiprocessing pool with {} cores...\n\n\n".format(ncores))
+
+        lnposterior_pickable = dill.loads(dill.dumps(self._lnposterior_with_bad_points))
+        self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
+                                            lnposterior_pickable, pool=pool)
+        print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
+
+
+        DISCARD = 1000
+
+        self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
+        self.sampler_with_bp.reset()
+        self.sampler_with_bp.run_mcmc(None, 3000, progress=True)
+
+        self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
+
+        
+
 
     def corner_plot(self, labels=None, dirname=''):
         print("In composite.py class-lf corner_plot")

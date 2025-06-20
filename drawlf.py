@@ -614,7 +614,7 @@ def find_bad_points(lf):
             print("p_bg= ", log_p_bg[i])
             print("numerator= ", log_numerator[i])
             print("denominator= ", log_denominator[i])
-            print("Pb= ", Pb[i])
+            print("Pb= ", Pb)
 
     lf.data = lf.data._replace(is_bad=is_bad)
 
@@ -896,26 +896,26 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         # print( mags_all[logphi_all!=logphi])
         # print( logphi_all[logphi_all!=logphi])
 
-        select = (logphi_all==logphi)
-        print("select= ", select)
-        select = (mags_all==mags)
-        print("select= ", select)
-        select = (left_all==left)
-        print("select= ", select)
-        select = (right_all==right)
-        print("select= ", select)
-        select = (uperr_all==uperr)
-        print("select= ", select)
-        select = (downerr_all==downerr)
-        print("select= ", select)
-        import sys
-        sys.exit(0)
-        mags_all = mags_all[select]
-        left_all = left_all[select]
-        right_all = right_all[select]
-        logphi_all = logphi_all[select]
-        uperr_all  = uperr_all[select]
-        downerr_all = downerr_all[select]
+        # select = (logphi_all==logphi)
+        # print("select= ", select)
+        # select = (mags_all==mags)
+        # print("select= ", select)
+        # select = (left_all==left)
+        # print("select= ", select)
+        # select = (right_all==right)
+        # print("select= ", select)
+        # select = (uperr_all==uperr)
+        # print("select= ", select)
+        # select = (downerr_all==downerr)
+        # print("select= ", select)
+        # import sys
+        # sys.exit(0)
+        # mags_all = mags_all[select]
+        # left_all = left_all[select]
+        # right_all = right_all[select]
+        # logphi_all = logphi_all[select]
+        # uperr_all  = uperr_all[select]
+        # downerr_all = downerr_all[select]
 
         mask = logphi_all > -100.0
 
@@ -942,15 +942,14 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
             i = int(sid)
             mask2 = (lf.data.sid == i) & mask
             print("mask2= ", mask2)
-            mags, left, right, logphi, uperr, downerr = lf.data.mag[mask2], \
-                lf.data.left[mask2], lf.data.right[mask2], \
-                lf.data.logphi[mask2], lf.data.uperr[mask2], \
-                lf.data.downerr[mask2]
+            mags, mag_err, logphi, uperr, downerr = lf.data.mag[mask2], lf.data.mag_err[mask2], \
+                lf.data.logphi[mask2], lf.data.uperr[mask2], lf.data.downerr[mask2]
+            
             
             print( mags[logphi>-100.0])
             print( logphi[logphi>-100.0])
             ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
-                        xerr=np.vstack((left, right)), 
+                        xerr=mag_err, 
                         yerr=np.vstack((uperr, downerr)),
                         marker='x', markersize=6,
                         fmt='None', zorder=5)
@@ -996,29 +995,7 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     -------
     - None
     """
-
-    # Print if all arrays are the same; if not, print which ones differ
-    arrays = [
-        ('logphi_all', getattr(lf, 'logphi_all', None), getattr(lf, 'logphi', None)),
-        ('mags_all', getattr(lf, 'mags_all', None), getattr(lf, 'mags', None)),
-        ('left_all', getattr(lf, 'left_all', None), getattr(lf, 'left', None)),
-        ('right_all', getattr(lf, 'right_all', None), getattr(lf, 'right', None)),
-        ('uperr_all', getattr(lf, 'uperr_all', None), getattr(lf, 'uperr', None)),
-        ('downerr_all', getattr(lf, 'downerr_all', None), getattr(lf, 'downerr', None)),
-    ]
-
-    all_same = all(np.array_equal(a, b) for _, a, b in arrays if a is not None and b is not None)
-    if all_same:
-        print("All *_all arrays are the same as their counterparts.")
-    else:
-        for name, arr_all, arr in arrays:
-            if arr_all is not None and arr is not None:
-                if np.array_equal(arr_all, arr):
-                    print(f"{name} is the same as its counterpart.")
-                else:
-                    print(f"{name} differs from its counterpart.")
-                    print(f"{name}: {arr_all}")
-                    print(f"{name.replace('_all','')}: {arr}")
+    
 
     z_plot = lf.z.mean() 
     

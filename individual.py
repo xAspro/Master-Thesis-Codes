@@ -1110,7 +1110,8 @@ class lf:
             ax.legend(fontsize=8)
 
         plt.tight_layout()
-        plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
+        # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}1d_posterior_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
 
         # Plot MCMC corner plot for all parameters with bad points
 
@@ -1122,7 +1123,8 @@ class lf:
             quantiles=[0.16, 0.5, 0.84],
         )
         fig.suptitle(f"Prior Model: {prior_tag}", fontsize=16)
-        fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
+        # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}Corner_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
 
         # Plot MCMC chains for all parameters with bad points
         fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
@@ -1138,7 +1140,8 @@ class lf:
                 ax.legend(fontsize=8)
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
+        # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
+        plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
 
 
         # Plot MCMC chains for each parameter separately and save
@@ -1153,7 +1156,8 @@ class lf:
             ax.set_xlabel('step')
             ax.legend(fontsize=8)
             plt.tight_layout()
-            plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
+            # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
+            plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_Individual_{i}_with_bad_points.png")
             plt.close(fig)
 
         # Print autocorrelation time and acceptance rate for the sampler with bad points
