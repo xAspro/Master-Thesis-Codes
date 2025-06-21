@@ -1,0 +1,5 @@
+# The parameters of the QLF with bad points are given here.
+# The columns are as follows:
+#                   Values                    |                                   Credibility Interval
+# phi_star     M_star     alpha     beta      |           phi_star              M_star             alpha             beta    
+  -5.8123      -21.3815   -2.7308   -0.4567   |       -7.2440 -5.6829     -24.0021 -21.2237   -3.8568 -2.6798   -2.0993 -0.2429

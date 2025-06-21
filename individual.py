@@ -1039,10 +1039,12 @@ class lf:
     def plot_chains_and_corner(self, dirname='', prior_tag=1, run_counter=0):
         # Print parameter medians and 1-sigma intervals
         param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        self.cred_interval = []
         for i, name in enumerate(param_names):
             vals = percentiles(self.samples_with_bp[:, i])
             print(f"{name}: median = {vals[2]:.4f}, -1σ = {vals[0]:.4f}, +1σ = {vals[1]:.4f}")
-
+            self.cred_interval.append(vals[:2])
+        self.cred_interval = np.array(self.cred_interval)
 
 
         fig = self.corner_quantile(
@@ -1055,7 +1057,7 @@ class lf:
         )
         fig.suptitle(f"Prior Model: {prior_tag}\nrun_counter: {run_counter}", fontsize=16)
         # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
-        plt.savefig(f"{dirname}Corner_{np.mean(self.z)}_{self.prior_tag}_with_bad_points_{run_counter}.png")
+        plt.savefig(f"{dirname}Corner_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points_{run_counter}.png")
 
         # Plot MCMC chains for all parameters with bad points
         fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
@@ -1071,8 +1073,7 @@ class lf:
                 ax.legend(fontsize=8)
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_with_bad_points_{np.mean(self.z):.3f}.png")
-        plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
+        plt.savefig(f"{dirname}Chains_{np.mean(self.z):4.0f}_{self.prior_tag}_with_bad_points.png")
 
 
 
@@ -1123,7 +1124,7 @@ class lf:
 
         self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
         self.sampler_with_bp.reset()
-        self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
+        self.sampler_with_bp.run_mcmc(None, 75000, progress=True)
         
         self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
 
@@ -1169,29 +1170,29 @@ class lf:
             import sys
             sys.exit("Exiting due to NaN in autocorrelation time.")
 
-        print("\n\ntau:", tau)
-        print("self.sampler_with_bp.get_chain().shape[0] / 50:", self.sampler_with_bp.get_chain().shape[0] / 50)
-        print("tau > self.sampler_with_bp.get_chain().shape[0] / 50:", tau > self.sampler_with_bp.get_chain().shape[0] / 50)
-        if np.any(tau > self.sampler_with_bp.get_chain().shape[0] / 50):
-            print("\n\n\nRecomputing MCMC with more steps...\n\n\n")
-            self.sampler_with_bp.reset()
-            self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
-            self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
+        # print("\n\ntau:", tau)
+        # print("self.sampler_with_bp.get_chain().shape[0] / 50:", self.sampler_with_bp.get_chain().shape[0] / 50)
+        # print("tau > self.sampler_with_bp.get_chain().shape[0] / 50:", tau > self.sampler_with_bp.get_chain().shape[0] / 50)
+        # if np.any(tau > self.sampler_with_bp.get_chain().shape[0] / 50):
+        #     print("\n\n\nRecomputing MCMC with more steps...\n\n\n")
+        #     self.sampler_with_bp.reset()
+        #     self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
+        #     self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
 
-            self.plot_chains_and_corner(dirname=dirname, prior_tag=prior_tag, run_counter=1)
+        #     self.plot_chains_and_corner(dirname=dirname, prior_tag=prior_tag, run_counter=1)
 
-            # Print autocorrelation time and acceptance rate for the sampler with bad points
-            try:
-                tau = self.sampler_with_bp.get_autocorr_time()
-            except AutocorrError as e:
-                print("Could not compute reliable autocorrelation time:", e)
-                tau = e.tau 
-                warning_msg = str(e)
+        #     # Print autocorrelation time and acceptance rate for the sampler with bad points
+        #     try:
+        #         tau = self.sampler_with_bp.get_autocorr_time()
+        #     except AutocorrError as e:
+        #         print("Could not compute reliable autocorrelation time:", e)
+        #         tau = e.tau 
+        #         warning_msg = str(e)
 
-            print("Autocorrelation time (per parameter):", tau)
-            acceptance_fraction = self.sampler_with_bp.acceptance_fraction
-            print("Mean acceptance fraction:", np.mean(acceptance_fraction))
-            print("Acceptance fraction per walker:", acceptance_fraction)
+        #     print("Autocorrelation time (per parameter):", tau)
+        #     acceptance_fraction = self.sampler_with_bp.acceptance_fraction
+        #     print("Mean acceptance fraction:", np.mean(acceptance_fraction))
+        #     print("Acceptance fraction per walker:", acceptance_fraction)
 
 
 
@@ -1218,6 +1219,7 @@ class lf:
         
         self.samples = self.samples_with_bp[:, :4]
         self.marginalise_and_find_MAP()
+        self.savedata_with_bp()
 
         return
     
@@ -1252,6 +1254,23 @@ class lf:
         self.map_params = np.array(map_params)
         print("MAP (marginalized over nuisance):", self.map_params)
 
+
+
+    def savedata_with_bp(self):
+        if self.zlims == (0.1, 0.4):
+            with open("parameters_with_bp.dat", "w") as f:
+                f.write("# The parameters of the QLF with bad points are given here.\n")
+                f.write("# The columns are as follows:\n")
+                f.write("#                   Values                    |                                   Credibility Interval\n")
+                f.write("# phi_star     M_star     alpha     beta      |           phi_star              M_star             alpha             beta    \n")
+
+        with open("parameters_with_bp.dat", "a") as f:
+            f.write("{:9.4f}   {:11.4f}   {:7.4f}   {:7.4f}   |       {:7.4f} {:7.4f}     {:7.4f} {:7.4f}   {:7.4f} {:7.4f}   {:7.4f} {:7.4f}\n".format(
+                self.map_params[0], self.map_params[1], self.map_params[2], self.map_params[3],
+                self.cred_interval[0][0], self.cred_interval[0][1], self.cred_interval[1][0], self.cred_interval[1][1],
+                self.cred_interval[2][0], self.cred_interval[2][1], self.cred_interval[3][0], self.cred_interval[3][1]
+            ))
+        return
 
 
 
