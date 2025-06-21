@@ -1033,107 +1033,15 @@ class lf:
             return -np.inf
 
         return lp + ll
-
-    def run_mcmc_with_bad_points(self, ncores, dirname='', prior_tag=1, run_counter=0):
-        if run_counter == 3:
-            print("Skipping MCMC run with bad points for run_counter = 3")
-            return
-        if run_counter == 0:
-            self.prior_tag = prior_tag
-
-            self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 25
-            self.mcmc_start = self.bf.x 
-            # If due to one bad point in the faint end, if the best fit has beta > 0,
-            # manually setting the guess for beta to be negative.
-            if self.bf.x[3] > 0:
-                self.mcmc_start[3] = -2.0
-
-            # self.mcmc_start = [-5.7, -21.3, -2.74, -1.0]
-
-            pos_with_bp = np.hstack((np.array([self.bf.x 
-                        + 1e-2*np.random.randn(self.bf.x.size) for i 
-                        in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
-            
-            self.get_qlf_data()
-
-        # print("Len of self.data = ", len(self.data.logphi))
-        # import sys
-        # sys.exit()
-
-        print("\n\n\tNumber of cores available for MCMC: ", ncores)
-
-        # print("len(self.sid) = ", len(self.sid))
-        # print("len(sid_all) = ", len(self.sid_all))
-        # print("self.sid==self.sid_all = ", np.all(self.sid==self.sid_all))
-
-        if ncores <= 1:
-            pool = None
-            print("Not using parallel processing...\n\n\n")
-        else:
-            pool = Pool(ncores)
-            print("Using parallel processing with {} cores...\n\n\n".format(ncores))
-
-        if run_counter == 0:
-            lnposterior_pickable = dill.loads(dill.dumps(self._lnposterior_with_bad_points))
-            self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
-                                                lnposterior_pickable, pool=pool)
-            print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
-
-
-            DISCARD = 1000
-
-            self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
-            self.sampler_with_bp.reset()
-            self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
-        
-        else:
-            print("Continuing MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
-            self.sampler_with_bp.run_mcmc(None, self.sampler_with_bp.get_chain().shape[0], progress=True)
-
-        self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
-
-
-        # Print autocorrelation time and acceptance rate for the sampler with bad points
-
-        from emcee.autocorr import AutocorrError
-        try:
-            tau = self.sampler_with_bp.get_autocorr_time()
-        except AutocorrError as e:
-            print("Could not compute reliable autocorrelation time:", e)
-            tau = e.tau 
-            warning_msg = str(e)
-
-        print("Autocorrelation time (per parameter):", tau)
-        print("tau:", tau)
-        acceptance_fraction = self.sampler_with_bp.acceptance_fraction
-        print("Mean acceptance fraction:", np.mean(acceptance_fraction))
-        print("Acceptance fraction per walker:", acceptance_fraction)
-
-
+    
+    def plot_chains_and_corner(self, dirname='', prior_tag=1, run_counter=0):
         # Print parameter medians and 1-sigma intervals
         param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
         for i, name in enumerate(param_names):
             vals = percentiles(self.samples_with_bp[:, i])
             print(f"{name}: median = {vals[2]:.4f}, -1σ = {vals[0]:.4f}, +1σ = {vals[1]:.4f}")
 
-        # # Plot all samples for each parameter as histograms and overlay the median
-        # fig, axes = plt.subplots(1, self.ndim_with_bp, figsize=(18, 4))
-        # param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
 
-        # for i, name in enumerate(param_names):
-        #     ax = axes[i]
-        #     data = self.samples_with_bp[:, i]
-        #     ax.hist(data, bins=30, color='skyblue', alpha=0.7, label='Samples')
-        #     median = np.median(data)
-        #     ax.axvline(median, color='red', linestyle='--', label='Median')
-        #     ax.set_title(name)
-        #     ax.legend(fontsize=8)
-
-        # plt.tight_layout()
-        # # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_with_bad_points_zmean_{np.mean(self.z):.3f}.png")
-        # plt.savefig(f"{dirname}1d_posterior_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
-
-        # Plot MCMC corner plot for all parameters with bad points
 
         fig = self.corner_quantile(
             self.samples_with_bp,
@@ -1165,6 +1073,77 @@ class lf:
         plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_with_bad_points.png")
 
 
+
+    def run_mcmc_with_bad_points(self, ncores, dirname='', prior_tag=1):
+
+        self.prior_tag = prior_tag
+
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 25
+        self.mcmc_start = self.bf.x 
+        # If due to one bad point in the faint end, if the best fit has beta > 0,
+        # manually setting the guess for beta to be negative.
+        if self.bf.x[3] > 0:
+            self.mcmc_start[3] = -2.0
+
+        # self.mcmc_start = [-5.7, -21.3, -2.74, -1.0]
+
+        pos_with_bp = np.hstack((np.array([self.bf.x 
+                    + 1e-2*np.random.randn(self.bf.x.size) for i 
+                    in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
+        
+        self.get_qlf_data()
+
+        # print("Len of self.data = ", len(self.data.logphi))
+        # import sys
+        # sys.exit()
+
+        print("\n\n\tNumber of cores available for MCMC: ", ncores)
+
+        # print("len(self.sid) = ", len(self.sid))
+        # print("len(sid_all) = ", len(self.sid_all))
+        # print("self.sid==self.sid_all = ", np.all(self.sid==self.sid_all))
+
+        if ncores <= 1:
+            pool = None
+            print("Not using parallel processing...\n\n\n")
+        else:
+            pool = Pool(ncores)
+            print("Using parallel processing with {} cores...\n\n\n".format(ncores))
+
+
+        lnposterior_pickable = dill.loads(dill.dumps(self._lnposterior_with_bad_points))
+        self.sampler_with_bp = emcee.EnsembleSampler(self.nwalkers_with_bp, self.ndim_with_bp,
+                                            lnposterior_pickable, pool=pool)
+        print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
+
+
+        DISCARD = 1000
+
+        self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
+        self.sampler_with_bp.reset()
+        self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
+        
+        self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
+
+
+        # Print autocorrelation time and acceptance rate for the sampler with bad points
+
+        from emcee.autocorr import AutocorrError
+        try:
+            tau = self.sampler_with_bp.get_autocorr_time()
+        except AutocorrError as e:
+            print("Could not compute reliable autocorrelation time:", e)
+            tau = e.tau 
+            warning_msg = str(e)
+
+        print("Autocorrelation time (per parameter):", tau)
+        print("tau:", tau)
+        acceptance_fraction = self.sampler_with_bp.acceptance_fraction
+        print("Mean acceptance fraction:", np.mean(acceptance_fraction))
+        print("Acceptance fraction per walker:", acceptance_fraction)
+
+        self.plot_chains_and_corner(dirname=dirname, prior_tag=prior_tag)
+
         # # Plot MCMC chains for each parameter separately and save
         # param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
         # for i, name in enumerate(param_names):
@@ -1189,14 +1168,26 @@ class lf:
             import sys
             sys.exit("Exiting due to NaN in autocorrelation time.")
 
-        print("\n\n\n\ntau = ", tau)
-        print("self.sampler_with_bp.get_chain().shape[0] = ", self.sampler_with_bp.get_chain().shape[0])
-        print("tau < self.sampler_with_bp.get_chain().shape[0] / 50 = ", tau < self.sampler_with_bp.get_chain().shape[0] / 50)
-        print("tau < self.sampler_with_bp.get_chain().shape[0] / 50 = ", np.any(tau < self.sampler_with_bp.get_chain().shape[0] / 50))
+
         if np.any(tau < self.sampler_with_bp.get_chain().shape[0] / 50):
-            print("Warning: Autocorrelation time contains NaN values. This may indicate convergence issues.")
-            print("Running the mcmc again and increasing the number of steps...")
-            return self.run_mcmc_with_bad_points(ncores, dirname, prior_tag, run_counter + 1)
+            self.sampler_with_bp.reset()
+            self.sampler_with_bp.run_mcmc(None, 600000, progress=True)
+
+            self.plot_chains_and_corner(dirname=dirname, prior_tag=prior_tag, run_counter=1)
+
+            # Print autocorrelation time and acceptance rate for the sampler with bad points
+            try:
+                tau = self.sampler_with_bp.get_autocorr_time()
+            except AutocorrError as e:
+                print("Could not compute reliable autocorrelation time:", e)
+                tau = e.tau 
+                warning_msg = str(e)
+
+            print("Autocorrelation time (per parameter):", tau)
+            acceptance_fraction = self.sampler_with_bp.acceptance_fraction
+            print("Mean acceptance fraction:", np.mean(acceptance_fraction))
+            print("Acceptance fraction per walker:", acceptance_fraction)
+
 
 
         samples_4d = self.samples_with_bp[:, :4]
@@ -1297,8 +1288,8 @@ class lf:
         """
 
         mpl.rcParams['font.size'] = '14'
-        self.medians = np.median(self.samples, axis=0)
-        f = corner.corner(self.samples, labels=labels, truths=self.medians)
+        self.medians = np.median(self.samples_with_bp, axis=0)
+        f = corner.corner(self.samples_with_bp, labels=labels, truths=self.medians)
         plotfile = dirname+'triangle.png'
         f.savefig(plotfile)
         mpl.rcParams['font.size'] = '22'
