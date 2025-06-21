@@ -1073,7 +1073,7 @@ class lf:
                 ax.legend(fontsize=8)
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        plt.savefig(f"{dirname}Chains_{np.mean(self.z):4.0f}_{self.prior_tag}_with_bad_points.png")
+        plt.savefig(f"{dirname}Chains_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points.png")
 
 
 
