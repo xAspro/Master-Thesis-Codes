@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from astropy.stats import knuth_bin_width  as kbw
 from astropy.stats import poisson_conf_interval as pci
 from scipy.stats import binned_statistic as bs
+from scipy.stats import norm
 import cosmolopy.distance as cd
 cosmo = {'omega_M_0':0.3,
          'omega_lambda_0':0.7,
@@ -617,7 +618,7 @@ def find_bad_points(lf):
             print("denominator= ", log_denominator[i])
             print("Pb= ", Pb)
 
-    lf.data = lf.data._replace(is_bad=is_bad)
+    lf.data = lf.data._replace(is_bad=is_bad, bad_prob=np.exp(log_bad_prob))
 
     return
 
@@ -630,21 +631,41 @@ def dsl(lf, i):
             print("Found label: ", x.label)
             return x.label
     return
+
+def find_error(lf):
+    logphi_graph = lf.log10phi(lf.map_params, lf.data.mag)
+    residual = lf.data.logphi - logphi_graph
+    sigma_diff = residual / lf.data.log_err
+
+    norm_cdf = norm.cdf(sigma_diff)
+    prob = 2 * np.minimum(norm_cdf, 1 - norm_cdf)
+
+    return logphi_graph, residual, sigma_diff, prob
+    
+
     
 def savedata_with_bp(lf):
     zlims = lf.zlims
     data = lf.data
+    res = find_error(lf)
+    logphi_graph = res[0]
+    residual = res[1]
+    sigma_diff = res[2]
+    prob = res[3]
     if zlims == (0.1, 0.4):
         with open('datapoints_with_bp.dat', 'w') as f:
             f.write('# The data points with bad points for the QLF at different redshift bins are given here.\n')
             f.write('# badness 1 implies the points are the bad points. \n')
             f.write('# The columns are as follows:\n')
-            f.write('# zmin   zmax   label                     badness   mag       mag_err    logphi    uperr    downerr   log_err\n')
+            f.write('# zmin   zmax   label                     badness   bad_prob   mag       mag_err    logphi    map_log_phi   uperr    downerr   log_err  residual   sig_dif   prob\n')
 
     with open('datapoints_with_bp.dat', 'a') as f:
+        print("data.sid= ", data.sid)
+        print("data.is_bad= ", data.is_bad)
+        print("data.bad_prob= ", data.bad_prob)
         for i in range(len(data.sid)):
-            f.write('{:6.2f} {:6.2f}   {:<25s} {:7d}   {:7.3f}   {:<7.3f}   {:7.3f}  {:7.3f}  {:7.3f}   {:7.3f}\n'.format(
-                zlims[0], zlims[1], dsl(lf, data.sid[i]), int(data.is_bad[i]), data.mag[i], data.mag_err[i], data.logphi[i], data.uperr[i], data.downerr[i], data.log_err[i]))
+            f.write('{:6.2f} {:6.2f}   {:<25s} {:7d}   {:7.3f}    {:7.3f}   {:<7.3f}   {:7.3f}  {:11.3f}   {:7.3f}  {:7.3f}   {:7.3f}   {:7.3f}    {:7.3f}    {:7.3e}\n'.format(
+                zlims[0], zlims[1], dsl(lf, data.sid[i]), int(data.is_bad[i]), data.bad_prob[i], data.mag[i], data.mag_err[i], data.logphi[i], logphi_graph[i], data.uperr[i], data.downerr[i], data.log_err[i], residual[i], sigma_diff[i], prob[i]))
 
 
     return 

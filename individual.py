@@ -265,7 +265,7 @@ def percentiles(x):
     return [u, l, c] 
 
 LFData = namedtuple("LFData", ["sid","mag", "mag_err", "logphi", "uperr", 
-                               "downerr", "log_err", "is_bad"])
+                               "downerr", "log_err", "bad_prob", "is_bad"])
 
 class selmap:
     """
@@ -928,8 +928,9 @@ class lf:
 
             sid_arr = np.full_like(logphi, sid, dtype=int)
 
-            data.append(LFData(sid=sid_arr, logphi=logphi, uperr=uperr, downerr=downerr,
-                           log_err=log_err, mag=mag, mag_err=mag_err, is_bad=np.zeros_like(sid_arr, dtype=bool)))
+            data.append(LFData(sid=sid_arr, logphi=logphi, uperr=uperr, downerr=downerr, log_err=log_err,
+                           mag=mag, mag_err=mag_err, is_bad=np.zeros_like(sid_arr, dtype=bool), 
+                           bad_prob=np.zeros_like(sid_arr, dtype=float)))
 
 
         all_sid = np.concatenate([d.sid for d in data])
@@ -950,7 +951,8 @@ class lf:
             log_err=all_log_err,
             mag=all_mag,
             mag_err=all_mag_err,
-            is_bad=np.zeros_like(all_sid, dtype=bool)  # Initialize is_bad as False
+            is_bad=np.zeros_like(all_sid, dtype=bool),  # Initialize is_bad as False
+            bad_prob=np.zeros_like(all_sid, dtype=float)  # Initialize bad_prob as 0.0
         )
 
         return
@@ -1121,7 +1123,7 @@ class lf:
 
         self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
         self.sampler_with_bp.reset()
-        self.sampler_with_bp.run_mcmc(None, 6000, progress=True)
+        self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
         
         self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
 
@@ -1173,7 +1175,8 @@ class lf:
         if np.any(tau > self.sampler_with_bp.get_chain().shape[0] / 50):
             print("\n\n\nRecomputing MCMC with more steps...\n\n\n")
             self.sampler_with_bp.reset()
-            self.sampler_with_bp.run_mcmc(None, 6000, progress=True)
+            self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
+            self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
 
             self.plot_chains_and_corner(dirname=dirname, prior_tag=prior_tag, run_counter=1)
 
