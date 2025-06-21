@@ -1,0 +1,13 @@
+# The data points with bad points for the QLF at different redshift bins are given here.
+# badness 1 implies the points are the bad points. 
+# The columns are as follows:
+# zmin   zmax   label                     badness   mag       mag_err    logphi    uperr    downerr   log_err
+  0.10   0.40   Richards et al. 2006            0   -24.600   0.300      -8.336    0.295    0.341     0.318
+  0.10   0.40   Richards et al. 2006            0   -24.000   0.300      -7.592    0.101    0.103     0.102
+  0.10   0.40   Richards et al. 2006            0   -23.400   0.300      -7.142    0.054    0.054     0.054
+  0.10   0.40   Richards et al. 2006            1   -22.800   0.300      -6.761    0.034    0.034     0.034
+  0.10   0.40   Richards et al. 2006            0   -22.200   0.300      -6.494    0.023    0.023     0.023
+  0.10   0.40   Richards et al. 2006            1   -21.600   0.300      -6.080    0.015    0.015     0.015
+  0.10   0.40   Richards et al. 2006            1   -21.000   0.300      -5.966    0.012    0.012     0.012
+  0.10   0.40   Richards et al. 2006            1   -20.400   0.300      -6.001    0.016    0.016     0.016
+  0.10   0.40   Richards et al. 2006            1   -19.800   0.300      -8.747    0.518    0.763     0.641

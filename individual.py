@@ -967,7 +967,7 @@ class lf:
                 return -np.inf
             if Vb <= 0 or Vb > 10:
                 return -np.inf
-            if Yb < -20 or Yb > 0:
+            if Yb < -50 or Yb > 20:
                 return -np.inf
             
             if logphi < -20 or logphi > 0:
@@ -1051,7 +1051,7 @@ class lf:
             title_kwargs={"fontsize": 12},
             quantiles=[0.16, 0.5, 0.84],
         )
-        fig.suptitle(f"Prior Model: {prior_tag}", fontsize=16)
+        fig.suptitle(f"Prior Model: {prior_tag}\nrun_counter: {run_counter}", fontsize=16)
         # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
         plt.savefig(f"{dirname}Corner_{np.mean(self.z)}_{self.prior_tag}_with_bad_points_{run_counter}.png")
 
@@ -1117,11 +1117,11 @@ class lf:
         print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
 
 
-        DISCARD = 1000
+        DISCARD = 5000
 
         self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
         self.sampler_with_bp.reset()
-        self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
+        self.sampler_with_bp.run_mcmc(None, 6000, progress=True)
         
         self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
 
@@ -1136,7 +1136,6 @@ class lf:
             tau = e.tau 
             warning_msg = str(e)
 
-        print("Autocorrelation time (per parameter):", tau)
         print("tau:", tau)
         acceptance_fraction = self.sampler_with_bp.acceptance_fraction
         print("Mean acceptance fraction:", np.mean(acceptance_fraction))
@@ -1168,10 +1167,13 @@ class lf:
             import sys
             sys.exit("Exiting due to NaN in autocorrelation time.")
 
-
-        if np.any(tau < self.sampler_with_bp.get_chain().shape[0] / 50):
+        print("\n\ntau:", tau)
+        print("self.sampler_with_bp.get_chain().shape[0] / 50:", self.sampler_with_bp.get_chain().shape[0] / 50)
+        print("tau > self.sampler_with_bp.get_chain().shape[0] / 50:", tau > self.sampler_with_bp.get_chain().shape[0] / 50)
+        if np.any(tau > self.sampler_with_bp.get_chain().shape[0] / 50):
+            print("\n\n\nRecomputing MCMC with more steps...\n\n\n")
             self.sampler_with_bp.reset()
-            self.sampler_with_bp.run_mcmc(None, 600000, progress=True)
+            self.sampler_with_bp.run_mcmc(None, 6000, progress=True)
 
             self.plot_chains_and_corner(dirname=dirname, prior_tag=prior_tag, run_counter=1)
 
@@ -1224,6 +1226,9 @@ class lf:
             (np.quantile(samples[:, i], lower_q), np.quantile(samples[:, i], upper_q))
             for i in range(samples.shape[1])
         ]
+        # This is for checking purpose.
+        # Variance alone is checked from the left tail.
+        bounds[-1] = (np.min(samples[:, -1]), np.quantile(samples[:, -1], upper_q))
         return corner.corner(samples, range=bounds, **kwargs)
     
     def marginalise_and_find_MAP(self):

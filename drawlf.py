@@ -586,22 +586,23 @@ def find_bad_points(lf):
     # Despite using the symmetric errors for QLF estimation,
     # we still use only the asymmetric errors for plotting.
 
-    safe_sig2 = lf.data.log_err**2 + epsilon
+    safe_sig2 = data.log_err**2 + epsilon
 
-    log_p_fg = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip(((lf.data.logphi - lf.log10phi(func_params, lf.data.mag)))**2 / safe_sig2, -1e10, 1e10))
-    log_p_bg = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((lf.data.logphi - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
+    log_p_fg = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip(((data.logphi - lf.log10phi(func_params, data.mag)))**2 / safe_sig2, -1e10, 1e10))
+    log_p_bg = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((data.logphi - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
 
     log_numerator = np.log(Pb) + log_p_bg
     log_denominator = np.logaddexp(np.log(1 - Pb) + log_p_fg, np.log(Pb) + log_p_bg)
 
     log_bad_prob = log_numerator - log_denominator
 
-    is_bad = log_bad_prob > -0.69  # This is equivalent to 50% in linear scale
+    # is_bad = log_bad_prob > -0.69  # This is equivalent to 50% in linear scale
+    is_bad = log_bad_prob > -0.1  # This is equivalent to 90% in linear scale
     print("log_bad_prob= ", log_bad_prob, "\texp(log_bad_prob)= ", np.exp(log_bad_prob))
 
     for i in range(len(sid)):
         if is_bad[i]:
-            print(f"\nBad point found: sid={sid[i]}, mag={mag[i]}, logphi={logphi[i]}, bad_prob={log_bad_prob[i]}")
+            print(f"\nBad point found: sid={sid[i]}, mag={mag[i]}, logphi={logphi[i]}, log_err={log_err}, bad_prob={log_bad_prob[i]}")
             print("p_fg= ", log_p_fg[i])
             print("p_bg= ", log_p_bg[i])
             print("numerator= ", log_numerator[i])
@@ -619,6 +620,34 @@ def find_bad_points(lf):
     lf.data = lf.data._replace(is_bad=is_bad)
 
     return
+
+def dsl(lf, i):
+    print("In drawlf.py dsl")
+    print("i= ", i)
+    for x in lf.maps:
+        print("x.sid= ", x.sid, "\tx.label= ", x.label)
+        if x.sid == i:
+            print("Found label: ", x.label)
+            return x.label
+    return
+    
+def savedata_with_bp(lf):
+    zlims = lf.zlims
+    data = lf.data
+    if zlims == (0.1, 0.4):
+        with open('datapoints_with_bp.dat', 'w') as f:
+            f.write('# The data points with bad points for the QLF at different redshift bins are given here.\n')
+            f.write('# badness 1 implies the points are the bad points. \n')
+            f.write('# The columns are as follows:\n')
+            f.write('# zmin   zmax   label                     badness   mag       mag_err    logphi    uperr    downerr   log_err\n')
+
+    with open('datapoints_with_bp.dat', 'a') as f:
+        for i in range(len(data.sid)):
+            f.write('{:6.2f} {:6.2f}   {:<25s} {:7d}   {:7.3f}   {:<7.3f}   {:7.3f}  {:7.3f}  {:7.3f}   {:7.3f}\n'.format(
+                zlims[0], zlims[1], dsl(lf, data.sid[i]), int(data.is_bad[i]), data.mag[i], data.mag_err[i], data.logphi[i], data.uperr[i], data.downerr[i], data.log_err[i]))
+
+
+    return 
 
 def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=True, c2=None, c3=None, includes_bad_points=False):
     """
@@ -822,12 +851,6 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
     
     # By now best fit LFs have been plotted. Now plot the data.
 
-    def dsl(i):
-        for x in lf.maps:
-            if x.sid == i:
-                return x.label
-        return
-
     sids = [x.sid for x in lf.maps]
     sids = np.unique(sids)
     
@@ -841,7 +864,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
                         xerr=np.vstack((left, right)), 
                         yerr=np.vstack((uperr, downerr)),
                         fmt='None', zorder=4)
-            ax.scatter(mags, logphi, c='#ffffff', edgecolor=cs[i], zorder=4, s=16, label=dsl(i)+' (rejected bins)')
+            ax.scatter(mags, logphi, c='#ffffff', edgecolor=cs[i], zorder=4, s=16, label=dsl(lf, i)+' (rejected bins)')
         return
     
     data = [lf.zlims]
@@ -858,7 +881,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
         mask = logphi > -100.0
         data.append([])
-        data[cnt].append(dsl(i))
+        data[cnt].append(dsl(lf, i))
         for j in range(len(mags[mask])):
             # print(f"\nj = {j} out of {len(mags[mask])}")
             # print("mags[mask][j]= ", mags[mask][j])
@@ -890,7 +913,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         # print("logphi= ", logphi)
         # print("uperr= ", uperr)
         # print("downerr= ", downerr)
-        ax.scatter(mags, logphi, c=cs[i], edgecolor='None', zorder=4, s=20, label=dsl(i))
+        ax.scatter(mags, logphi, c=cs[i], edgecolor='None', zorder=4, s=20, label=dsl(lf, i))
         ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
                     xerr=np.vstack((left, right)), 
                     yerr=np.vstack((uperr, downerr)),
@@ -945,7 +968,7 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
                         yerr=np.vstack((uperr_all, downerr_all)),
                         fmt='None', zorder=4)
             ax.scatter(mags_all, logphi_all, c='#ffffff', edgecolor=cs[i],
-                       zorder=4, s=16, label=dsl(i)+' (rejected bin)')
+                       zorder=4, s=16, label=dsl(lf, i)+' (rejected bin)')
             
     if includes_bad_points:
         print("\n\n\n\n\n\n\t\tIncluding bad points in the plot")
@@ -975,15 +998,16 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
                         yerr=np.vstack((uperr, downerr)),
                         marker='x', markersize=6,
                         fmt='None', zorder=5)
-            ax.scatter(mags, logphi, c="#ff0000", edgecolor=cs[i], zorder=5, s=16, label=dsl(i)+' erroneous bin')
+            ax.scatter(mags, logphi, c="#ff0000", edgecolor=cs[i], zorder=5, s=16, label=dsl(lf, i)+' erroneous bin')
 
 
     savedata(data)
+    savedata_with_bp(lf)
 
     if showMockSample:
         for i in sids:
             mags, left, right, logphi, uperr, downerr = get_lf_sample(lf, i, z_plot)
-            ax.scatter(mags, logphi, c='k', edgecolor='None', zorder=4, s=16, label=dsl(i))
+            ax.scatter(mags, logphi, c='k', edgecolor='None', zorder=4, s=16, label=dsl(lf, i))
             ax.errorbar(mags, logphi, ecolor='k', capsize=0,
                         xerr=np.vstack((left, right)), 
                         yerr=np.vstack((uperr, downerr)),
