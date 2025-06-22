@@ -970,6 +970,7 @@ class lf:
             return -np.inf
         if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
             return -np.inf
+        return -np.log(Pb)
         return 0.0
     
     def loglike_for_1_param(self, theta, x, y, err, degree=3):
@@ -1000,6 +1001,25 @@ class lf:
             return -np.inf
         ll = self.loglike_for_1_param(theta, x, y, err, degree)
         return lp + ll
+    
+    def find_Pb_Yb_Vb(self, y, walkers):
+        Pb = np.random.uniform(0.0, 1.0, size=walkers)
+
+        mean = np.mean(y)
+        Yb = np.random.normal(loc=mean, scale=10, size=walkers)
+
+        # # Hand picking alpha and beta for gamma distribution
+        # # to get mean around 10 and Variance around 20
+        # alpha, beta = 5, 2
+
+        # Hand picking alpha and beta for gamma distribution
+        # to get mean around 2 and Variance around 2
+        alpha, beta = 2, 1
+        Vb = np.random.gamma(shape=alpha, scale=beta, size=walkers)
+
+        print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
+
+        return np.array([Pb, Yb, Vb]).T
 
     def mcmc_for_1_param(self, x, y, err, label, coeff, degree=3):
         x = np.array(x)
@@ -1013,9 +1033,7 @@ class lf:
         for _ in range(walkers):
             walker_pos = np.empty(ndim)
             walker_pos[:degree+1] = coeff + 1e-2 * np.random.randn(degree+1)
-            walker_pos[degree+1] = np.random.uniform(0, 1)
-            walker_pos[degree+2] = np.random.uniform(-1e2, 1e2)
-            walker_pos[degree+3] = np.random.uniform(0, 1e2)
+            walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y, walkers)[_]
             pos.append(walker_pos)
         pos = np.array(pos)
 
@@ -1023,9 +1041,9 @@ class lf:
 
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
-        sampler.run_mcmc(pos, 5000, progress=True)
+        sampler.run_mcmc(pos, 1, progress=True)
         sampler.reset()
-        sampler.run_mcmc(None, 10000, progress=True)
+        sampler.run_mcmc(None, 1000, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1085,6 +1103,9 @@ class lf:
         print(f"Bad points for {label}:", is_bad)
 
         self.plot_bad_points(x, y, err, map_params, is_bad, label, degree=degree)
+
+        import sys
+        sys.exit("Testing")
 
         return map_params
     
