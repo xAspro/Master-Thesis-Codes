@@ -1061,9 +1061,12 @@ class lf:
         ndim = degree + 4
         # Each walker position: [poly_coeffs..., Pb, Yb, Vb]
         pos = []
+        scale = 1e-1  # Scale for the initial walker positions
+        if label == 'beta':
+            scale = 2
         for _ in range(walkers):
             walker_pos = np.empty(ndim)
-            walker_pos[:degree+1] = coeff + 1e-2 * np.random.randn(degree+1)
+            walker_pos[:degree+1] = coeff + scale * np.random.randn(degree+1)
             walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y)
             pos.append(walker_pos)
         pos = np.array(pos)
@@ -1072,9 +1075,9 @@ class lf:
 
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
-        sampler.run_mcmc(pos, 500, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, 10000, progress=True)
+        sampler.run_mcmc(pos, 10000, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, 10000, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1082,7 +1085,7 @@ class lf:
         labels = [f'$x^{degree - i}$' for i in range(degree + 1)] + ['Pb', 'Yb', 'Vb']
 
         corner.corner(samples, labels=labels,
-                      quantiles=[0.16, 0.5, 0.84],
+                      quantiles=[0.16, 0.5, 0.84], bins=100, 
                       show_titles=True, title_kwargs={"fontsize": 12})
         plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
         plt.savefig(f'mcmc-{label}_results_{self.prior_tag}.png')
@@ -1255,6 +1258,8 @@ class lf:
         coeff_list = []
         map_param = []
         for i in range(len(data)):
+            if i != 3:
+                continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
             print(f"Degree of polynomial for {params[i]}: {pnum[i]}")
