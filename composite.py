@@ -906,11 +906,33 @@ class lf:
         x, y = data
         # Fit using weighted least squares
         
-        # Fit Chebyshev polynomial (automatically scales x to [-1, 1])
-        cheb_fit = T.fit(x, y, degree, w=1.0/err)
-        # cheb_fit is a callable polynomial function
-        poly_fn = cheb_fit
-        coeffs = cheb_fit.coef  # Chebyshev coefficients
+        # # Fit Chebyshev polynomial (automatically scales x to [-1, 1])
+        # cheb_fit = T.fit(x, y, degree, w=1.0/err)
+        # # cheb_fit is a callable polynomial function
+        # poly_fn = cheb_fit
+        # coeffs = cheb_fit.coef  # Chebyshev coefficients
+
+        # # Plot the data points with error bars and the best-fit polynomial curve
+        # plt.figure(figsize=(8, 5))
+        # plt.errorbar(x, y, yerr=err, fmt='o', label='Data', capsize=3)
+        # x_fit = np.linspace(np.min(x), np.max(x), 200)
+        # y_fit = poly_fn(x_fit)
+        # plt.plot(x_fit, y_fit, 'r-', label='Best-fit polynomial')
+
+        # # Estimate 1-sigma error band for the fit using covariance matrix
+        # # (np.polyfit does not return cov by default, so we use a simple MC approach)
+        # n_mc = 1000
+        # mc_curves = []
+        # for _ in range(n_mc):
+        #     y_mc = y + np.random.normal(0, err)
+        #     cheb_mc = T.fit(x, y_mc, degree, w=1.0/err)
+        #     mc_curves.append(cheb_mc(x_fit))  # Use the Chebyshev object directly
+        # mc_curves = np.array(mc_curves)
+        # y_std = np.std(mc_curves, axis=0)
+
+        # Fit normal polynomial (monomial basis)
+        coeffs = np.polyfit(x, y, degree, w=1.0/err)
+        poly_fn = np.poly1d(coeffs)
 
         # Plot the data points with error bars and the best-fit polynomial curve
         plt.figure(figsize=(8, 5))
@@ -920,13 +942,13 @@ class lf:
         plt.plot(x_fit, y_fit, 'r-', label='Best-fit polynomial')
 
         # Estimate 1-sigma error band for the fit using covariance matrix
-        # (np.polyfit does not return cov by default, so we use a simple MC approach)
         n_mc = 1000
         mc_curves = []
         for _ in range(n_mc):
             y_mc = y + np.random.normal(0, err)
-            cheb_mc = T.fit(x, y_mc, degree, w=1.0/err)
-            mc_curves.append(cheb_mc(x_fit))  # Use the Chebyshev object directly
+            coeffs_mc = np.polyfit(x, y_mc, degree, w=1.0/err)
+            poly_mc = np.poly1d(coeffs_mc)
+            mc_curves.append(poly_mc(x_fit))
         mc_curves = np.array(mc_curves)
         y_std = np.std(mc_curves, axis=0)
 
@@ -946,7 +968,7 @@ class lf:
         Pb, Yb, Vb = theta[-3:]
         if np.any((-50 > arr) | (arr > 50)):
             return -np.inf
-        if not ((0 < Pb < 1) and (0 < Vb < 1e10) and (-1e10 < Yb < 1e10)):
+        if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
             return -np.inf
         return 0.0
     
@@ -1001,9 +1023,9 @@ class lf:
 
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
-        sampler.run_mcmc(pos, 1, progress=True)
+        sampler.run_mcmc(pos, 5000, progress=True)
         sampler.reset()
-        sampler.run_mcmc(None, 1000, progress=True)
+        sampler.run_mcmc(None, 10000, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1088,7 +1110,8 @@ class lf:
         is_bad : array-like
             Boolean array indicating which points are considered "bad".
         """
-        poly_fn = T(map_params[:degree+1])
+        # poly_fn = T(map_params[:degree+1])
+        poly_fn = np.poly1d(map_params[:degree+1])
         poly_fnx = poly_fn(x)
         residuals = y - poly_fnx
 
@@ -1139,7 +1162,8 @@ class lf:
         y = np.asarray(y)
         err = np.asarray(err)
 
-        poly_fn = T(map_params[:degree+1])
+        # poly_fn = T(map_params[:degree+1])
+        poly_fn = np.poly1d(map_params[:degree+1])
         x_fit = np.linspace(np.min(x), np.max(x), 200)
         y_fit = poly_fn(x_fit)
 
