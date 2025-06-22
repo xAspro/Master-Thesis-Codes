@@ -1050,6 +1050,70 @@ class lf:
         # print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
 
         return np.array([Pb, Yb, Vb]).T
+    
+    def plot_logposterior_2d_slice(logpos_fn, theta_fixed, i, j, x, y, err,
+                                    ranges=None, label=None, degree=3, resolution=100):
+        """
+        Plots a 2D slice of the log-posterior by varying parameters i and j.
+
+        Parameters:
+        -----------
+        logpos_fn : callable
+            The function that returns the log-posterior.
+        theta_fixed : ndarray
+            1D array of the full parameter vector with fixed values.
+        i, j : int
+            Indices of the parameters to vary in 2D.
+        x, y, err : arrays
+            Data inputs to pass to the logpos function.
+        ranges : tuple of tuples, optional
+            ((xmin, xmax), (ymin, ymax)) — if None, auto-set based on fixed values.
+        label : str
+            Label to use in the filename.
+        degree : int
+            Degree of polynomial model (passed to logpos).
+        resolution : int
+            Number of grid points per axis.
+        """
+        theta = theta_fixed.copy()
+        
+        if ranges is None:
+            xi = theta[i]
+            xj = theta[j]
+            dx = abs(xi) * 0.5 + 1e-2
+            dy = abs(xj) * 0.5 + 1e-2
+            range_i = (xi - dx, xi + dx)
+            range_j = (xj - dy, xj + dy)
+        else:
+            range_i, range_j = ranges
+
+        grid_i = np.linspace(*range_i, resolution)
+        grid_j = np.linspace(*range_j, resolution)
+        I, J = np.meshgrid(grid_i, grid_j)
+        Z = np.full_like(I, fill_value=np.nan)
+
+        for a in range(resolution):
+            for b in range(resolution):
+                theta[i] = I[a, b]
+                theta[j] = J[a, b]
+                val = logpos_fn(theta, x, y, err, degree=degree)
+                if np.isfinite(val):
+                    Z[a, b] = val
+
+        plt.figure(figsize=(7, 5))
+        import matplotlib.cm as cm
+        plt.contourf(I, J, Z, levels=50, cmap=cm.viridis)
+        plt.xlabel(f"$\\theta_{i}$")
+        plt.ylabel(f"$\\theta_{j}$")
+        plt.colorbar(label="log-posterior")
+        plt.title(f"log-posterior slice: $\\theta_{i}$ vs $\\theta_{j}$")
+        fname = f"logpost_slice_theta{i}_theta{j}_{label}.png" if label else f"logpost_slice_theta{i}_theta{j}.png"
+        plt.tight_layout()
+        plt.savefig(fname)
+        plt.close()
+        
+        return
+
 
     def mcmc_for_1_param(self, x, y, err, label, coeff, degree=3):
         x = np.array(x)
@@ -1058,8 +1122,8 @@ class lf:
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
         if label == 'logphi' or label == 'M_star':
-            nburns = 2500
-            nprod = 15000
+            nburns = 10000
+            nprod = 200000
         else:
             nburns = 1000
             nprod = 5000
@@ -1146,6 +1210,28 @@ class lf:
             print("Could not compute autocorrelation time:", e)
         print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
 
+        taus = []
+        x_tau = []
+        for i in range(nprod // 50, nprod, nprod // 50):
+            tau = emcee.autocorr.integrated_time(sampler.get_chain()[:i], tol=0)
+            taus.append(tau)
+            x_tau.append(i)
+
+        # Plot autocorrelation time as a function of steps
+        taus = np.array(taus)
+        plt.figure(figsize=(8, 4))
+        for i in range(ndim):
+            plt.plot(x_tau, taus[:, i], label=f'param_{i}')
+        plt.xlabel('Number of steps')
+        plt.ylabel('Autocorrelation time')
+        plt.title('Autocorrelation time vs steps')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f'mcmc-{label}_autocorr_{self.prior_tag}.png')
+        plt.close()
+
+
+
         marginalised_samples = samples[:, :-3]
 
         bins = 20
@@ -1172,6 +1258,20 @@ class lf:
         print(f"Bad points for {label}:", is_bad)
 
         self.plot_bad_points(x, y, err, map_params, is_bad, label, degree=degree)
+
+
+        for i in range(len(map_params) - 1):
+            self.plot_logposterior_2d_slice(
+                self.loglike_for_1_param,
+                theta_fixed=map_params,
+                i=i,
+                j=i+1,
+                x=x, y=y, err=err,
+                label=f"{i}_vs_{i+1}",
+                degree=degree,
+                resolution=100
+            )
+
 
         # import sys
         # sys.exit("Testing")
