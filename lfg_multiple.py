@@ -28,8 +28,9 @@ start_time = time.time()
 readable_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
 print("Time right now: ", readable_time)
 
-
-bins_lfs = np.load('bins_lfs.npy', allow_pickle=True)
+# lf_file = 'bins_lfs.npy'
+lf_file = 'bins_lfs_mini.npy'
+bins_lfs = np.load(lf_file, allow_pickle=True)
 # bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)
 
 print(type(bins_lfs))

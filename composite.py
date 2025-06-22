@@ -905,8 +905,13 @@ class lf:
         """
         x, y = data
         # Fit using weighted least squares
-        coeffs = np.polyfit(x, y, degree, w=1.0/err)
-        poly_fn = np.poly1d(coeffs)
+        
+        # Fit Chebyshev polynomial (automatically scales x to [-1, 1])
+        cheb_fit = T.fit(x, y, degree, w=1.0/err)
+        # cheb_fit is a callable polynomial function
+        poly_fn = cheb_fit
+        coeffs = cheb_fit.coef  # Chebyshev coefficients
+
         # Plot the data points with error bars and the best-fit polynomial curve
         plt.figure(figsize=(8, 5))
         plt.errorbar(x, y, yerr=err, fmt='o', label='Data', capsize=3)
@@ -920,8 +925,8 @@ class lf:
         mc_curves = []
         for _ in range(n_mc):
             y_mc = y + np.random.normal(0, err)
-            coeffs_mc = np.polyfit(x, y_mc, degree, w=1.0/err)
-            mc_curves.append(np.poly1d(coeffs_mc)(x_fit))
+            cheb_mc = T.fit(x, y_mc, degree, w=1.0/err)
+            mc_curves.append(cheb_mc(x_fit))  # Use the Chebyshev object directly
         mc_curves = np.array(mc_curves)
         y_std = np.std(mc_curves, axis=0)
 
@@ -929,6 +934,7 @@ class lf:
 
         plt.xlabel('x')
         plt.ylabel('y')
+        plt.ylim()  # Adjust y-limits as needed
         plt.legend()
         plt.tight_layout()
         plt.savefig(f'polynomial_fit_{label}_with_errors.png')
@@ -938,7 +944,7 @@ class lf:
     def logprior_for_1_param(self, theta):
         arr = theta[:-3]
         Pb, Yb, Vb = theta[-3:]
-        if not np.any((-30 < arr) & (arr < 10)):
+        if np.any((-50 > arr) | (arr > 50)):
             return -np.inf
         if not ((0 < Pb < 1) and (0 < Vb < 1e10) and (-1e10 < Yb < 1e10)):
             return -np.inf
@@ -948,7 +954,8 @@ class lf:
         arr = theta[:-3]
         Pb, Yb, Vb = theta[-3:]
 
-        poly_fn = np.poly1d(arr)(x)
+        # poly_fn = np.poly1d(arr)(x)
+        poly_fn = self.atz(x, arr)
 
         epsilon = 1e-10  # Small value to prevent division by zero
         safe_sig2 = err**2 + epsilon
@@ -973,7 +980,11 @@ class lf:
         return lp + ll
 
     def mcmc_for_1_param(self, x, y, err, label, coeff, degree=3):
-        walkers = 20
+        x = np.array(x)
+        y = np.array(y)
+        err = np.array(err)
+
+        walkers = 100
         ndim = degree + 4
         # Each walker position: [poly_coeffs..., Pb, Yb, Vb]
         pos = []
@@ -990,14 +1001,16 @@ class lf:
 
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
-        sampler.run_mcmc(pos, 5000, progress=True)
+        sampler.run_mcmc(pos, 1, progress=True)
         sampler.reset()
-        sampler.run_mcmc(None, 100000, progress=True)
+        sampler.run_mcmc(None, 1000, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
 
-        corner.corner(samples, labels=[f'param_{i}' for i in range(degree + 4)],
+        labels = [f'$x^{degree - i}$' for i in range(degree + 1)] + ['Pb', 'Yb', 'Vb']
+
+        corner.corner(samples, labels=labels,
                       quantiles=[0.16, 0.5, 0.84],
                       show_titles=True, title_kwargs={"fontsize": 12})
         plt.savefig(f'mcmc-{label}_results.png')
@@ -1024,23 +1037,136 @@ class lf:
             print("Could not compute autocorrelation time:", e)
         print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
 
-        marginalised_samples = sampler.get_chain(flat=True)[:, :-3]  # Exclude Pb, Yb, Vb
+        marginalised_samples = samples[:, :-3]
 
-        # Find the index of the maximum posterior sample
-        max_idx = np.argmax(marginalised_samples, axis=0)
-        print("Index of maximum posterior sample:", max_idx)
-        map_params = sampler.get_chain(flat=True)[max_idx]
+        bins = 20
+        hist, edges = np.histogramdd(marginalised_samples, bins=bins)
 
-        print(f"MAP estimate for {label}: {map_params}")
+        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
 
-        # Optionally, print each parameter's MAP value
-        for i, val in enumerate(map_params):
-            print(f"param_{i} (MAP): {val}")
+        map_params = []
+        for i in range(degree+1):
+            # Bin edges for this dimension
+            bin_edges = edges[i]
+            # Center of the bin
+            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
+            map_params.append(center)
+        map_params = np.array(map_params)
+        print(f"MAP (marginalized over nuisance) for {label}:", map_params)
+
+        median_Pb = np.median(samples[:, -3])
+        median_Yb = np.median(samples[:, -2])
+        median_Vb = np.median(samples[:, -1])
+
+        is_bad = self.find_bad_points(x, y, err, map_params,
+                                      [median_Pb, median_Yb, median_Vb], degree=degree)
+        print(f"Bad points for {label}:", is_bad)
+
+        self.plot_bad_points(x, y, err, map_params, is_bad, label, degree=degree)
 
         return map_params
+    
+    def find_bad_points(self, x, y, err, map_params, nuisance_params, degree=3):
+        """
+        Find bad points in the data based on the fitted polynomial and the MAP parameters.
 
-        TOMORROW!!! CREATE A NEW LF SAVE FILE WHICH CONTAINS BASICALLY A VERY SMALL BIN
-        ITS TAKING TOO MUCH TIME BECAUSE NP.SAVE AND NP.LOAD IS MAKING IT SLOW
+        Parameters
+        ----------
+        x : array-like
+            Independent variable values.
+        y : array-like
+            Dependent variable values.
+        err : array-like
+            Errors in the dependent variable.
+        map_params : array-like
+            MAP parameters from MCMC.
+        degree : int, optional
+            Degree of the polynomial fit. Default is 3.
+
+        Returns
+        -------
+        is_bad : array-like
+            Boolean array indicating which points are considered "bad".
+        """
+        poly_fn = T(map_params[:degree+1])
+        poly_fnx = poly_fn(x)
+        residuals = y - poly_fnx
+
+        safe_sig2 = err**2 + 1e-10  # Small value to prevent division by zero
+        safe_Vb = nuisance_params[2] + 1e-10
+
+        Pb = nuisance_params[0]
+        Yb = nuisance_params[1]
+
+
+        log_p_fg = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip((residuals)**2 / safe_sig2, -1e10, 1e10))
+        log_p_bg = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((poly_fnx - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
+
+        log_numerator = np.log(Pb) + log_p_bg
+        log_denominator = np.logaddexp(np.log(1 - Pb) + log_p_fg, np.log(Pb) + log_p_bg)
+
+        log_bad_prob = log_numerator - log_denominator
+
+        # is_bad = log_bad_prob > -0.69  # This is equivalent to 50% in linear scale
+        is_bad = log_bad_prob > -0.1  # This is equivalent to 90% in linear scale
+        print("log_bad_prob= ", log_bad_prob, "\texp(log_bad_prob)= ", np.exp(log_bad_prob))
+
+        return is_bad
+
+
+    def plot_bad_points(self, x, y, err, map_params, is_bad, label, degree=3):
+        """
+        Plot the data points, fitted polynomial, and highlight bad points.
+
+        Parameters
+        ----------
+        x : array-like
+            Independent variable values.
+        y : array-like
+            Dependent variable values.
+        err : array-like
+            Errors in the dependent variable.
+        map_params : array-like
+            MAP parameters from MCMC.
+        is_bad : array-like
+            Boolean array indicating which points are considered "bad".
+        label : str
+            Label for the plot title.
+        degree : int, optional
+            Degree of the polynomial fit. Default is 3.
+        """
+        x = np.asarray(x)
+        y = np.asarray(y)
+        err = np.asarray(err)
+
+        poly_fn = T(map_params[:degree+1])
+        x_fit = np.linspace(np.min(x), np.max(x), 200)
+        y_fit = poly_fn(x_fit)
+
+        plt.figure(figsize=(8, 5))
+        plt.errorbar(x, y, yerr=err, fmt='o', label='Data', capsize=3)
+        plt.plot(x_fit, y_fit, 'r-', label='Best-fit polynomial')
+
+        print("x= ", x, "\ty= ", y, "\terr= ", err)
+        print("is_bad= ", is_bad)
+
+        print("len(x)= ", len(x), "\tlen(y)= ", len(y), "\tlen(err)= ", len(err))
+        print("len(is_bad)= ", len(is_bad))
+
+        # Highlight bad points
+        bad_x = x[is_bad]
+        bad_y = y[is_bad]
+        bad_err = err[is_bad]
+        plt.errorbar(bad_x, bad_y, yerr=bad_err, fmt='o', color='orange', label='Bad points', capsize=3)
+
+        plt.xlabel('z')
+        plt.ylabel(label)
+        plt.title(f'Polynomial Fit with Bad Points Highlighted: {label}')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f'bad_points_plot_{label}.png')
+        plt.close()
+
 
     
     def run_mcmc_for_for_1_param(self, pnum=np.array([3,4,2,5])):
@@ -1077,7 +1203,56 @@ class lf:
                 f.write(" ".join(str(x) for x in row) + "\n")
 
 
+    def log_prior_full(self, theta):
+        """
+        Set up uniform priors for the full dataset.
+        """
+        params = self.getparams(theta)
+        alpha = params[2]
+        alpha_atz6 = self.atz(6.0, alpha) 
         
+        if (np.all(theta < self.prior_max_values) and
+            np.all(theta > self.prior_min_values) and
+            alpha_atz6 < 0):
+            
+            if alpha < -7 or alpha > beta:
+                return -np.inf
+            
+            if beta > 0:
+                return -np.inf
+            
+            return 0
+        
+        else:
+            return -np.inf
+
+    def log_like_full(self, theta, data_full):
+        """
+        Calculate the log-likelihood for the full dataset.
+        """
+        zmean = data_full[1]
+        data = np.array(data_full[0])
+
+        logphi = self.log10phi(theta, data[:, 0], zmean)
+        logphi /= np.log10(np.e)
+
+    def log_prob_full(self, theta, data_full):
+        pass
+
+    def mcmc_all_params(self, data_full, guess, pnum=np.array([3,4,2,5])):
+        """
+        Run MCMC to fit for all data, with all the parameters together.
+        The parameters follows polynomial form, 
+        where the degree of polynomial is given by pnum.
+        """
+
+        print("In composite.py class-lf mcmc_all_params")
+
+        zmean = data_full[1]
+        data = np.array(data_full[0])
+
+        ndim = np.sum(pnum) + 3
+        nwalkers = 100
 
 
 
