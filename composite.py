@@ -783,6 +783,194 @@ class lf:
         
         return
 
+    def sample_data_set(self):
+        """
+        This is a function which does nothing but provide a sample data set,
+        which was obtained from running mcmc in `individual.py` file.
+        """
+
+        zmean = [0.305, 0.500, 0.699, 0.902, 1.102, 1.298, 1.502, 1.701, 1.976, 
+                 2.302, 2.446, 2.548, 2.645, 2.746, 2.850, 2.950, 3.050, 3.148, 
+                 3.246, 3.342, 3.442, 3.870, 4.343, 4.922, 5.999]
+
+        logphi = [
+            -5.8123, -6.4152, -7.0860, -6.4479, -6.2338, -6.2530, -6.2179, -6.2102, 
+            -6.1750, -5.8939, -6.1222, -5.7050, -5.7862, -6.0597, -6.0751, -6.5549, 
+            -6.5404, -6.2448, -7.0072, -7.5788, -6.7057, -7.9790, -7.6661, -7.2109, 
+            -11.7806
+        ]
+
+        logphi_l = [
+            -7.2440, -6.5481, -7.1345, -6.7162, -6.3641, -6.3556, -6.3520, -6.2861, 
+            -6.5757, -6.0534, -6.6768, -6.7663, -5.8448, -6.2410, -6.3852, -6.8366, 
+            -6.7352, -6.9824, -8.3627, -8.9081, -7.2521, -8.0520, -9.1543, -7.5857, 
+            -11.9955
+        ]
+
+        logphi_u = [
+            -5.6829, -6.0554, -6.2760, -6.3228, -6.1095, -6.0637, -6.0871, -6.1273, 
+            -6.0574, -5.7132, -6.0204, -5.7455, -5.7271, -5.9955, -5.9023, -6.1506, 
+            -6.4709, -5.9880, -6.1737, -5.4836, -6.3671, -7.7915, -6.1355, -6.9908, 
+            -11.0626
+        ]
+
+        M_star = [
+            -21.3815, -23.3261, -25.0078, -24.5790, -24.7391, -25.0499, -25.3398, -25.4468, 
+            -25.5517, -24.9456, -25.2789, -24.4237, -24.6506, -25.5248, -25.3310, -26.2386, 
+            -26.1322, -25.1820, -26.9001, -27.5000, -26.3003, -27.3448, -26.3596, -25.7025, 
+            -31.5716
+        ]
+
+        M_star_l = [
+            -24.0021, -23.6584, -25.0226, -24.9778, -24.9200, -25.1955, -25.4669, -25.5810, 
+            -26.1027, -25.3222, -26.3185, -26.3243, -24.8320, -25.8943, -26.1352, -26.7247, 
+            -26.4682, -26.8006, -29.7789, -30.4433, -27.7482, -27.4777, -28.3320, -26.0888, 
+            -31.6762
+        ]
+
+        M_star_u = [
+            -21.2237, -22.7327, -23.8103, -24.4039, -24.5331, -24.7403, -25.0790, -25.3398, 
+            -25.3735, -24.5729, -25.1411, -24.3793, -24.4275, -25.3274, -24.8381, -25.3667, 
+            -26.0178, -24.5800, -24.8789, -23.0703, -25.5200, -27.1652, -24.2435, -25.1100, 
+            -30.1533
+        ]
+
+        alpha = [
+            -2.7308, -3.3047, -4.3388, -3.6924, -3.6904, -3.6084, -3.7419, -3.7697, 
+            -3.5928, -2.9482, -3.0561, -2.7177, -2.7851, -3.2676, -2.7138, -3.4523, 
+            -3.7326, -2.7462, -3.2712, -4.3261, -3.0391, -5.3042, -3.4402, -3.2905, 
+            -5.5750
+        ]
+
+        alpha_l = [
+            -3.8568, -3.5979, -4.4419, -3.9769, -3.8309, -3.7400, -3.9089, -3.9005, 
+            -3.9318, -3.1459, -4.0794, -4.0619, -2.9288, -3.7850, -3.3733, -4.5393, 
+            -4.5487, -3.6286, -5.1750, -5.5801, -4.5576, -5.6212, -4.6919, -3.5510, 
+            -6.5226
+        ]
+
+        alpha_u = [
+            -2.6798, -2.9562, -3.3041, -3.4870, -3.5195, -3.4259, -3.5884, -3.6576, 
+            -3.4955, -2.7391, -2.9227, -2.7022, -2.6457, -3.0078, -2.4341, -2.5965, 
+            -3.4697, -2.4101, -2.1692, -2.2083, -2.2095, -4.5489, -2.9652, -3.0701, 
+            -4.4757
+        ]
+
+        beta = [
+            -0.4567, -1.5267, -2.0849, -1.7867, -1.6928, -1.7600, -1.7503, -1.6327, 
+            -1.6167, -1.4378, -1.3308, -0.7445, -0.5643, -1.0570, -1.1204, -1.5443, 
+            -1.5193, -1.1523, -1.8045, -1.9982, -1.1488, -2.0012, -2.0946, -1.1883, 
+            -2.2936
+        ]
+
+        beta_l = [
+            -2.0993, -1.7210, -2.1517, -1.9898, -1.7547, -1.8074, -1.7895, -1.6953, 
+            -1.9931, -1.5304, -1.7993, -1.9127, -0.7383, -1.2601, -1.3947, -1.7377, 
+            -1.6440, -1.7539, -1.9838, -2.1391, -1.6121, -2.0423, -2.6479, -1.6477, 
+            -2.4503
+        ]
+
+        beta_u = [
+            -0.2429, -1.3134, -1.7548, -1.7032, -1.5781, -1.4974, -1.5952, -1.5839, 
+            -1.5375, -1.2912, -1.2700, -0.7224, -0.3381, -0.9771, -0.9211, -1.3649, 
+            -1.4442, -0.9194, -1.6695, -1.5854, -0.7169, -1.7931, -0.8642, -0.4580, 
+            -2.2205
+        ]
+
+        return [[logphi, logphi_l, logphi_u],
+                [M_star, M_star_l, M_star_u],
+                [alpha, alpha_l, alpha_u],
+                [beta, beta_l, beta_u]], zmean
+    
+    def fit_polynomial_curve(self, data, err, label, degree=3):
+        """
+        Fit a polynomial of given degree to data with errors. Additionally,
+        plots the data for visual checks too!
+
+        Parameters
+        ----------
+        data : ndarray
+            ndarray of (x, y), where x is the independent variable and y is the dependent variable.
+        err : array-like
+            Symmetric errors for y values.
+        degree : int, optional
+            Degree of the polynomial to fit. Default is 3.
+
+        Returns
+        -------
+        coeffs : ndarray
+            Polynomial coefficients (highest power first).
+        poly_fn : function
+            Function to evaluate the fitted polynomial.
+        """
+        x, y = data
+        # Fit using weighted least squares
+        coeffs = np.polyfit(x, y, degree, w=1.0/err)
+        poly_fn = np.poly1d(coeffs)
+        # Plot the data points with error bars and the best-fit polynomial curve
+        plt.figure(figsize=(8, 5))
+        plt.errorbar(x, y, yerr=err, fmt='o', label='Data', capsize=3)
+        x_fit = np.linspace(np.min(x), np.max(x), 200)
+        y_fit = poly_fn(x_fit)
+        plt.plot(x_fit, y_fit, 'r-', label='Best-fit polynomial')
+
+        # Estimate 1-sigma error band for the fit using covariance matrix
+        # (np.polyfit does not return cov by default, so we use a simple MC approach)
+        n_mc = 1000
+        mc_curves = []
+        for _ in range(n_mc):
+            y_mc = y + np.random.normal(0, err)
+            coeffs_mc = np.polyfit(x, y_mc, degree, w=1.0/err)
+            mc_curves.append(np.poly1d(coeffs_mc)(x_fit))
+        mc_curves = np.array(mc_curves)
+        y_std = np.std(mc_curves, axis=0)
+        plt.fill_between(x_fit, y_fit - y_std, y_fit + y_std, color='r', alpha=0.2, label='1$\sigma$ error band')
+
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f'polynomial_fit_{label}_with_errors.png')
+        plt.close()
+        return coeffs, poly_fn
+
+    
+    def run_mcmc_for_for_1_param(self, pnum=np.array([3,4,2,5])):
+        data_full = self.sample_data_set()
+        zmean = data_full[1]
+        data = np.array(data_full[0])
+
+        params = ["logphi", "M_star", "alpha", "beta"]
+        for i in range(len(data)):
+            print(f"(x, y): {(zmean, data[i][0])}")
+            print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
+            print(f"Degree of polynomial for {params[i]}: {pnum[i]}")
+            print(f"Label for {params[i]}: {params[i]}")
+            d = (zmean, data[i][0])
+            err = ((data[i][2] - data[i][1])/2.0)
+            coeffs, poly_fn = self.fit_polynomial_curve(
+                d, err,
+                params[i], degree=pnum[i]
+            )
+            print(f"Fitted coefficients for {params[i]}: {coeffs}")
+            print(f"Polynomial function for {params[i]}: {poly_fn}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class lf_polyb:
     print("In composite.py class-lf_polyb")
 
@@ -975,7 +1163,4 @@ class lf_polyb:
         mpl.rcParams['font.size'] = '22'
         
         return
-    
-    
-
     

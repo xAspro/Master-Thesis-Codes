@@ -1124,7 +1124,7 @@ class lf:
 
         self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
         self.sampler_with_bp.reset()
-        self.sampler_with_bp.run_mcmc(None, 75000, progress=True)
+        self.sampler_with_bp.run_mcmc(None, 100000, progress=True)
         
         self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
 

@@ -14,6 +14,14 @@ import datetime
 import os
 
 
+print("bins.py has started")
+print("Arguments passed:", sys.argv)
+
+# optionally:
+print("PYTHONPATH:", sys.path)
+
+
+
 #NOTES!!!!!!!
 
 # - McGreer SDSS DR7 and S82 data were partially removed from the QLF estimate because it overlaps with the Yang et al. 2016 data.
@@ -148,18 +156,19 @@ method = 'Nelder-Mead'
 # Just for checking reduced zls
 # zls = [(0.1,0.4), (0.4, 0.6), (0.6, 0.8)]
 
-zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
-       (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),
-       (2.4, 2.5), (2.5, 2.6), (2.6, 2.7), (2.7, 2.8), (2.8, 2.9),
-       (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
-       (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5)
-    ]
+# zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
+#        (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),
+#        (2.4, 2.5), (2.5, 2.6), (2.6, 2.7), (2.7, 2.8), (2.8, 2.9),
+#        (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
+#        (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5)
+#     ]
 
-# zls =[(0.1, 0.4)]
+zls =[(0.1, 0.4)]
 
 # zls = [(2.2, 2.4)]
 
 def main(cores):
+    print("In main of bins.py")
 
     lfs = [] 
 
@@ -254,5 +263,6 @@ def main(cores):
 
 
 if __name__ == "__main__":
+    print("In name == '__main__' of bins.py")
     cores = int(sys.argv[1]) if len(sys.argv) > 1 else 1
     main(cores)
