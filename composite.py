@@ -973,9 +973,13 @@ class lf:
         # x0 = arr[2]
         # if not ((-50 < x2 < 50) and (-50 < x1 < 50) and (-50 < x0 < 50)):
         #     return -np.inf
-        if (np.any((-50 > arr) | (arr > 50))):
+        # if (np.any((-50 > arr) | (arr > 50))):
+        if (np.any((-10 > arr) | (arr > 5))):
             return -np.inf
         if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
+            return -np.inf
+        rnge = self.rnge
+        if np.any((arr < self.coeff - rnge) | (arr > self.coeff + rnge)):
             return -np.inf
         
         # print("Prior tag =", self.prior_tag)
@@ -1065,8 +1069,8 @@ class lf:
             nburns = 10000
             nprod = 200000
         else:
-            nburns = 50000
-            nprod = 100000
+            nburns = 500
+            nprod = 2000
 
         walkers = 50
         ndim = degree + 4
@@ -1082,29 +1086,36 @@ class lf:
             pos.append(walker_pos)
         pos = np.array(pos)
 
-        pos=[]
-        for _ in range(walkers):
+        # Set how many to visualize (large) and how many to use for MCMC (small)
+        oversample_factor = 1000
+        n_visualize = walkers * oversample_factor
+
+
+        self.coeff = coeff
+        self.rnge = 1
+
+        pos_all = []
+        for _ in range(n_visualize):
             walker_pos = np.empty(ndim)
-            walker_pos[:degree+1] = coeff + scale * np.random.uniform(-1, 1, degree+1)
+            walker_pos[:degree+1] = coeff + scale * np.random.uniform(-self.rnge, self.rnge, degree+1)
             walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y)
-            pos.append(walker_pos)
-        pos = np.array(pos)
+            pos_all.append(walker_pos)
+        pos_all = np.array(pos_all)
 
-        # Plot the 2D scatter of the first two parameters of the initial walker positions,
-        # colored by their log-posterior (or log-likelihood) value.
 
-        # Compute log-posterior for each walker position in the initial ensemble
-        logprobs = np.array([self.logpos_for_1_param(p, x, y, err, degree) for p in pos])
-
-        plt.figure(figsize=(7, 6))
-        sc = plt.scatter(pos[:, 0], pos[:, 1], c=logprobs, cmap='viridis', s=40, edgecolor='k')
-        plt.xlabel(labels[0])
-        plt.ylabel(labels[1])
-        plt.title(f'Initial walker positions: {labels[0]} vs {labels[1]}')
-        plt.colorbar(sc, label='log-posterior')
-        plt.tight_layout()
-        plt.savefig(f'initial_pos_distribution_{label}.png')
+        figure = corner.corner(
+            pos_all[:, :degree+1],  # Only polynomial coefficients
+            labels=[f"param_{i}" for i in range(degree+1)],
+            show_titles=True,
+            title_fmt=".2f",
+            title_kwargs={"fontsize": 12}
+        )
+        plt.suptitle("Initial Walker Distribution (Poly Coeffs)", fontsize=14)
+        figure.tight_layout()
+        figure.savefig(f'initial_pos_cornerstyle_{label}.png')
         plt.close()
+
+        pos = pos_all[:walkers]
 
 
         print("pos shape:", pos.shape)
@@ -1112,8 +1123,8 @@ class lf:
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
         sampler.run_mcmc(pos, nburns, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, nprod, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, nprod, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1380,6 +1391,7 @@ class lf:
             for row in map_param:
                 f.write(" ".join(str(x) for x in row) + "\n")
 
+        print("MAP: ", map_param)
         initial_pos = map_param[:, 0]
         uncertainties = np.array([row[1:] for row in map_param])
 
