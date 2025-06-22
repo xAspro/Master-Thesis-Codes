@@ -924,7 +924,8 @@ class lf:
             mc_curves.append(np.poly1d(coeffs_mc)(x_fit))
         mc_curves = np.array(mc_curves)
         y_std = np.std(mc_curves, axis=0)
-        plt.fill_between(x_fit, y_fit - y_std, y_fit + y_std, color='r', alpha=0.2, label='1$\sigma$ error band')
+
+        plt.fill_between(x_fit, y_fit - y_std, y_fit + y_std, color='r', alpha=0.2, label=r'1$\sigma$ error band')
 
         plt.xlabel('x')
         plt.ylabel('y')
@@ -933,6 +934,113 @@ class lf:
         plt.savefig(f'polynomial_fit_{label}_with_errors.png')
         plt.close()
         return coeffs, poly_fn
+    
+    def logprior_for_1_param(self, theta):
+        arr = theta[:-3]
+        Pb, Yb, Vb = theta[-3:]
+        if not np.any((-30 < arr) & (arr < 10)):
+            return -np.inf
+        if not ((0 < Pb < 1) and (0 < Vb < 1e10) and (-1e10 < Yb < 1e10)):
+            return -np.inf
+        return 0.0
+    
+    def loglike_for_1_param(self, theta, x, y, err, degree=3):
+        arr = theta[:-3]
+        Pb, Yb, Vb = theta[-3:]
+
+        poly_fn = np.poly1d(arr)(x)
+
+        epsilon = 1e-10  # Small value to prevent division by zero
+        safe_sig2 = err**2 + epsilon
+        safe_Vb = Vb + epsilon
+
+        logforeground_model = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip(((y - poly_fn))**2 / safe_sig2, -1e10, 1e10))
+        logbackground_model = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((y - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
+
+        a = np.log(1 - Pb) + logforeground_model
+        b = np.log(Pb) + logbackground_model
+
+        lnL = np.sum(np.logaddexp(a, b))
+
+        return lnL
+
+
+    def logpos_for_1_param(self, theta, x, y, err, degree=3):
+        lp = self.logprior_for_1_param(theta)
+        if not np.isfinite(lp):
+            return -np.inf
+        ll = self.loglike_for_1_param(theta, x, y, err, degree)
+        return lp + ll
+
+    def mcmc_for_1_param(self, x, y, err, label, coeff, degree=3):
+        walkers = 20
+        ndim = degree + 4
+        # Each walker position: [poly_coeffs..., Pb, Yb, Vb]
+        pos = []
+        for _ in range(walkers):
+            walker_pos = np.empty(ndim)
+            walker_pos[:degree+1] = coeff + 1e-2 * np.random.randn(degree+1)
+            walker_pos[degree+1] = np.random.uniform(0, 1)
+            walker_pos[degree+2] = np.random.uniform(-1e2, 1e2)
+            walker_pos[degree+3] = np.random.uniform(0, 1e2)
+            pos.append(walker_pos)
+        pos = np.array(pos)
+
+        print("pos shape:", pos.shape)
+
+        sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
+                                        args=(x, y, err, degree))
+        sampler.run_mcmc(pos, 5000, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, 100000, progress=True)
+
+        samples = sampler.get_chain(flat=True)
+        print("MCMC sampling completed.")
+
+        corner.corner(samples, labels=[f'param_{i}' for i in range(degree + 4)],
+                      quantiles=[0.16, 0.5, 0.84],
+                      show_titles=True, title_kwargs={"fontsize": 12})
+        plt.savefig(f'mcmc-{label}_results.png')
+        plt.close()
+
+        # Plot chains for each parameter
+        mpl.rcParams['font.size'] = '10'
+        fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
+        for i in range(ndim):
+            ax = axes[i] if ndim > 1 else axes
+            for j in range(walkers):
+                ax.plot(sampler.chain[j, :, i], color='k', alpha=0.1)
+            ax.set_ylabel(f'param_{i}')
+        axes[-1].set_xlabel('step')
+        plt.tight_layout()
+        plt.savefig(f'mcmc-{label}_chains.png')
+        plt.close()
+
+        # Print autocorrelation time and acceptance rate
+        try:
+            tau = sampler.get_autocorr_time()
+            print("Autocorrelation time for each parameter:", tau)
+        except Exception as e:
+            print("Could not compute autocorrelation time:", e)
+        print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
+
+        marginalised_samples = sampler.get_chain(flat=True)[:, :-3]  # Exclude Pb, Yb, Vb
+
+        # Find the index of the maximum posterior sample
+        max_idx = np.argmax(marginalised_samples, axis=0)
+        print("Index of maximum posterior sample:", max_idx)
+        map_params = sampler.get_chain(flat=True)[max_idx]
+
+        print(f"MAP estimate for {label}: {map_params}")
+
+        # Optionally, print each parameter's MAP value
+        for i, val in enumerate(map_params):
+            print(f"param_{i} (MAP): {val}")
+
+        return map_params
+
+        TOMORROW!!! CREATE A NEW LF SAVE FILE WHICH CONTAINS BASICALLY A VERY SMALL BIN
+        ITS TAKING TOO MUCH TIME BECAUSE NP.SAVE AND NP.LOAD IS MAKING IT SLOW
 
     
     def run_mcmc_for_for_1_param(self, pnum=np.array([3,4,2,5])):
@@ -941,6 +1049,8 @@ class lf:
         data = np.array(data_full[0])
 
         params = ["logphi", "M_star", "alpha", "beta"]
+        coeff_list = []
+        map_param = []
         for i in range(len(data)):
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
@@ -953,7 +1063,21 @@ class lf:
                 params[i], degree=pnum[i]
             )
             print(f"Fitted coefficients for {params[i]}: {coeffs}")
-            print(f"Polynomial function for {params[i]}: {poly_fn}")
+            print(f"Polynomial function for {params[i]}: \n{poly_fn}")
+            coeff_list.append(coeffs)
+
+            map_param.append(self.mcmc_for_1_param(
+                zmean, data[i][0], (data[i][2] - data[i][1])/2.0,
+                params[i], coeffs, degree=pnum[i]
+            ))
+
+        # Save the MAP parameter estimates to a file, one row per line
+        with open("composite_map_param_estimate.dat", "w") as f:
+            for row in map_param:
+                f.write(" ".join(str(x) for x in row) + "\n")
+
+
+        
 
 
 
