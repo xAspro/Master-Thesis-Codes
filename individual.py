@@ -809,7 +809,7 @@ class lf:
         return lp - self.neglnlike(theta)
 
 
-    def run_mcmc(self, ncores):
+    def run_mcmc(self, ncores=1):
         """
         Run Markov Chain Monte Carlo (MCMC) sampling to estimate the posterior distribution
         of the QLF parameters.
@@ -828,7 +828,7 @@ class lf:
 
         """
         
-        self.ndim, self.nwalkers = self.bf.x.size, 100
+        self.ndim, self.nwalkers = self.bf.x.size, 50
         self.mcmc_start = self.bf.x 
         pos = [self.mcmc_start + 1e-4*np.random.randn(self.ndim) for i
                in range(self.nwalkers)]
@@ -840,9 +840,9 @@ class lf:
 
         lnprob_pickable = dill.loads(dill.dumps(self._lnprob))
         self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
-                                            lnprob_pickable, pool=pool)
+                                            lnprob_pickable, pool=None)
         print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers, self.ndim))
-        self.sampler.run_mcmc(pos, 3000, progress=True)
+        self.sampler.run_mcmc(pos, 1500, progress=True)
 
         self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
         

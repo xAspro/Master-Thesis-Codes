@@ -238,6 +238,16 @@ lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum1)
 
 lfg1.run_mcmc_for_for_1_param(pnum1)
 
+
+# # sample data from earlier runs. logphi and mstar are constrained well,
+# # but not so well for alpha and beta.
+# guess =  np.array([-0.23, 0.95, -7.08, -0.29, 2.11, -5.06, -21.44, -0.14, 1.05, -1.94, 2.65, 0.06, -0.68, 2.27, -2.60, -0.52])
+
+# uncertainty = np.array([0.10, -0.13, 0.48, -0.42, 0.38, -0.41, 0.13, -0.13, 0.73, -0.87, 1.64, -1.42, 0.88, -0.95,
+#                         8.90, -7.93, 7.39, -9.18, 8.48, -8.05, 11.81, -4.57, 28.87, -30.28, 29.68, -29.28, 27.53, -31.28, 
+#                         32.62, -26.22, 30.23, -29.11])
+# lfg1.mcmc_all_params(lf.sample_data_set, guess, uncertainty, pnum1)
+
 import sys
 sys.exit("\n\nTesting Purpose\n\n")
 # lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[4,4,4,4])

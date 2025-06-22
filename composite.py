@@ -1051,69 +1051,6 @@ class lf:
 
         return np.array([Pb, Yb, Vb]).T
     
-    def plot_logposterior_2d_slice(logpos_fn, theta_fixed, i, j, x, y, err,
-                                    ranges=None, label=None, degree=3, resolution=100):
-        """
-        Plots a 2D slice of the log-posterior by varying parameters i and j.
-
-        Parameters:
-        -----------
-        logpos_fn : callable
-            The function that returns the log-posterior.
-        theta_fixed : ndarray
-            1D array of the full parameter vector with fixed values.
-        i, j : int
-            Indices of the parameters to vary in 2D.
-        x, y, err : arrays
-            Data inputs to pass to the logpos function.
-        ranges : tuple of tuples, optional
-            ((xmin, xmax), (ymin, ymax)) — if None, auto-set based on fixed values.
-        label : str
-            Label to use in the filename.
-        degree : int
-            Degree of polynomial model (passed to logpos).
-        resolution : int
-            Number of grid points per axis.
-        """
-        theta = theta_fixed.copy()
-        
-        if ranges is None:
-            xi = theta[i]
-            xj = theta[j]
-            dx = abs(xi) * 0.5 + 1e-2
-            dy = abs(xj) * 0.5 + 1e-2
-            range_i = (xi - dx, xi + dx)
-            range_j = (xj - dy, xj + dy)
-        else:
-            range_i, range_j = ranges
-
-        grid_i = np.linspace(*range_i, resolution)
-        grid_j = np.linspace(*range_j, resolution)
-        I, J = np.meshgrid(grid_i, grid_j)
-        Z = np.full_like(I, fill_value=np.nan)
-
-        for a in range(resolution):
-            for b in range(resolution):
-                theta[i] = I[a, b]
-                theta[j] = J[a, b]
-                val = logpos_fn(theta, x, y, err, degree=degree)
-                if np.isfinite(val):
-                    Z[a, b] = val
-
-        plt.figure(figsize=(7, 5))
-        import matplotlib.cm as cm
-        plt.contourf(I, J, Z, levels=50, cmap=cm.viridis)
-        plt.xlabel(f"$\\theta_{i}$")
-        plt.ylabel(f"$\\theta_{j}$")
-        plt.colorbar(label="log-posterior")
-        plt.title(f"log-posterior slice: $\\theta_{i}$ vs $\\theta_{j}$")
-        fname = f"logpost_slice_theta{i}_theta{j}_{label}.png" if label else f"logpost_slice_theta{i}_theta{j}.png"
-        plt.tight_layout()
-        plt.savefig(fname)
-        plt.close()
-        
-        return
-
 
     def mcmc_for_1_param(self, x, y, err, label, coeff, degree=3):
         x = np.array(x)
@@ -1121,26 +1058,54 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        if label == 'logphi' or label == 'M_star':
+        if label == 'logphi':
+            nburns = 20000
+            nprod = 40000
+        elif label == 'M_star':
             nburns = 10000
             nprod = 200000
         else:
-            nburns = 1000
-            nprod = 5000
+            nburns = 50000
+            nprod = 100000
 
         walkers = 50
         ndim = degree + 4
         # Each walker position: [poly_coeffs..., Pb, Yb, Vb]
         pos = []
-        scale = 1e-2  # Scale for the initial walker positions
-        # if label == 'beta' or label == 'alpha':
-        #     scale = 1e-2
+        scale = 1e-1  # Scale for the initial walker positions
+        if label == 'beta' or label == 'alpha':
+            scale = 1
         for _ in range(walkers):
             walker_pos = np.empty(ndim)
             walker_pos[:degree+1] = coeff + scale * np.random.randn(degree+1)
             walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y)
             pos.append(walker_pos)
         pos = np.array(pos)
+
+        pos=[]
+        for _ in range(walkers):
+            walker_pos = np.empty(ndim)
+            walker_pos[:degree+1] = coeff + scale * np.random.uniform(-1, 1, degree+1)
+            walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y)
+            pos.append(walker_pos)
+        pos = np.array(pos)
+
+        # Plot the 2D scatter of the first two parameters of the initial walker positions,
+        # colored by their log-posterior (or log-likelihood) value.
+
+        # Compute log-posterior for each walker position in the initial ensemble
+        logprobs = np.array([self.logpos_for_1_param(p, x, y, err, degree) for p in pos])
+
+        plt.figure(figsize=(7, 6))
+        sc = plt.scatter(pos[:, 0], pos[:, 1], c=logprobs, cmap='viridis', s=40, edgecolor='k')
+        plt.xlabel(labels[0])
+        plt.ylabel(labels[1])
+        plt.title(f'Initial walker positions: {labels[0]} vs {labels[1]}')
+        plt.colorbar(sc, label='log-posterior')
+        plt.tight_layout()
+        plt.savefig(f'initial_pos_distribution_{label}.png')
+        plt.close()
+
 
         print("pos shape:", pos.shape)
 
@@ -1184,6 +1149,10 @@ class lf:
 
         corner.corner(samples, labels=labels, bounds=bounds,
                       quantiles=[0.16, 0.5, 0.84], bins=100, 
+                      levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
+                      smooth=True, 
+                      fill_contours=True,
+                      plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
         plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
         plt.savefig(f'mcmc-{label}_results_{self.prior_tag}.png')
@@ -1259,24 +1228,15 @@ class lf:
 
         self.plot_bad_points(x, y, err, map_params, is_bad, label, degree=degree)
 
-
-        for i in range(len(map_params) - 1):
-            self.plot_logposterior_2d_slice(
-                self.loglike_for_1_param,
-                theta_fixed=map_params,
-                i=i,
-                j=i+1,
-                x=x, y=y, err=err,
-                label=f"{i}_vs_{i+1}",
-                degree=degree,
-                resolution=100
-            )
-
-
         # import sys
         # sys.exit("Testing")
 
-        return map_params
+        # Compute 16th, 50th, and 84th percentiles for each parameter (excluding nuisance)
+        percentiles = np.percentile(marginalised_samples, [16, 50, 84], axis=0)
+        minus_sigma = percentiles[1] - percentiles[0]
+        plus_sigma = percentiles[2] - percentiles[1]
+
+        return [map_params, minus_sigma, plus_sigma]
     
     def find_bad_points(self, x, y, err, map_params, nuisance_params, degree=3):
         """
@@ -1394,8 +1354,8 @@ class lf:
         coeff_list = []
         map_param = []
         for i in range(len(data)):
-            # if i != 2:
-            #     continue
+            if i < 2:
+                continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
             print(f"Degree of polynomial for {params[i]}: {pnum[i]}")
@@ -1419,6 +1379,13 @@ class lf:
         with open("composite_map_param_estimate.dat", "w") as f:
             for row in map_param:
                 f.write(" ".join(str(x) for x in row) + "\n")
+
+        initial_pos = map_param[:, 0]
+        uncertainties = np.array([row[1:] for row in map_param])
+
+        self.mcmc_all_params(
+            data_full, initial_pos, uncertainties, pnum=pnum
+        )
 
 
     def log_prior_full(self, theta):
@@ -1457,7 +1424,7 @@ class lf:
     def log_prob_full(self, theta, data_full):
         pass
 
-    def mcmc_all_params(self, data_full, guess, pnum=np.array([3,4,2,5])):
+    def mcmc_all_params(self, data_full, guess, uncertainty, pnum=np.array([3,4,2,5])):
         """
         Run MCMC to fit for all data, with all the parameters together.
         The parameters follows polynomial form, 
@@ -1471,6 +1438,16 @@ class lf:
 
         ndim = np.sum(pnum) + 3
         nwalkers = 100
+
+        initial_guess = np.zeros(ndim)
+        splitlocs = np.cumsum(pnum)
+        initial_guess[:splitlocs[0]] = guess[:splitlocs[0]]         # logphi
+        initial_guess[splitlocs[0]:splitlocs[1]] = guess[splitlocs[0]:splitlocs[1]] # M_star
+        initial_guess[splitlocs[1]:splitlocs[2]] = guess[splitlocs[1]:splitlocs[2]] # alpha
+        initial_guess[splitlocs[2]:splitlocs[3]] = guess[splitlocs[2]:splitlocs[3]] # beta
+        initial_guess[-3:] = self.find_Pb_Yb_Vb(data[:, 0], walkers=nwalkers)   # Pb, Yb, Vb
+
+
 
 
 
