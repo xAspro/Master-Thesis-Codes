@@ -594,41 +594,41 @@ class lf:
 
         return
 
-    def find_Pb_Yb_Vb(self):
-        Pb = np.random.uniform(0.0, 1.0, size=self.nwalkers_with_bp)
-        mean = self.bf.x[0]
-        print("mean = ", mean)
-        # log10_Yb = np.random.normal(loc=mean, scale=1, size=self.nwalkers_with_bp)
-        # Yb = 10.0**log10_Yb
-        # log10_Vb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
-        # Vb = 10.0**log10_Vb
+    # def find_Pb_Yb_Vb(self):
+    #     Pb = np.random.uniform(0.0, 1.0, size=self.nwalkers_with_bp)
+    #     mean = self.bf.x[0]
+    #     print("mean = ", mean)
+    #     # log10_Yb = np.random.normal(loc=mean, scale=1, size=self.nwalkers_with_bp)
+    #     # Yb = 10.0**log10_Yb
+    #     # log10_Vb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
+    #     # Vb = 10.0**log10_Vb
 
-        Yb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
+    #     Yb = np.random.normal(loc=mean, scale=5, size=self.nwalkers_with_bp)
 
-        # Hand picking alpha and beta for gamma distribution
-        # to get mode around 10 and mean around 20
-        alpha, beta = 2, 10
-        Vb = np.random.gamma(shape=alpha, scale=beta, size=self.nwalkers_with_bp)
+    #     # Hand picking alpha and beta for gamma distribution
+    #     # to get mode around 10 and mean around 20
+    #     alpha, beta = 2, 10
+    #     Vb = np.random.gamma(shape=alpha, scale=beta, size=self.nwalkers_with_bp)
 
-        # print("\nStatistics of Yb and Vb for testing purposes")
-        # print("Yb mean = ", np.mean(Yb), "\tYb std = ", np.std(Yb))
-        # print("Vb mean = ", np.mean(Vb), "\tVb std = ", np.std(Vb))
-        # print("Pb mean = ", np.mean(Pb), "\tPb std = ", np.std(Pb))
-        # print("\n\n")
-        # print("log10_Yb mean = ", np.mean(log10_Yb),
-        #       "\tlog10_Yb std = ", np.std(log10_Yb))
-        # print("log10_Vb mean = ", np.mean(log10_Vb),
-        #       "\tlog10_Vb std = ", np.std(log10_Vb))
+    #     # print("\nStatistics of Yb and Vb for testing purposes")
+    #     # print("Yb mean = ", np.mean(Yb), "\tYb std = ", np.std(Yb))
+    #     # print("Vb mean = ", np.mean(Vb), "\tVb std = ", np.std(Vb))
+    #     # print("Pb mean = ", np.mean(Pb), "\tPb std = ", np.std(Pb))
+    #     # print("\n\n")
+    #     # print("log10_Yb mean = ", np.mean(log10_Yb),
+    #     #       "\tlog10_Yb std = ", np.std(log10_Yb))
+    #     # print("log10_Vb mean = ", np.mean(log10_Vb),
+    #     #       "\tlog10_Vb std = ", np.std(log10_Vb))
 
-        # print("Mean = ", mean),
+    #     # print("Mean = ", mean),
         
-        # import sys
+    #     # import sys
 
-        # sys.exit("\nQuiting for testing purposes\n")
+    #     # sys.exit("\nQuiting for testing purposes\n")
 
-        print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
+    #     print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
 
-        return np.array([Pb, Yb, Vb]).T
+    #     return np.array([Pb, Yb, Vb]).T
     
     def _lnprior_with_bad_points(self, params):
         logphi, M_star, alpha, beta = params[:4]
@@ -968,22 +968,28 @@ class lf:
         Pb, Yb, Vb = theta[-3:]
         # if np.any((-50 > arr) | (arr > 50)):
         #     return -np.inf
-        x2 = arr[0]
-        x1 = arr[1]
-        x0 = arr[2]
-        if not ((-50 < x2 < 50) and (-50 < x1 < 50) and (-50 < x0 < 50)):
+        # x2 = arr[0]
+        # x1 = arr[1]
+        # x0 = arr[2]
+        # if not ((-50 < x2 < 50) and (-50 < x1 < 50) and (-50 < x0 < 50)):
+        #     return -np.inf
+        if (np.any((-50 > arr) | (arr > 50))):
             return -np.inf
         if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
             return -np.inf
-        return -Pb
-        return 0.0
+        
+        # print("Prior tag =", self.prior_tag)
+        if self.prior_tag == 1:
+            return 0.0
+        if self.prior_tag == 2:
+            return -Pb
     
     def loglike_for_1_param(self, theta, x, y, err, degree=3):
         arr = theta[:-3]
         Pb, Yb, Vb = theta[-3:]
 
-        # poly_fn = np.poly1d(arr)(x)
-        poly_fn = self.atz(x, arr)
+        poly_fn = np.poly1d(arr)(x)
+        # poly_fn = self.atz(x, arr)
 
         epsilon = 1e-10  # Small value to prevent division by zero
         safe_sig2 = err**2 + epsilon
@@ -997,6 +1003,21 @@ class lf:
 
         lnL = np.sum(np.logaddexp(a, b))
 
+        if np.isnan(lnL):
+            print("\nNaN in loglike_for_1_param")
+            print("Pb =", Pb)
+            print("Yb =", Yb)
+            print("Vb =", Vb)
+            print("safe_sig2 =", safe_sig2)
+            print("safe_Vb =", safe_Vb)
+            print("logforeground_model =", logforeground_model)
+            print("logbackground_model =", logbackground_model)
+            print("a =", a)
+            print("b =", b)
+            print("lnL =", lnL)
+            print()
+            return -np.inf
+
         return lnL
 
 
@@ -1005,9 +1026,13 @@ class lf:
         if not np.isfinite(lp):
             return -np.inf
         ll = self.loglike_for_1_param(theta, x, y, err, degree)
+        if np.isnan(ll):
+            print("NaN in loglike_for_1_param")
+        if np.isnan(lp):
+            print("NaN in logprior_for_1_param")
         return lp + ll
     
-    def find_Pb_Yb_Vb(self, y, walkers):
+    def find_Pb_Yb_Vb(self, y, walkers=1):
         Pb = np.random.uniform(0.0, 1.0, size=walkers)
 
         mean = np.mean(y)
@@ -1030,15 +1055,16 @@ class lf:
         x = np.array(x)
         y = np.array(y)
         err = np.array(err)
+        self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        walkers = 14
+        walkers = 50
         ndim = degree + 4
         # Each walker position: [poly_coeffs..., Pb, Yb, Vb]
         pos = []
         for _ in range(walkers):
             walker_pos = np.empty(ndim)
             walker_pos[:degree+1] = coeff + 1e-2 * np.random.randn(degree+1)
-            walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y, walkers)[_]
+            walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y)
             pos.append(walker_pos)
         pos = np.array(pos)
 
@@ -1046,9 +1072,9 @@ class lf:
 
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
-        sampler.run_mcmc(pos, 200, progress=True)
+        sampler.run_mcmc(pos, 500, progress=True)
         sampler.reset()
-        sampler.run_mcmc(None, 100000, progress=True)
+        sampler.run_mcmc(None, 10000, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1058,7 +1084,8 @@ class lf:
         corner.corner(samples, labels=labels,
                       quantiles=[0.16, 0.5, 0.84],
                       show_titles=True, title_kwargs={"fontsize": 12})
-        plt.savefig(f'mcmc-{label}_results.png')
+        plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
+        plt.savefig(f'mcmc-{label}_results_{self.prior_tag}.png')
         plt.close()
 
         # Plot chains for each parameter
@@ -1071,7 +1098,7 @@ class lf:
             ax.set_ylabel(f'param_{i}')
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        plt.savefig(f'mcmc-{label}_chains.png')
+        plt.savefig(f'mcmc-{label}_chains_{self.prior_tag}.png')
         plt.close()
 
         # Print autocorrelation time and acceptance rate
@@ -1109,8 +1136,8 @@ class lf:
 
         self.plot_bad_points(x, y, err, map_params, is_bad, label, degree=degree)
 
-        import sys
-        sys.exit("Testing")
+        # import sys
+        # sys.exit("Testing")
 
         return map_params
     
@@ -1214,7 +1241,7 @@ class lf:
         plt.title(f'Polynomial Fit with Bad Points Highlighted: {label}')
         plt.legend()
         plt.tight_layout()
-        plt.savefig(f'bad_points_plot_{label}.png')
+        plt.savefig(f'bad_points_plot_{label}_{self.prior_tag}.png')
         plt.close()
 
 
