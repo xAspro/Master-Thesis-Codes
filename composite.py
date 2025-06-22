@@ -1057,6 +1057,13 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
+        if label == 'logphi' or label == 'M_star':
+            nburns = 2500
+            nprod = 15000
+        else:
+            nburns = 1000
+            nprod = 5000
+
         walkers = 50
         ndim = degree + 4
         # Each walker position: [poly_coeffs..., Pb, Yb, Vb]
@@ -1075,9 +1082,9 @@ class lf:
 
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
-        sampler.run_mcmc(pos, 10000, progress=True)
-        # sampler.reset()
-        # sampler.run_mcmc(None, 20000, progress=True)
+        sampler.run_mcmc(pos, nburns, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, nprod, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1107,7 +1114,7 @@ class lf:
             return np.percentile(samples, [lower, upper], axis=0).T
 
         # Example usage: print 95% credible intervals for each parameter
-        bounds = central_bounds(samples, q=0.95)
+        bounds = central_bounds(samples, q=0.90)
         for i, (lo, hi) in enumerate(bounds):
             print(f"Param {i}: {lo:.4f} to {hi:.4f} (central 95%)")
 
