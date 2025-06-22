@@ -1047,7 +1047,7 @@ class lf:
         alpha, beta = 2, 1
         Vb = np.random.gamma(shape=alpha, scale=beta, size=walkers)
 
-        print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
+        # print("shape = ", np.array([Pb, Yb, Vb]).T.shape)
 
         return np.array([Pb, Yb, Vb]).T
 
@@ -1061,9 +1061,9 @@ class lf:
         ndim = degree + 4
         # Each walker position: [poly_coeffs..., Pb, Yb, Vb]
         pos = []
-        scale = 1e-1  # Scale for the initial walker positions
-        if label == 'beta':
-            scale = 2
+        scale = 1e-2  # Scale for the initial walker positions
+        # if label == 'beta' or label == 'alpha':
+        #     scale = 1e-2
         for _ in range(walkers):
             walker_pos = np.empty(ndim)
             walker_pos[:degree+1] = coeff + scale * np.random.randn(degree+1)
@@ -1077,14 +1077,41 @@ class lf:
                                         args=(x, y, err, degree))
         sampler.run_mcmc(pos, 10000, progress=True)
         # sampler.reset()
-        # sampler.run_mcmc(None, 10000, progress=True)
+        # sampler.run_mcmc(None, 20000, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
 
         labels = [f'$x^{degree - i}$' for i in range(degree + 1)] + ['Pb', 'Yb', 'Vb']
 
-        corner.corner(samples, labels=labels,
+        # Compute bounds that cover a central q percentile of the samples
+        def central_bounds(samples, q=0.95):
+            """
+            Compute the lower and upper bounds that enclose a central q percentile of the samples.
+            The bounds are at (1-q)/2 and 1-(1-q)/2 percentiles.
+
+            Parameters
+            ----------
+            samples : ndarray
+                MCMC samples, shape (nsamples, ndim)
+            q : float
+                Central percentile to cover (e.g., 0.95 for 95% interval)
+
+            Returns
+            -------
+            bounds : ndarray
+                Array of shape (ndim, 2): lower and upper bounds for each parameter
+            """
+            lower = 100 * (1 - q) / 2
+            upper = 100 * (1 + q) / 2
+            return np.percentile(samples, [lower, upper], axis=0).T
+
+        # Example usage: print 95% credible intervals for each parameter
+        bounds = central_bounds(samples, q=0.95)
+        for i, (lo, hi) in enumerate(bounds):
+            print(f"Param {i}: {lo:.4f} to {hi:.4f} (central 95%)")
+
+        corner.corner(samples, labels=labels, bounds=bounds,
                       quantiles=[0.16, 0.5, 0.84], bins=100, 
                       show_titles=True, title_kwargs={"fontsize": 12})
         plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
@@ -1241,6 +1268,7 @@ class lf:
 
         plt.xlabel('z')
         plt.ylabel(label)
+        plt.ylim(np.min(y) - 1, np.max(y) + 1)  # Adjust y-limits as needed
         plt.title(f'Polynomial Fit with Bad Points Highlighted: {label}')
         plt.legend()
         plt.tight_layout()
@@ -1250,6 +1278,7 @@ class lf:
 
     
     def run_mcmc_for_for_1_param(self, pnum=np.array([3,4,2,5])):
+        pnum = np.array([3, 4, 4, 5])
         data_full = self.sample_data_set()
         zmean = data_full[1]
         data = np.array(data_full[0])
@@ -1258,8 +1287,8 @@ class lf:
         coeff_list = []
         map_param = []
         for i in range(len(data)):
-            if i != 3:
-                continue
+            # if i != 2:
+            #     continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
             print(f"Degree of polynomial for {params[i]}: {pnum[i]}")
