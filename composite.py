@@ -966,11 +966,16 @@ class lf:
     def logprior_for_1_param(self, theta):
         arr = theta[:-3]
         Pb, Yb, Vb = theta[-3:]
-        if np.any((-50 > arr) | (arr > 50)):
+        # if np.any((-50 > arr) | (arr > 50)):
+        #     return -np.inf
+        x2 = arr[0]
+        x1 = arr[1]
+        x0 = arr[2]
+        if not ((-50 < x2 < 50) and (-50 < x1 < 50) and (-50 < x0 < 50)):
             return -np.inf
         if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
             return -np.inf
-        return -np.log(Pb)
+        return -Pb
         return 0.0
     
     def loglike_for_1_param(self, theta, x, y, err, degree=3):
@@ -1026,7 +1031,7 @@ class lf:
         y = np.array(y)
         err = np.array(err)
 
-        walkers = 100
+        walkers = 14
         ndim = degree + 4
         # Each walker position: [poly_coeffs..., Pb, Yb, Vb]
         pos = []
@@ -1041,9 +1046,9 @@ class lf:
 
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
-        sampler.run_mcmc(pos, 1, progress=True)
+        sampler.run_mcmc(pos, 200, progress=True)
         sampler.reset()
-        sampler.run_mcmc(None, 1000, progress=True)
+        sampler.run_mcmc(None, 100000, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1231,7 +1236,7 @@ class lf:
             err = ((data[i][2] - data[i][1])/2.0)
             coeffs, poly_fn = self.fit_polynomial_curve(
                 d, err,
-                params[i], degree=pnum[i]
+                params[i], degree=(pnum[i]-1)
             )
             print(f"Fitted coefficients for {params[i]}: {coeffs}")
             print(f"Polynomial function for {params[i]}: \n{poly_fn}")
@@ -1239,7 +1244,7 @@ class lf:
 
             map_param.append(self.mcmc_for_1_param(
                 zmean, data[i][0], (data[i][2] - data[i][1])/2.0,
-                params[i], coeffs, degree=pnum[i]
+                params[i], coeffs, degree=(pnum[i]-1)
             ))
 
         # Save the MAP parameter estimates to a file, one row per line
