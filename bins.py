@@ -232,6 +232,7 @@ def main(cores):
         drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
         print("Drawn the LF for this bin.")
 
+
         
         # FOR SUMMARY (Fig 4)
         if WRITE_PARAMS2: 
@@ -245,6 +246,9 @@ def main(cores):
 
         # mosaic.draw(lfs)
 
+
+        lfi.clear_samples()
+
     end_time = time.time()
 
 
@@ -256,7 +260,8 @@ def main(cores):
 
     print("\n\n\nlfs:", lfs)
 
-    np.save('bins_lfs.npy', lfs)
+
+    np.save('bins_lfs_1.npy', lfs)
 
     print(type(lfs))
     print(dir(lfs))

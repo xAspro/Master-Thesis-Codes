@@ -1223,6 +1223,27 @@ class lf:
 
         return
     
+    def clear_samples(self):
+        """
+        Clear the stored samples and reset the sampler.
+        
+        This method clears the `samples` attribute and resets the `sampler` attribute
+        to None, effectively removing any previously stored MCMC samples.
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        None
+        """
+        self.samples = None
+        self.sampler = None
+        self.sampler_with_bp = None
+        self.samples_with_bp = None
+        return
+    
 
     def corner_quantile(self, samples, central_fraction=0.8, **kwargs):
         lower_q = (1 - central_fraction) / 2
