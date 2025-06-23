@@ -975,7 +975,7 @@ class lf:
         # if not ((-50 < x2 < 50) and (-50 < x1 < 50) and (-50 < x0 < 50)):
         #     return -np.inf
         # if (np.any((-50 > arr) | (arr > 50))):
-        if (np.any((-10 > arr) | (arr > 5))): # for beta and alpha
+        if (np.any((-10 > arr) | (arr > 7))): # for beta and alpha
             return -np.inf
         # if (np.any((-40 > arr) | (arr > 5))): ## FOR m_star
         #     return -np.inf
@@ -1073,7 +1073,7 @@ class lf:
             nprod = 200000
         else:
             nburns = 50000
-            nprod = 2000
+            nprod = 200000
 
         walkers = 50
         ndim = degree + 4
@@ -1108,8 +1108,8 @@ class lf:
 
 
         figure = corner.corner(
-            pos_all[:, :degree+1],  # Only polynomial coefficients
-            labels=[f"param_{i}" for i in range(degree+1)],
+            pos_all,  # All coefficients: polynomial plus nuisance parameters
+            labels=[f"param_{i}" for i in range(degree+4)],
             show_titles=True,
             title_fmt=".2f",
             title_kwargs={"fontsize": 12}
@@ -1375,7 +1375,7 @@ class lf:
         coeff_list = []
         map_param = []
         for i in range(len(data)):
-            if i >= 2:
+            if i < 3:
                 continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
@@ -1461,7 +1461,7 @@ class lf:
         """
         Calculate the log10 of the QLF for the full dataset.
         """
-        print("theta = ", theta)
+        # print("theta = ", theta)
         params = self.getparams(theta)
 
         # print("params = ", params)
@@ -1479,19 +1479,32 @@ class lf:
         # print("M_star = ", M_star)
         # print("alpha = ", alpha)
         # print("beta = ", beta)
-        # import sys; sys.exit("Testing log10phi_full")
+        
 
         # print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
-        # print(f"mag = {mag}, z = {z}")
+        # # print(f"mag = {mag}, z = {z}")
         # print(f"shape of mag = {mag.shape}, shape of z = {z.shape}")
 
         # print(f"shape of log10phi_star = {log10phi_star.shape}, shape of M_star = {M_star.shape}")
         # print(f"shape of alpha = {alpha.shape}, shape of beta = {beta.shape}")
+        # print(f"shape of M_star = {M_star.shape}, shape of mag = {mag.shape}")
 
+        # import sys; sys.exit("Testing log10phi_full")
+
+        ln10 = np.log(10)
+
+        log10_num = log10phi_star
+        log10_den = np.logaddexp(
+            0.4 * ln10 * (alpha + 1) * (mag - M_star),
+            0.4 * ln10 * (beta + 1) * (mag - M_star)
+        ) / ln10
+
+        log10phi = log10_num - log10_den
+
+        # print(f"log10phi shape = {log10phi.shape}, mag shape = {mag.shape}, z shape = {z.shape}")
         
-        phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(mag-M_star)) +
-                                     10.0**(0.4*(beta+1)*(mag-M_star)))
-        return np.log10(phi)
+        # import sys; sys.exit("Testing log10phi_full")
+        return log10phi
 
     def neg_log_like_full(self, theta, data_full):
         """
@@ -1600,7 +1613,7 @@ class lf:
 
         self.bf_full = result
         print("Best fit parameters for full dataset:", result.x)
-        import sys; sys.exit("Testing find_best_fit_full")
+        # import sys; sys.exit("Testing find_best_fit_full")
         return result
 
     def mcmc_all_params(self, data_full, guess, pnum=np.array([3,4,2,5])):
@@ -1822,6 +1835,53 @@ class lf:
         guess = np.concatenate((guess, nuisance_param_guess))
 
         self.find_best_fit_full(data_full, guess)
+
+        # Plot each parameter (logphi, M_star, alpha, beta) separately with its data points
+        params = ["logphi", "M_star", "alpha", "beta"]
+        splitlocs = np.cumsum(pnum)
+        param_indices = [0] + splitlocs.tolist()
+        zmean = data_full[1]
+        data = np.array(data_full[0])
+
+        param_data = self.sample_data_set()
+
+        for i, param in enumerate(params):
+            # Use sample_data_set for plotting the parameter evolution
+            sample_data = param_data[0]
+            sample_zmean = param_data[1]
+            y_data = sample_data[i][0]
+            yerr = (np.array(sample_data[i][2]) - np.array(sample_data[i][1])) / 2.0
+            yerr = np.abs(yerr)
+            coeffs = self.bf_full.x[param_indices[i]:param_indices[i+1]]
+            degree = len(coeffs) - 1
+
+            # Use the correct function for each parameter
+            z_fit = np.linspace(np.min(sample_zmean), np.max(sample_zmean), 200)
+            params_split = self.getparams(self.bf_full.x[:-3])
+            if param == "logphi":
+                y_fit = self.atz(z_fit, params_split[0])
+            elif param == "M_star":
+                y_fit = self.atz(z_fit, params_split[1])
+            elif param == "alpha":
+                y_fit = self.atz(z_fit, params_split[2])
+            elif param == "beta":
+                y_fit = self.atz_beta(z_fit, params_split[3])
+
+            print(f"Plotting {param} with coefficients: {coeffs}")
+
+
+            plt.figure(figsize=(8, 5))
+            plt.errorbar(sample_zmean, y_data, yerr=yerr, fmt='o', label='Sample Data', capsize=3)
+            plt.plot(z_fit, y_fit, 'r-', label='Best-fit function')
+            plt.xlabel('z')
+            plt.ylabel(param)
+            plt.title(f'{param} vs z')
+            plt.legend()
+            plt.tight_layout()
+            plt.savefig(f'best_fit_{param}_with_sample_data.png')
+            plt.close()
+
+        import sys; sys.exit("Testing call_mcmc")
 
         # Manually set prior ranges for the full fit using bf_full.x
         half = self.bf_full.x / 2.0
