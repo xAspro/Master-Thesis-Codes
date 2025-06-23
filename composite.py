@@ -1418,21 +1418,21 @@ class lf:
         alpha = params[2]
         beta = params[3]
         alpha_atz6 = self.atz(6.0, alpha) 
-        
+
+
         if (np.all(theta < self.prior_max_values) and
             np.all(theta > self.prior_min_values) and
-            alpha_atz6 < 0):
-            
+            alpha_atz6 < -4.0):
+
             if alpha < -7 or alpha > beta:
                 return -np.inf
             
             if beta > 0:
                 return -np.inf
             
-            return 0
+            return 0.0 
         
-        else:
-            return -np.inf
+        return -np.inf
         
     def log10phi_full(self, theta, mag, z):
         """
@@ -1445,12 +1445,12 @@ class lf:
         alpha = self.atz(z, params[2])
         beta = self.atz(z, params[3])
 
-        print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
-        print(f"mag = {mag}, z = {z}")
-        print(f"shape of mag = {mag.shape}, shape of z = {z.shape}")
+        # print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
+        # print(f"mag = {mag}, z = {z}")
+        # print(f"shape of mag = {mag.shape}, shape of z = {z.shape}")
 
-        print(f"shape of log10phi_star = {log10phi_star.shape}, shape of M_star = {M_star.shape}")
-        print(f"shape of alpha = {alpha.shape}, shape of beta = {beta.shape}")
+        # print(f"shape of log10phi_star = {log10phi_star.shape}, shape of M_star = {M_star.shape}")
+        # print(f"shape of alpha = {alpha.shape}, shape of beta = {beta.shape}")
 
         
         phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(mag-M_star)) +
@@ -1461,26 +1461,37 @@ class lf:
         """
         Calculate the log-likelihood for the full dataset.
         """
+        # print("In composite.py class-lf neg_log_like_full")
 
         zmean = data_full[1]
         data = np.array(data_full[0])
 
-        print(f"zmean = {zmean}, data shape = {data.shape}")
+        # print(f"zmean = {zmean}, data shape = {data.shape}")
+
+        mag = data[3, :]
+        y = data[0, :]
+        # print(f"mag shape = {mag.shape}")
+        # print(f"mag = {mag}")
+        # print(f"data[:, 0] shape = {data[:, 0].shape}")
+        # print(f"data[:, 0] = {data[:, 0]}")
+        # print(f"data[:, 1] shape = {data[:, 1].shape}")
+        # print(f"data[:, 1] = {data[:, 1]}")
+        # print(f"data[:, 2] shape = {data[:, 2].shape}")
+        # print(f"data[:, 2] = {data[:, 2]}")
+        # print()
+        # print("data = ", data)
+        # print(f"data shape = {data.shape}")
+        # print()
+        # import sys; sys.exit("Testing neg_log_like_full")
 
 
-        x = zmean
-        y = data[:, 0]
-        sig = (data[:, 2] - data[:, 1]) / 2.0
+        sig = (data[2, :] - data[1, :]) / 2.0
 
         Pb, Yb, Vb = theta[-3:]
 
-        logphi = self.log10phi_full(theta[:-3], data[:, 0], zmean)
+        logphi = self.log10phi_full(theta[:-3], mag, zmean)
         logphi /= np.log10(np.e)  # Convert to base e
 
-        for i in range(len(data)):
-            print(f"(x, y): {(zmean, data[i][0])}")
-            print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
-        
 
         epsilon = 1e-10  # Small value to prevent division by zero
         safe_sig2 = sig**2 + epsilon
@@ -1720,6 +1731,7 @@ class lf:
         zmin = database['zmin']
         zmax = database['zmax']
         zmean = self.sample_data_set()[1]
+        mag = database['mag']
 
         # fitting z min for this size and format
         new_zmean = [zmean[0]]
@@ -1749,7 +1761,7 @@ class lf:
                 database['logphi'].tolist(),
                 (database['logphi'] - database['downerr']).tolist(),
                 (database['logphi'] + database['uperr']).tolist(),
-                # Add similar lines for M_star, alpha, beta if available in your database
+                mag.tolist()
             ]),
             zmean
         ]
