@@ -22,6 +22,7 @@ from numpy.polynomial.polynomial import polyval
 
 from pathos.multiprocessing import ProcessingPool as Pool
 import dill
+import re
 
 def getselfn(selfile):
     """
@@ -880,7 +881,7 @@ class lf:
         return [[logphi, logphi_l, logphi_u],
                 [M_star, M_star_l, M_star_u],
                 [alpha, alpha_l, alpha_u],
-                [beta, beta_l, beta_u]], zmean
+                [beta, beta_l, beta_u]], np.array(zmean)
     
     def fit_polynomial_curve(self, data, err, label, degree=3):
         """
@@ -974,8 +975,10 @@ class lf:
         # if not ((-50 < x2 < 50) and (-50 < x1 < 50) and (-50 < x0 < 50)):
         #     return -np.inf
         # if (np.any((-50 > arr) | (arr > 50))):
-        if (np.any((-10 > arr) | (arr > 5))):
+        if (np.any((-10 > arr) | (arr > 5))): # for beta and alpha
             return -np.inf
+        # if (np.any((-40 > arr) | (arr > 5))): ## FOR m_star
+        #     return -np.inf
         if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
             return -np.inf
         rnge = self.rnge
@@ -1069,7 +1072,7 @@ class lf:
             nburns = 10000
             nprod = 200000
         else:
-            nburns = 500
+            nburns = 50000
             nprod = 2000
 
         walkers = 50
@@ -1086,6 +1089,7 @@ class lf:
             pos.append(walker_pos)
         pos = np.array(pos)
 
+        ##################################################################
         # Set how many to visualize (large) and how many to use for MCMC (small)
         oversample_factor = 1000
         n_visualize = walkers * oversample_factor
@@ -1116,6 +1120,8 @@ class lf:
         plt.close()
 
         pos = pos_all[:walkers]
+
+        ##################################################################
 
 
         print("pos shape:", pos.shape)
@@ -1159,9 +1165,9 @@ class lf:
             print(f"Param {i}: {lo:.4f} to {hi:.4f} (central 95%)")
 
         corner.corner(samples, labels=labels, bounds=bounds,
-                      quantiles=[0.16, 0.5, 0.84], bins=100, 
+                      quantiles=[0.16, 0.5, 0.84], bins=20, 
                       levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
-                      smooth=True, 
+                      smooth=True,
                       fill_contours=True,
                       plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
@@ -1233,11 +1239,11 @@ class lf:
         median_Yb = np.median(samples[:, -2])
         median_Vb = np.median(samples[:, -1])
 
-        is_bad = self.find_bad_points(x, y, err, map_params,
+        is_bad = self.find_bad_points(np.poly1d, x, y, err, map_params,
                                       [median_Pb, median_Yb, median_Vb], degree=degree)
         print(f"Bad points for {label}:", is_bad)
 
-        self.plot_bad_points(x, y, err, map_params, is_bad, label, degree=degree)
+        self.plot_bad_points(np.poly1d, x, y, err, map_params, is_bad, label, degree=degree)
 
         # import sys
         # sys.exit("Testing")
@@ -1249,7 +1255,7 @@ class lf:
 
         return [map_params, minus_sigma, plus_sigma]
     
-    def find_bad_points(self, x, y, err, map_params, nuisance_params, degree=3):
+    def find_bad_points(self, func, x, y, err, map_params, nuisance_params, degree=3):
         """
         Find bad points in the data based on the fitted polynomial and the MAP parameters.
 
@@ -1272,7 +1278,7 @@ class lf:
             Boolean array indicating which points are considered "bad".
         """
         # poly_fn = T(map_params[:degree+1])
-        poly_fn = np.poly1d(map_params[:degree+1])
+        poly_fn = func(map_params[:degree+1])
         poly_fnx = poly_fn(x)
         residuals = y - poly_fnx
 
@@ -1298,7 +1304,7 @@ class lf:
         return is_bad
 
 
-    def plot_bad_points(self, x, y, err, map_params, is_bad, label, degree=3):
+    def plot_bad_points(self, func, x, y, err, map_params, is_bad, label, degree=3):
         """
         Plot the data points, fitted polynomial, and highlight bad points.
 
@@ -1324,7 +1330,7 @@ class lf:
         err = np.asarray(err)
 
         # poly_fn = T(map_params[:degree+1])
-        poly_fn = np.poly1d(map_params[:degree+1])
+        poly_fn = func(map_params[:degree+1])
         x_fit = np.linspace(np.min(x), np.max(x), 200)
         y_fit = poly_fn(x_fit)
 
@@ -1344,10 +1350,14 @@ class lf:
         bad_err = err[is_bad]
         plt.errorbar(bad_x, bad_y, yerr=bad_err, fmt='o', color='orange', label='Bad points', capsize=3)
 
+        if func == np.poly1d:
+            title = 'Polynomial Fit'
+        else:
+            title = 'Full Param T fit'
         plt.xlabel('z')
         plt.ylabel(label)
         plt.ylim(np.min(y) - 1, np.max(y) + 1)  # Adjust y-limits as needed
-        plt.title(f'Polynomial Fit with Bad Points Highlighted: {label}')
+        plt.title(f'{title} with Bad Points Highlighted: {label}')
         plt.legend()
         plt.tight_layout()
         plt.savefig(f'bad_points_plot_{label}_{self.prior_tag}.png')
@@ -1365,7 +1375,7 @@ class lf:
         coeff_list = []
         map_param = []
         for i in range(len(data)):
-            if i < 2:
+            if i >= 2:
                 continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
@@ -1406,6 +1416,7 @@ class lf:
         """
         params = self.getparams(theta)
         alpha = params[2]
+        beta = params[3]
         alpha_atz6 = self.atz(6.0, alpha) 
         
         if (np.all(theta < self.prior_max_values) and
@@ -1422,21 +1433,120 @@ class lf:
         
         else:
             return -np.inf
+        
+    def log10phi_full(self, theta, mag, z):
+        """
+        Calculate the log10 of the QLF for the full dataset.
+        """
+        params = self.getparams(theta)
 
-    def log_like_full(self, theta, data_full):
+        log10phi_star = self.atz(z, params[0])
+        M_star = self.atz(z, params[1])
+        alpha = self.atz(z, params[2])
+        beta = self.atz(z, params[3])
+
+        print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
+        print(f"mag = {mag}, z = {z}")
+        print(f"shape of mag = {mag.shape}, shape of z = {z.shape}")
+
+        print(f"shape of log10phi_star = {log10phi_star.shape}, shape of M_star = {M_star.shape}")
+        print(f"shape of alpha = {alpha.shape}, shape of beta = {beta.shape}")
+
+        
+        phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(mag-M_star)) +
+                                     10.0**(0.4*(beta+1)*(mag-M_star)))
+        return np.log10(phi)
+
+    def neg_log_like_full(self, theta, data_full):
         """
         Calculate the log-likelihood for the full dataset.
         """
+
         zmean = data_full[1]
         data = np.array(data_full[0])
 
-        logphi = self.log10phi(theta, data[:, 0], zmean)
-        logphi /= np.log10(np.e)
+        print(f"zmean = {zmean}, data shape = {data.shape}")
+
+
+        x = zmean
+        y = data[:, 0]
+        sig = (data[:, 2] - data[:, 1]) / 2.0
+
+        Pb, Yb, Vb = theta[-3:]
+
+        logphi = self.log10phi_full(theta[:-3], data[:, 0], zmean)
+        logphi /= np.log10(np.e)  # Convert to base e
+
+        for i in range(len(data)):
+            print(f"(x, y): {(zmean, data[i][0])}")
+            print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
+        
+
+        epsilon = 1e-10  # Small value to prevent division by zero
+        safe_sig2 = sig**2 + epsilon
+        safe_Vb = Vb + epsilon
+
+        log_foreground_model = np.log((1 / np.sqrt(2 * np.pi * safe_sig2))) + (-0.5 * np.clip(((y - logphi))**2 / safe_sig2, -1e10, 1e10))
+        log_background_model = np.log((1 / np.sqrt(2 * np.pi * (safe_Vb + safe_sig2)))) + (-0.5 * np.clip(((y - Yb)**2 / (safe_Vb + safe_sig2)), -1e10, 1e10))
+
+        a = np.log(1 - Pb) + log_foreground_model
+        b = np.log(Pb) + log_background_model
+
+        lnL = np.sum(np.logaddexp(a, b))
+
+        if np.isnan(lnL):
+            print("\nNaN in neg_log_like_full")
+            print("Pb =", Pb)
+            print("Yb =", Yb)
+            print("Vb =", Vb)
+            print("safe_sig2 =", safe_sig2)
+            print("safe_Vb =", safe_Vb)
+            print("log_foreground_model =", log_foreground_model)
+            print("log_background_model =", log_background_model)
+            print("a =", a)
+            print("b =", b)
+            print("lnL =", lnL)
+            print()
+
+            return np.inf
+        
+        return -lnL  # Return negative log-likelihood for minimization
+
 
     def log_prob_full(self, theta, data_full):
-        pass
+        """
+        Calculate the log-probability for the full dataset.
+        """
+        lp = self.log_prior_full(theta)
+        if not np.isfinite(lp):
+            return -np.inf
+        ll = self.neg_log_like_full(theta, data_full)
+        if np.isnan(ll):
+            print("NaN in neg_log_like_full")
+        if np.isnan(lp):
+            print("NaN in log_prior_full")
+        return lp - ll
+    
+    def find_best_fit_full(self, data_full, guess, method='Nelder-Mead'):
+        """
+        Find the best fit parameters for the full dataset using optimization.
+        """
+        print("In composite.py class-lf find_best_fit_full")
+        
+        result = op.minimize(self.neg_log_like_full,
+                             guess,
+                             args=(data_full,),
+                             method=method, options={'maxfev': 20000,
+                                                     'maxiter': 20000,
+                                                     'disp': True})
 
-    def mcmc_all_params(self, data_full, guess, uncertainty, pnum=np.array([3,4,2,5])):
+        if not result.success:
+            print('Likelihood optimisation did not converge.')
+
+        self.bf_full = result
+        return result
+
+    def mcmc_all_params(self, data_full, guess, pnum=np.array([3,4,2,5])):
         """
         Run MCMC to fit for all data, with all the parameters together.
         The parameters follows polynomial form, 
@@ -1458,6 +1568,210 @@ class lf:
         initial_guess[splitlocs[1]:splitlocs[2]] = guess[splitlocs[1]:splitlocs[2]] # alpha
         initial_guess[splitlocs[2]:splitlocs[3]] = guess[splitlocs[2]:splitlocs[3]] # beta
         initial_guess[-3:] = self.find_Pb_Yb_Vb(data[:, 0], walkers=nwalkers)   # Pb, Yb, Vb
+
+        pos = np.zeros((nwalkers, ndim))
+        for i in range(ndim - 3):
+            pos[:, i] = initial_guess[i] - 0.01 + np.random.uniform(0, 1, nwalkers)
+        pos[:, -3:] = np.tile(initial_guess[-3:], (nwalkers, 1))
+
+
+        # Run MCMC for all parameters
+        sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,))
+        print("Running MCMC for all parameters...")
+        sampler.run_mcmc(pos, 2000, progress=True)
+        samples = sampler.get_chain(flat=True)
+
+        # Plot corner plot (same format as previous)
+        labels = [f'param_{i}' for i in range(ndim - 3)] + ['Pb', 'Yb', 'Vb']
+        corner.corner(samples, labels=labels, quantiles=[0.16, 0.5, 0.84], bins=20, 
+                      levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
+                      smooth=True, fill_contours=True, plot_datapoints=False,
+                      show_titles=True, title_kwargs={"fontsize": 12})
+        plt.suptitle('Full MCMC fit', fontsize=14)
+        plt.savefig('mcmc_full_corner.png')
+        plt.close()
+
+        # Plot chains for each parameter
+        mpl.rcParams['font.size'] = '10'
+        fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
+        for i in range(ndim):
+            ax = axes[i] if ndim > 1 else axes
+            for j in range(nwalkers):
+                ax.plot(sampler.chain[j, :, i], color='k', alpha=0.1)
+            ax.set_ylabel(labels[i])
+        axes[-1].set_xlabel('step')
+        plt.tight_layout()
+        plt.savefig('mcmc_full_chains.png')
+        plt.close()
+
+        # Find MAP (maximum a posteriori) estimate
+        bins = 20
+        marginalised_samples = samples[:, :-3]
+        hist, edges = np.histogramdd(marginalised_samples, bins=bins)
+        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
+        map_params = []
+        for i in range(marginalised_samples.shape[1]):
+            bin_edges = edges[i]
+            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
+            map_params.append(center)
+        map_params = np.array(map_params)
+        print("MAP (marginalized over nuisance):", map_params)
+
+        # Median nuisance parameters
+        median_Pb = np.median(samples[:, -3])
+        median_Yb = np.median(samples[:, -2])
+        median_Vb = np.median(samples[:, -1])
+
+        # Find bad points
+        is_bad = self.find_bad_points(self.log10phi_full,
+            data_full[1], data_full[0][0], (data_full[0][2] - data_full[0][1]) / 2.0,
+            map_params, [median_Pb, median_Yb, median_Vb], degree=(len(map_params)-1)
+        )
+        print("Bad points:", is_bad)
+
+        # Plot final output with bad points
+        self.plot_bad_points(self.log10phi_full,
+            data_full[1], data_full[0][0], (data_full[0][2] - data_full[0][1]) / 2.0,
+            map_params, is_bad, 'logphi', degree=(len(map_params)-1)
+        )
+
+        
+
+    def read_datapoints_with_bp(self, filename):
+        """
+        Reads the datapoints_with_bp.dat file and returns a structured numpy array.
+        Skips comment lines starting with '#' or empty lines.
+
+        Parameters
+        ----------
+        filename : str
+            Path to the datapoints_with_bp.dat file.
+
+        Returns
+        -------
+        np.ndarray
+            Structured numpy array with the following fields:
+            - 'zmin': Minimum redshift (float)
+            - 'zmax': Maximum redshift (float)
+            - 'label': Label (string)
+            - 'badness': Badness score (int)
+            - 'bad_prob': Probability of being bad (float)
+            - 'mag': Magnitude (float)
+            - 'mag_err': Magnitude error (float)
+            - 'logphi': Logarithm of the luminosity function (float)
+            - 'map_log_phi': MAP log luminosity function (float)
+            - 'uperr': Upper error (float)
+            - 'downerr': Lower error (float)
+            - 'log_err': Logarithm of the error (float)
+            - 'residual': Residual (float)
+            - 'sig_dif': Significance difference (float)
+            - 'prob': Probability of residual (float)
+        """
+        print("In composite.py class-lf read_datapoints_with_bp")
+
+        dtype = [
+            ('zmin', float),
+            ('zmax', float),
+            ('label', 'U40'),
+            ('badness', int),
+            ('bad_prob', float),
+            ('mag', float),
+            ('mag_err', float),
+            ('logphi', float),
+            ('map_log_phi', float),
+            ('uperr', float),
+            ('downerr', float),
+            ('log_err', float),
+            ('residual', float),
+            ('sig_dif', float),
+            ('prob', float)
+        ]
+
+        data = []
+        with open(filename, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                # Split using two or more spaces as delimiter
+                parts = re.split(r'\s{2,}', line)
+                zmin = float(parts[0])
+                zmax = float(parts[1])
+                label = parts[2]
+                rest = parts[3:]
+                row = [zmin, zmax, label]
+                row += [int(rest[0])]
+                row += [float(x) for x in rest[1:]]
+                data.append(tuple(row))
+        return np.array(data, dtype=dtype)
+
+
+    def call_mcmc(self, pnum=np.array([3,4,4,5])):
+        """
+        Call the MCMC function to fit all parameters.
+        """
+        print("In composite.py class-lf call_mcmc")
+
+        guess = np.array([-0.23, 0.95, -7.08, -0.29, 2.11, -5.06, -21.44, -0.14, 1.05, -1.94, 2.65, 0.06, -0.68, 2.27, -2.60, -0.52])
+
+        database = self.read_datapoints_with_bp("datapoints_with_bp.dat")
+
+        # Extract the data from the structured array
+        zmin = database['zmin']
+        zmax = database['zmax']
+        zmean = self.sample_data_set()[1]
+
+        # fitting z min for this size and format
+        new_zmean = [zmean[0]]
+        cnt = 0
+        for i in range(1, len(zmin)):
+                
+            if zmin[i] != zmin[i-1]:
+                cnt += 1
+                print(f"\nzmin[{i}] = {zmin[i]:.3f}, zmin[{i-1}] = {zmin[i-1]:.3f}")
+                print(f"cnt = {cnt}")
+                print(f"zmean[{cnt}] = {zmean[cnt]:.3f}")
+                print(f"zmean[{cnt-1}] = {zmean[cnt-1]:.3f}\n")
+                new_zmean.append(zmean[cnt])
+            else:
+                new_zmean.append(new_zmean[-1])
+        zmean = np.array(new_zmean)
+
+        print(f"zmean: {zmean}")
+        print(f"shape of zmean: {zmean.shape}, shape of zmin: {zmin.shape}, shape of zmax: {zmax.shape}")
+        
+        logphi = database['logphi']
+        mag = database['mag']
+        logphi_err = database['log_err']
+
+        data_full = [
+            np.array([
+                database['logphi'].tolist(),
+                (database['logphi'] - database['downerr']).tolist(),
+                (database['logphi'] + database['uperr']).tolist(),
+                # Add similar lines for M_star, alpha, beta if available in your database
+            ]),
+            zmean
+        ]
+
+        print("\nData for full fit:")
+        print(data_full)
+        print(f"shape of data_full[0]: {data_full[0].shape}, shape of data_full[1]: {data_full[1].shape}")
+
+
+
+        self.find_best_fit_full(data_full, guess)
+
+        # Manually set prior ranges for the full fit using bf_full.x
+        half = self.bf_full.x / 2.0
+        double = 2.0 * self.bf_full.x
+        self.min_prior_full = np.where(half < double, half, double)
+        self.max_prior_full = np.where(half > double, half, double)
+        assert np.all(self.min_prior_full < self.max_prior_full)
+
+        self.mcmc_all_params(data_full, self.bf_full.x, pnum=pnum)
+
+        return
 
 
 
