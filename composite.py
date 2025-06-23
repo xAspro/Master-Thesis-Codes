@@ -1419,6 +1419,20 @@ class lf:
         beta = params[3]
         alpha_atz6 = self.atz(6.0, alpha) 
 
+        Pb, Yb, Vb = theta[-3:]
+
+        print("Pb = ", Pb, "\tYb = ", Yb, "\tVb = ", Vb)
+        print("params = ", params)
+        print("theta = ", theta)
+
+        print(f"self.prior_min_values = {self.prior_min_values}")
+        print(f"self.prior_max_values = {self.prior_max_values}")
+
+        print(f"size of self.prior_min_values = {self.prior_min_values.size}")
+        print(f"size of self.prior_max_values = {self.prior_max_values.size}")
+        print(f"size of theta = {theta.size}")
+        import sys; sys.exit("Testing log_prior_full")
+
 
         if (np.all(theta < self.prior_max_values) and
             np.all(theta > self.prior_min_values) and
@@ -1430,6 +1444,15 @@ class lf:
             if beta > 0:
                 return -np.inf
             
+            if Pb < 0 or Pb > 1:
+                return -np.inf
+            
+            if Yb < -100 or Yb > 100:
+                return -np.inf
+            
+            if Vb < 0 or Vb > 100:
+                return -np.inf
+            
             return 0.0 
         
         return -np.inf
@@ -1438,12 +1461,25 @@ class lf:
         """
         Calculate the log10 of the QLF for the full dataset.
         """
+        print("theta = ", theta)
         params = self.getparams(theta)
+
+        # print("params = ", params)
 
         log10phi_star = self.atz(z, params[0])
         M_star = self.atz(z, params[1])
         alpha = self.atz(z, params[2])
-        beta = self.atz(z, params[3])
+        beta = self.atz_beta(z, params[3])
+        # Already removed nuisance parameters from theta
+        # Pb, Yb, Vb = params[-3:]
+
+
+
+        # print("\nlog10phi_star = ", log10phi_star)
+        # print("M_star = ", M_star)
+        # print("alpha = ", alpha)
+        # print("beta = ", beta)
+        # import sys; sys.exit("Testing log10phi_full")
 
         # print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
         # print(f"mag = {mag}, z = {z}")
@@ -1544,11 +1580,17 @@ class lf:
         """
         print("In composite.py class-lf find_best_fit_full")
         print("Initial guess for parameters:", guess)
-        import sys; sys.exit("Testing find_best_fit_full")
+        # import sys; sys.exit("Testing find_best_fit_full")
+
+        main_bounds = [(None, None) for _ in range(len(guess) - 3)]
+        nuisance_bounds = [(0, 1), (-100, 100), (0, 100)]
+        bounds = main_bounds + nuisance_bounds
+
         
         result = op.minimize(self.neg_log_like_full,
                              guess,
                              args=(data_full,),
+                             bounds=bounds,
                              method=method, options={'maxfev': 20000,
                                                      'maxiter': 20000,
                                                      'disp': True})
@@ -1582,12 +1624,12 @@ class lf:
         initial_guess[splitlocs[0]:splitlocs[1]] = guess[splitlocs[0]:splitlocs[1]] # M_star
         initial_guess[splitlocs[1]:splitlocs[2]] = guess[splitlocs[1]:splitlocs[2]] # alpha
         initial_guess[splitlocs[2]:splitlocs[3]] = guess[splitlocs[2]:splitlocs[3]] # beta
-        initial_guess[-3:] = self.find_Pb_Yb_Vb(data[:, 0], walkers=nwalkers)   # Pb, Yb, Vb
+        initial_guess[-3:] = guess[-3:]  # Pb, Yb, Vb
 
         pos = np.zeros((nwalkers, ndim))
-        for i in range(ndim - 3):
+        for i in range(ndim):
             pos[:, i] = initial_guess[i] - 0.01 + np.random.uniform(0, 1, nwalkers)
-        pos[:, -3:] = np.tile(initial_guess[-3:], (nwalkers, 1))
+
 
 
         # Run MCMC for all parameters
@@ -1649,8 +1691,6 @@ class lf:
             data_full[1], data_full[0][0], (data_full[0][2] - data_full[0][1]) / 2.0,
             map_params, is_bad, 'logphi', degree=(len(map_params)-1)
         )
-
-        
 
     def read_datapoints_with_bp(self, filename):
         """
@@ -1777,6 +1817,9 @@ class lf:
         print(f"shape of data_full[0]: {data_full[0].shape}, shape of data_full[1]: {data_full[1].shape}")
 
 
+        nuisance_param_guess = np.array([0.1, -5, 2])
+
+        guess = np.concatenate((guess, nuisance_param_guess))
 
         self.find_best_fit_full(data_full, guess)
 
