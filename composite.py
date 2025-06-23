@@ -1506,18 +1506,18 @@ class lf:
         lnL = np.sum(np.logaddexp(a, b))
 
         if np.isnan(lnL):
-            print("\nNaN in neg_log_like_full")
-            print("Pb =", Pb)
-            print("Yb =", Yb)
-            print("Vb =", Vb)
-            print("safe_sig2 =", safe_sig2)
-            print("safe_Vb =", safe_Vb)
-            print("log_foreground_model =", log_foreground_model)
-            print("log_background_model =", log_background_model)
-            print("a =", a)
-            print("b =", b)
-            print("lnL =", lnL)
-            print()
+            # print("\nNaN in neg_log_like_full")
+            # print("Pb =", Pb)
+            # print("Yb =", Yb)
+            # print("Vb =", Vb)
+            # print("safe_sig2 =", safe_sig2)
+            # print("safe_Vb =", safe_Vb)
+            # print("log_foreground_model =", log_foreground_model)
+            # print("log_background_model =", log_background_model)
+            # print("a =", a)
+            # print("b =", b)
+            # print("lnL =", lnL)
+            # print()
 
             return np.inf
         
@@ -1543,6 +1543,8 @@ class lf:
         Find the best fit parameters for the full dataset using optimization.
         """
         print("In composite.py class-lf find_best_fit_full")
+        print("Initial guess for parameters:", guess)
+        import sys; sys.exit("Testing find_best_fit_full")
         
         result = op.minimize(self.neg_log_like_full,
                              guess,
@@ -1555,6 +1557,8 @@ class lf:
             print('Likelihood optimisation did not converge.')
 
         self.bf_full = result
+        print("Best fit parameters for full dataset:", result.x)
+        import sys; sys.exit("Testing find_best_fit_full")
         return result
 
     def mcmc_all_params(self, data_full, guess, pnum=np.array([3,4,2,5])):
@@ -1722,6 +1726,8 @@ class lf:
         Call the MCMC function to fit all parameters.
         """
         print("In composite.py class-lf call_mcmc")
+
+        self.pnum = pnum
 
         guess = np.array([-0.23, 0.95, -7.08, -0.29, 2.11, -5.06, -21.44, -0.14, 1.05, -1.94, 2.65, 0.06, -0.68, 2.27, -2.60, -0.52])
 
