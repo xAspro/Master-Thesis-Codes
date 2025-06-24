@@ -1084,7 +1084,8 @@ class lf:
             scale = 1
         for _ in range(walkers):
             walker_pos = np.empty(ndim)
-            walker_pos[:degree+1] = coeff + scale * np.random.randn(degree+1)
+            # walker_pos[:degree+1] = coeff + scale * np.random.randn(degree+1)
+            walker_pos[:degree+1] = coeff + scale * np.random.uniform(-1, 1, degree+1)
             walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y)
             pos.append(walker_pos)
         pos = np.array(pos)
@@ -1129,8 +1130,8 @@ class lf:
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
         sampler.run_mcmc(pos, nburns, progress=True)
-        # sampler.reset()
-        # sampler.run_mcmc(None, nprod, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, nprod, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1366,7 +1367,7 @@ class lf:
 
     
     def run_mcmc_for_for_1_param(self, pnum=np.array([3,4,2,5])):
-        pnum = np.array([3, 4, 4, 5])
+        pnum = np.array([3, 4, 4, 2])
         data_full = self.sample_data_set()
         zmean = data_full[1]
         data = np.array(data_full[0])
@@ -1415,33 +1416,52 @@ class lf:
         Set up uniform priors for the full dataset.
         """
         params = self.getparams(theta)
-        alpha = params[2]
-        beta = params[3]
+        z = np.linspace(0.1, 6.0, 20) 
+        alpha = self.atz(z, params[2])
+        beta = self.atz_beta(z, params[3])
+
+        # print("theta = ", theta)
+
+        # print("alpha = ", alpha)
+        # print("beta = ", beta)
         alpha_atz6 = self.atz(6.0, alpha) 
 
         Pb, Yb, Vb = theta[-3:]
 
-        print("Pb = ", Pb, "\tYb = ", Yb, "\tVb = ", Vb)
-        print("params = ", params)
-        print("theta = ", theta)
+        # print("Pb = ", Pb, "\tYb = ", Yb, "\tVb = ", Vb)
+        # print("params = ", params)
+        # print("theta = ", theta)
 
-        print(f"self.prior_min_values = {self.prior_min_values}")
-        print(f"self.prior_max_values = {self.prior_max_values}")
+        # print(f"self.prior_min_values = {self.prior_min_values}")
+        # print(f"self.prior_max_values = {self.prior_max_values}")
 
-        print(f"size of self.prior_min_values = {self.prior_min_values.size}")
-        print(f"size of self.prior_max_values = {self.prior_max_values.size}")
-        print(f"size of theta = {theta.size}")
-        import sys; sys.exit("Testing log_prior_full")
+        # print(f"size of self.prior_min_values = {self.prior_min_values.size}")
+        # print(f"size of self.prior_max_values = {self.prior_max_values.size}")
+        # print(f"size of theta = {theta.size}")
 
 
-        if (np.all(theta < self.prior_max_values) and
-            np.all(theta > self.prior_min_values) and
-            alpha_atz6 < -4.0):
 
-            if alpha < -7 or alpha > beta:
+        # print(f"theta[:-3] = {theta[:-3]}")
+        # print(f"self.prior_max_values[:-3] = {self.prior_max_values[:-3]}")
+        # print(f"self.prior_min_values[:-3] = {self.prior_min_values[:-3]}")
+        # print(f"alpha_atz6 = {alpha_atz6}")
+        # print(f"theta[:-3] < self.prior_max_values[:-3] = {(theta[:-3] < self.prior_max_values[:-3])}")
+        # print(f"theta[:-3] > self.prior_min_values[:-3] = {(theta[:-3] > self.prior_min_values[:-3])}")
+        # print(f"np.all(theta[:-3] < self.prior_max_values[:-3]) = {np.all(theta[:-3] < self.prior_max_values[:-3])}")
+        # print(f"np.all(theta[:-3] > self.prior_min_values[:-3]) = {np.all(theta[:-3] > self.prior_min_values[:-3])}")
+        # print(f"alpha_atz6 < -4.0 = {alpha_atz6 < -4.0}")
+        # import sys; sys.exit("Testing log_prior_full")
+
+
+        if (np.all(theta[:-3] < self.prior_max_values[:-3]) and
+            np.all(theta[:-3] > self.prior_min_values[:-3]) and
+            # alpha_atz6 < -4.0):
+            1):
+
+            if np.any(alpha > beta):
                 return -np.inf
             
-            if beta > 0:
+            if np.any(beta > 0):
                 return -np.inf
             
             if Pb < 0 or Pb > 1:
@@ -1453,6 +1473,7 @@ class lf:
             if Vb < 0 or Vb > 100:
                 return -np.inf
             
+            # print("Returning 0!!")
             return 0.0 
         
         return -np.inf
@@ -1641,7 +1662,7 @@ class lf:
 
         pos = np.zeros((nwalkers, ndim))
         for i in range(ndim):
-            pos[:, i] = initial_guess[i] - 0.01 + np.random.uniform(0, 1, nwalkers)
+            pos[:, i] = initial_guess[i] - 0.0001 * np.random.uniform(0, 1, nwalkers)
 
 
 
@@ -1649,6 +1670,8 @@ class lf:
         sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,))
         print("Running MCMC for all parameters...")
         sampler.run_mcmc(pos, 2000, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, 20000, progress=True)
         samples = sampler.get_chain(flat=True)
 
         # Plot corner plot (same format as previous)
@@ -1667,15 +1690,25 @@ class lf:
         for i in range(ndim):
             ax = axes[i] if ndim > 1 else axes
             for j in range(nwalkers):
-                ax.plot(sampler.chain[j, :, i], color='k', alpha=0.1)
+                ax.plot(sampler.chain[j, :, i], alpha=0.1)
             ax.set_ylabel(labels[i])
         axes[-1].set_xlabel('step')
         plt.tight_layout()
         plt.savefig('mcmc_full_chains.png')
         plt.close()
 
+        # Print autocorrelation time and acceptance rate
+        try:
+            tau = sampler.get_autocorr_time()
+            print("Autocorrelation time for each parameter:", tau)
+        except Exception as e:
+            print("Could not compute autocorrelation time:", e)
+        print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
+
+        import sys; sys.exit("Testing mcmc_all_params")
+
         # Find MAP (maximum a posteriori) estimate
-        bins = 20
+        bins = 2
         marginalised_samples = samples[:, :-3]
         hist, edges = np.histogramdd(marginalised_samples, bins=bins)
         max_idx = np.unravel_index(np.argmax(hist), hist.shape)
@@ -1830,7 +1863,7 @@ class lf:
         print(f"shape of data_full[0]: {data_full[0].shape}, shape of data_full[1]: {data_full[1].shape}")
 
 
-        nuisance_param_guess = np.array([0.1, -5, 2])
+        nuisance_param_guess = np.array([0.0, -5, 2])
 
         guess = np.concatenate((guess, nuisance_param_guess))
 
@@ -1853,7 +1886,7 @@ class lf:
             yerr = (np.array(sample_data[i][2]) - np.array(sample_data[i][1])) / 2.0
             yerr = np.abs(yerr)
             coeffs = self.bf_full.x[param_indices[i]:param_indices[i+1]]
-            degree = len(coeffs) - 1
+            # degree = len(coeffs) - 1
 
             # Use the correct function for each parameter
             z_fit = np.linspace(np.min(sample_zmean), np.max(sample_zmean), 200)
@@ -1881,18 +1914,69 @@ class lf:
             plt.savefig(f'best_fit_{param}_with_sample_data.png')
             plt.close()
 
-        import sys; sys.exit("Testing call_mcmc")
+        # import sys; sys.exit("Testing call_mcmc")
 
-        # Manually set prior ranges for the full fit using bf_full.x
-        half = self.bf_full.x / 2.0
-        double = 2.0 * self.bf_full.x
-        self.min_prior_full = np.where(half < double, half, double)
-        self.max_prior_full = np.where(half > double, half, double)
-        assert np.all(self.min_prior_full < self.max_prior_full)
+        # Set the best fit line to be 0.1 in all its parameters with alternating signs, starting with -0.1 for each parameter group
+        # Determine the split locations for each parameter group
+        splitlocs = np.cumsum(pnum)
+        max_full_x = np.zeros_like(self.bf_full.x[:-3])
+        start = 0
+        for end in splitlocs:
+            # if end == splitlocs[-1]:
+            #     break
+            length = end - start
+            # Alternating signs: -0.1, +0.1, -0.1, ...
+            vals = np.array([50 * 0.1 ** (length - i) for i in range(length)])
+            max_full_x[start:end] = vals
+            start = end 
 
-        self.mcmc_all_params(data_full, self.bf_full.x, pnum=pnum)
+        print("max_full_x:", max_full_x)
+
+        # # Manually set prior ranges for the full fit using bf_full.x
+        # half = self.bf_full.x / 20
+        # double = 20 * self.bf_full.x
+        # self.min_prior_full = np.where(half < double, half, double)
+        # self.max_prior_full = np.where(half > double, half, double)
+        # assert np.all(self.min_prior_full < self.max_prior_full)
+
+        self.min_prior_full = np.concatenate([np.array(-1 * max_full_x), np.array([0, -100, 0])])
+        self.max_prior_full = np.concatenate([np.array(max_full_x), np.array([1, 100, 100])])
+
+        # print("Prior min values for full fit:", self.min_prior_full)
+        # print("Prior max values for full fit:", self.max_prior_full)
+
+        self.prior_min_values = self.min_prior_full
+        self.prior_max_values = self.max_prior_full
+
+
+        # print("Size of guess:", guess.size)
+        # print("Size of prior min values:", self.prior_min_values.size)
+        # print("Size of prior max values:", self.prior_max_values.size)
+        # print("splitlocs:", splitlocs)
+        # print("splitlocs[:-1]:", splitlocs[:-1])
+        # print("size of self.bf_full.x:", self.bf_full.x.size)
+
+        # import sys; sys.exit("Testing call_mcmc")
+
+        guess = np.zeros_like(self.prior_max_values)
+        guess[-3:] = np.array([0.1, -5, 2])  # Pb, Yb, Vb
+
+        print("Guess for MCMC:", guess)
+        print("self.prior_min_values:", self.prior_min_values)
+        print("self.prior_max_values:", self.prior_max_values)
+
+        print("min < guess < max:",
+              np.all(self.prior_min_values < guess) and
+              np.all(self.prior_max_values > guess))
+
+        self.mcmc_all_params(data_full, guess, pnum=pnum)
 
         return
+
+
+
+
+
 
 
 

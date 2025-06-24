@@ -236,8 +236,8 @@ selnfiles = []
 
 lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum1)
 
-# lfg1.run_mcmc_for_for_1_param(pnum1)
-lfg1.call_mcmc()
+lfg1.run_mcmc_for_for_1_param(pnum1)
+# lfg1.call_mcmc()
 
 
 # # sample data from earlier runs. logphi and mstar are constrained well,
