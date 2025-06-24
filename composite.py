@@ -975,18 +975,30 @@ class lf:
         # if not ((-50 < x2 < 50) and (-50 < x1 < 50) and (-50 < x0 < 50)):
         #     return -np.inf
         # if (np.any((-50 > arr) | (arr > 50))):
-        if (np.any((-10 > arr) | (arr > 7))): # for beta and alpha
+        if (np.any((-50 > arr) | (arr > 7))): # for beta and alpha
             return -np.inf
         # if (np.any((-40 > arr) | (arr > 5))): ## FOR m_star
         #     return -np.inf
         if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
             return -np.inf
         rnge = self.rnge
+        # print("\nPrior coeff =", self.coeff, "Range =", rnge)
+        # print("arr =", arr)
+        # print("self.coeff - rnge =", self.coeff - rnge, "self.coeff + rnge =", self.coeff + rnge)
+
+        # print("arr < self.coeff - rnge =", np.any(arr < self.coeff - rnge))
+        # print("arr > self.coeff + rnge =", np.any(arr > self.coeff + rnge))
+
+        # print("np.any((arr < self.coeff - rnge) | (arr > self.coeff + rnge)) =", np.any((arr < self.coeff - rnge) | (arr > self.coeff + rnge)))
+
+        # Check if any coefficient is outside the range of [coeff - rnge, coeff + rnge]
+        # if np.any((arr < self.coeff - rnge) | (arr >
         if np.any((arr < self.coeff - rnge) | (arr > self.coeff + rnge)):
             return -np.inf
         
         # print("Prior tag =", self.prior_tag)
         if self.prior_tag == 1:
+            # print("Returning 0 for prior tag 1")
             return 0.0
         if self.prior_tag == 2:
             return -Pb
@@ -1130,8 +1142,8 @@ class lf:
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
         sampler.run_mcmc(pos, nburns, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, nprod, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, nprod, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1376,7 +1388,9 @@ class lf:
         coeff_list = []
         map_param = []
         for i in range(len(data)):
-            if i < 3:
+            # if i < 3:
+            #     continue
+            if i != 1:
                 continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
