@@ -1077,44 +1077,32 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        if label == 'logphi':
-            nburns = 20000
-            nprod = 40000
-        elif label == 'M_star':
-            nburns = 10000
-            nprod = 200000
-        else:
-            nburns = 50000
-            nprod = 200000
+        nburns = 20000
+        nprod = 100000
 
         walkers = 50
         ndim = degree + 4
-        # Each walker position: [poly_coeffs..., Pb, Yb, Vb]
-        pos = []
-        scale = 1e-1  # Scale for the initial walker positions
-        if label == 'beta' or label == 'alpha':
-            scale = 1
-        for _ in range(walkers):
-            walker_pos = np.empty(ndim)
-            # walker_pos[:degree+1] = coeff + scale * np.random.randn(degree+1)
-            walker_pos[:degree+1] = coeff + scale * np.random.uniform(-1, 1, degree+1)
-            walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y)
-            pos.append(walker_pos)
-        pos = np.array(pos)
 
-        ##################################################################
-        # Set how many to visualize (large) and how many to use for MCMC (small)
+
         oversample_factor = 1000
         n_visualize = walkers * oversample_factor
 
 
         self.coeff = coeff
-        self.rnge = 1
+
+        if label == 'logphi':
+            self.rnge = 1
+        elif label == 'M_star':
+            self.rnge = 5.5
+        elif label == 'alpha':
+            self.rnge = 1
+        elif label == 'beta':
+            self.rnge = 1
 
         pos_all = []
         for _ in range(n_visualize):
             walker_pos = np.empty(ndim)
-            walker_pos[:degree+1] = coeff + scale * np.random.uniform(-self.rnge, self.rnge, degree+1)
+            walker_pos[:degree+1] = coeff + np.random.uniform(-self.rnge, self.rnge, degree+1)
             walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y)
             pos_all.append(walker_pos)
         pos_all = np.array(pos_all)
@@ -1122,7 +1110,7 @@ class lf:
 
         figure = corner.corner(
             pos_all,  # All coefficients: polynomial plus nuisance parameters
-            labels=[f"param_{i}" for i in range(degree+4)],
+            labels=[f"param_{i}" for i in range(degree+1)] + ['Pb', 'Yb', 'Vb'],
             show_titles=True,
             title_fmt=".2f",
             title_kwargs={"fontsize": 12}
@@ -1142,8 +1130,8 @@ class lf:
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
         sampler.run_mcmc(pos, nburns, progress=True)
-        # sampler.reset()
-        # sampler.run_mcmc(None, nprod, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, nprod, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1180,12 +1168,25 @@ class lf:
         corner.corner(samples, labels=labels, bounds=bounds,
                       quantiles=[0.16, 0.5, 0.84], bins=20, 
                       levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
+                    #   levels=[0.1175, 0.393, 0.676, 0.865],
                       smooth=True,
                       fill_contours=True,
                       plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
         plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
-        plt.savefig(f'mcmc-{label}_results_{self.prior_tag}.png')
+        plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Orignal.png')
+        plt.close()
+
+        corner.corner(samples, labels=labels, bounds=bounds,
+                      quantiles=[0.16, 0.5, 0.84], bins=20, 
+                      levels=[0.1175, 0.393, 0.676],
+                    #   levels=[0.1175, 0.393, 0.676, 0.865],
+                      smooth=True,
+                      fill_contours=True,
+                      plot_datapoints=False,
+                      show_titles=True, title_kwargs={"fontsize": 12})
+        plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
+        plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Clean.png')
         plt.close()
 
         # Plot chains for each parameter
@@ -1390,8 +1391,8 @@ class lf:
         for i in range(len(data)):
             # if i < 3:
             #     continue
-            if i != 1:
-                continue
+            # if i != 0:
+            #     continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
             print(f"Degree of polynomial for {params[i]}: {pnum[i]}")
@@ -1721,6 +1722,12 @@ class lf:
 
         import sys; sys.exit("Testing mcmc_all_params")
 
+
+        
+        # FOR THIS 19 DIMENSIONAL PLOT AND HISTOGRAM, SAVE EACH DIMENSION SEPARATELY
+        # THEN YOU CAN DO THE HISTOGRAM WITHOUT RUNNING OUT OF RAM
+        
+
         # Find MAP (maximum a posteriori) estimate
         bins = 2
         marginalised_samples = samples[:, :-3]
@@ -1982,6 +1989,9 @@ class lf:
         print("min < guess < max:",
               np.all(self.prior_min_values < guess) and
               np.all(self.prior_max_values > guess))
+        
+        # FOR THIS 19 DIMENSIONAL PLOT AND HISTOGRAM, SAVE EACH DIMENSION SEPARATELY
+        # THEN YOU CAN DO THE HISTOGRAM WITHOUT RUNNING OUT OF RAM
 
         self.mcmc_all_params(data_full, guess, pnum=pnum)
 
