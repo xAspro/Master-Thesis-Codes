@@ -1055,9 +1055,18 @@ class lf:
             title_kwargs={"fontsize": 12},
             quantiles=[0.16, 0.5, 0.84],
         )
+        # fig = corner.corner(self.samples_with_bp, labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$'],
+        #               quantiles=[0.16, 0.5, 0.84], bins=20, 
+        #               levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
+        #             #   levels=[0.1175, 0.393, 0.676, 0.865],
+        #               smooth=True,
+        #               fill_contours=True,
+        #               plot_datapoints=False,
+        #               show_titles=True, title_kwargs={"fontsize": 12})
         fig.suptitle(f"Prior Model: {prior_tag}\nrun_counter: {run_counter}", fontsize=16)
         # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
         plt.savefig(f"{dirname}Corner_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points_{run_counter}.png")
+        plt.savefig(f"{dirname}Corner_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points_{run_counter}.pdf")
 
         # Plot MCMC chains for all parameters with bad points
         fig, axes = plt.subplots(self.ndim_with_bp, 1, figsize=(12, 2 * self.ndim_with_bp), sharex=True)
@@ -1074,6 +1083,7 @@ class lf:
         axes[-1].set_xlabel('step')
         plt.tight_layout()
         plt.savefig(f"{dirname}Chains_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points.png")
+        plt.savefig(f"{dirname}Chains_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points.pdf")
 
 
 
@@ -1259,11 +1269,11 @@ class lf:
                 f.write("# The parameters of the QLF with bad points are given here.\n")
                 f.write("# The columns are as follows:\n")
                 f.write("#                   Values                    |                                   Credibility Interval\n")
-                f.write("# phi_star     M_star     alpha     beta      |           phi_star              M_star             alpha             beta    \n")
+                f.write("# zmean   |   phi_star     M_star     alpha     beta      |           phi_star              M_star             alpha             beta    \n")
 
         with open("parameters_with_bp.dat", "a") as f:
-            f.write("{:9.4f}   {:11.4f}   {:7.4f}   {:7.4f}   |       {:7.4f} {:7.4f}     {:7.4f} {:7.4f}   {:7.4f} {:7.4f}   {:7.4f} {:7.4f}\n".format(
-                self.map_params[0], self.map_params[1], self.map_params[2], self.map_params[3],
+            f.write(" {:7.4f}  | {:9.4f}   {:11.4f}   {:7.4f}   {:7.4f}   |       {:7.4f} {:7.4f}     {:7.4f} {:7.4f}   {:7.4f} {:7.4f}   {:7.4f} {:7.4f}\n".format(
+                np.mean(self.z), self.map_params[0], self.map_params[1], self.map_params[2], self.map_params[3],
                 self.cred_interval[0][0], self.cred_interval[0][1], self.cred_interval[1][0], self.cred_interval[1][1],
                 self.cred_interval[2][0], self.cred_interval[2][1], self.cred_interval[3][0], self.cred_interval[3][1]
             ))
