@@ -1143,8 +1143,8 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        nburns = 20000
-        nprod = 100000
+        nburns = 200
+        nprod = 1000
 
         walkers = 50
         ndim = degree + 4
@@ -1307,29 +1307,28 @@ class lf:
 
 
 
-        marginalised_samples = samples[:, :-3]
+        # marginalised_samples = samples[:, :-3]
 
-        bins = 20
-        hist, edges = np.histogramdd(marginalised_samples, bins=bins)
+        # bins = 20
+        # hist, edges = np.histogramdd(marginalised_samples, bins=bins)
 
-        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
+        # max_idx = np.unravel_index(np.argmax(hist), hist.shape)
 
-        map_params = []
-        for i in range(degree+1):
-            # Bin edges for this dimension
-            bin_edges = edges[i]
-            # Center of the bin
-            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
-            map_params.append(center)
-        map_params = np.array(map_params)
-        print(f"MAP (marginalized over nuisance) for {label}:", map_params)
+        # map_params = []
+        # for i in range(degree+1):
+        #     # Bin edges for this dimension
+        #     bin_edges = edges[i]
+        #     # Center of the bin
+        #     center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
+        #     map_params.append(center)
+        # map_params = np.array(map_params)
+        # print(f"MAP (marginalized over nuisance) for {label}:", map_params)
 
-        median_Pb = np.median(samples[:, -3])
-        median_Yb = np.median(samples[:, -2])
-        median_Vb = np.median(samples[:, -1])
+        # median_Pb = np.median(samples[:, -3])
+        # median_Yb = np.median(samples[:, -2])
+        # median_Vb = np.median(samples[:, -1])
 
-        is_bad = self.find_bad_points(np.poly1d, x, y, err, map_params,
-                                      [median_Pb, median_Yb, median_Vb], degree=degree)
+        is_bad = self.find_bad_points(np.poly1d, x, y, err, map_params, degree=degree)
         print(f"Bad points for {label}:", is_bad)
 
         self.plot_bad_points(np.poly1d, x, y, err, map_params, is_bad, label, degree=degree)
@@ -1337,14 +1336,17 @@ class lf:
         # import sys
         # sys.exit("Testing")
 
+        # marginalised_samples = samples[:, :-3]  # Exclude nuisance parameters (Pb, Yb, Vb)
+
         # Compute 16th, 50th, and 84th percentiles for each parameter (excluding nuisance)
-        percentiles = np.percentile(marginalised_samples, [16, 50, 84], axis=0)
+        # percentiles = np.percentile(marginalised_samples, [16, 50, 84], axis=0)
+        percentiles = np.percentile(samples, [16, 50, 84], axis=0)
         minus_sigma = percentiles[1] - percentiles[0]
         plus_sigma = percentiles[2] - percentiles[1]
 
         return [map_params, minus_sigma, plus_sigma]
     
-    def find_bad_points(self, func, x, y, err, map_params, nuisance_params, degree=3):
+    def find_bad_points(self, func, x, y, err, map_params, degree=3):
         """
         Find bad points in the data based on the fitted polynomial and the MAP parameters.
 
@@ -1366,6 +1368,8 @@ class lf:
         is_bad : array-like
             Boolean array indicating which points are considered "bad".
         """
+        nuisance_params = map_params[-3:]  # Last three parameters are Pb, Yb, Vb
+        map_params = map_params[:-3]  # Exclude nuisance parameters for polynomial fit
         # poly_fn = T(map_params[:degree+1])
         poly_fn = func(map_params[:degree+1])
         poly_fnx = poly_fn(x)
@@ -1489,10 +1493,14 @@ class lf:
                 params[i], coeffs, degree=(pnum[i]-1)
             ))
 
-        # Save the MAP parameter estimates to a file, one row per line
+        # # Save the MAP parameter estimates to a file, one row per line
+        # with open("composite_map_param_estimate.dat", "w") as f:
+        #     for row in map_param:
+        #         f.write(" ".join(str(x) for x in row) + "\n")
+
         with open("composite_map_param_estimate.dat", "w") as f:
-            for row in map_param:
-                f.write(" ".join(str(x) for x in row) + "\n")
+            for i in range(len(map_param)):
+                f.write(f"{params[i]}: {' '.join(str(x) for x in map_param[i])}\n")
 
         print("MAP: ", map_param)
         initial_pos = map_param[:, 0]

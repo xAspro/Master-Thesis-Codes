@@ -1081,7 +1081,7 @@ class lf:
 
         self.prior_tag = prior_tag
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 25
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
         self.mcmc_start = self.bf.x 
         # If due to one bad point in the faint end, if the best fit has beta > 0,
         # manually setting the guess for beta to be negative.
@@ -1196,28 +1196,11 @@ class lf:
 
 
 
-        samples_4d = self.samples_with_bp[:, :4]
-
-        bins = 20
-        hist, edges = np.histogramdd(samples_4d, bins=bins)
-
-        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
-
-        map_params = []
-        for i in range(4):
-            # Bin edges for this dimension
-            bin_edges = edges[i]
-            # Center of the bin
-            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
-            map_params.append(center)
-        map_params = np.array(map_params)
-        print("MAP (marginalized over nuisance):", map_params)
-
         # import sys
         # from datetime import datetime
         # sys.exit(f"\nQuitting for testing purposes\nprior tag = {self.prior_tag}\nTime right now = {datetime.now()}\n")
         
-        self.samples = self.samples_with_bp[:, :4]
+        self.samples = self.samples_with_bp[:, :-3]
         self.marginalise_and_find_MAP()
         self.savedata_with_bp()
 
@@ -1258,22 +1241,15 @@ class lf:
         return corner.corner(samples, range=bounds, **kwargs)
     
     def marginalise_and_find_MAP(self):
-        samples_4d = self.samples_with_bp[:, :4]
-
-        bins = 20
-        hist, edges = np.histogramdd(samples_4d, bins=bins)
-
-        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
-
-        map_params = []
-        for i in range(4):
-            # Bin edges for this dimension
-            bin_edges = edges[i]
-            # Center of the bin
-            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
-            map_params.append(center)
-        self.map_params = np.array(map_params)
-        print("MAP (marginalized over nuisance):", self.map_params)
+        print("\nFinding MAP (maximum a posteriori) values with bad points...")
+        log_probs = np.array([self._lnposterior_with_bad_points(theta) for theta in self.samples_with_bp])
+        map_idx = np.argmax(log_probs)
+        self.map_params = self.samples_with_bp[map_idx]
+        print("\nMAP (maximum a posteriori) values with bad points:")
+        labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        for i, val in enumerate(self.map_params):
+            print(f"{labels[i]}: {val:.4f}")
+        print("\nMAP (maximum a posteriori) values with bad points saved in self.map_params.")
 
 
 
