@@ -883,6 +883,72 @@ class lf:
                 [alpha, alpha_l, alpha_u],
                 [beta, beta_l, beta_u]], np.array(zmean)
     
+    def read_parameters_with_bp(self):
+        """
+        Reads the parameters_with_bp.dat file and returns arrays for zmean, values, and credibility intervals.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        ret : list of lists
+            Each inner list contains the values for a single redshift bin:
+            [log10phi, log10phi_lower, log10phi_upper, M_star, M_star_lower, M_star_upper,
+             alpha, alpha_lower, alpha_upper, beta, beta_lower, beta_upper]
+        zmean : numpy.ndarray
+            Array of mean redshift values corresponding to the parameters.
+        """
+        filename = 'parameters_with_bp.dat'
+        zmean = []
+        values = []
+        intervals = []
+        with open(filename, 'r') as f:
+            print(f"Reading parameters from {filename}...")
+            for line in f:
+                print(line)
+                line = line.strip()
+                # Skip comments and empty lines
+                if not line or line.startswith('#'):
+                    continue
+                print(f"Processing line: {line}")
+                # Split by the two '|' separators
+                if line.count('|') == 2:
+                    print(f"Line has 2 '|' separators: {line}")
+                    parts = line.split('|')
+                    left = parts[0].strip()
+                    middle = parts[1].strip()
+                    right = parts[2].strip()
+                    # left: zmean
+                    z = float(left)
+                    # middle: 4 parameter values
+                    vals = [float(x) for x in middle.split()]
+                    # right: 4 pairs of intervals (lower upper for each param)
+                    right_parts = right.split()
+                    interval_pairs = []
+                    for i in range(0, 8, 2):
+                        interval_pairs.append([float(right_parts[i]), float(right_parts[i+1])])
+                    zmean.append(z)
+                    values.append(vals)
+                    intervals.append(interval_pairs)
+        
+        print(f"Read {len(zmean)} redshift bins from {filename}.")
+        zmean = np.array(zmean)
+        values = np.array(values)
+        intervals = np.array(intervals)  # shape (N, 4, 2)
+        print(f"zmean shape: {zmean.shape}, values shape: {values.shape}, intervals shape: {intervals.shape}")
+
+        ret = []
+        for i in range(len(zmean)):
+            ret.append([[values[i][0], intervals[i][0][0], intervals[i][0][1]],
+                        [values[i][1], intervals[i][1][0], intervals[i][1][1]],
+                        [values[i][2], intervals[i][2][0], intervals[i][2][1]],
+                        [values[i][3], intervals[i][3][0], intervals[i][3][1]]])
+
+        ret = np.transpose(ret, (1, 2, 0))  # shape (4, 3, N)
+        return ret, zmean
+    
     def fit_polynomial_curve(self, data, err, label, degree=3):
         """
         Fit a polynomial of given degree to data with errors. Additionally,
@@ -1381,7 +1447,9 @@ class lf:
     
     def run_mcmc_for_for_1_param(self, pnum=np.array([3,4,2,5])):
         pnum = np.array([3, 4, 4, 2])
-        data_full = self.sample_data_set()
+        # data_full = self.sample_data_set()
+        data_full = self.read_parameters_with_bp()
+
         zmean = data_full[1]
         data = np.array(data_full[0])
 

@@ -33,8 +33,10 @@ lf_file = 'bins_lfs_mini.npy'
 bins_lfs = np.load(lf_file, allow_pickle=True)
 # bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)
 
-print(type(bins_lfs))
-print(dir(bins_lfs))
+# print(type(bins_lfs))
+# print(dir(bins_lfs))
+
+print("\n\n\n")
 
 ###############################################################################################
 ###############################################################################################
