@@ -1296,6 +1296,15 @@ class lf:
         plt.savefig(f'mcmc-{label}_autocorr_{self.prior_tag}.png')
         plt.close()
 
+        # Print MAP (maximum a posteriori) estimate
+        # Compute the log-probability for each sample and find the MAP estimate
+        log_probs = np.array([self.logpos_for_1_param(theta, x, y, err, degree) for theta in samples])
+        map_idx = np.argmax(log_probs)
+        map_params = samples[map_idx]
+        print("\nMAP (maximum a posteriori) values:")
+        for i, val in enumerate(map_params):
+            print(f"param_{i}: {val:.4f}")
+
 
 
         marginalised_samples = samples[:, :-3]
