@@ -1145,8 +1145,8 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        nburns = 20000
-        nprod = 100000
+        nburns = 2000
+        nprod = 10000
 
         walkers = 50
         ndim = degree + 4
@@ -1490,8 +1490,8 @@ class lf:
         for i in range(len(data)):
             # if i < 3:
             #     continue
-            # if i != 0:
-            #     continue
+            if i != 1:
+                continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
             print(f"Degree of polynomial for {params[i]}: {pnum[i]}")
