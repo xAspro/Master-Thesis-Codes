@@ -42,7 +42,7 @@ print("\n\n\n")
 ###############################################################################################
 ###############################################################################################
 
-pnum1 = [3,4,2,5]
+pnum1 = [3, 4, 4, 2]
 g1 = np.array([-7.95061036, 1.15284665, -0.12037541,
               -18.64592897, -4.52638114, 0.47207865, -0.01890026,
               -3.35945526, -0.26211017,
@@ -242,6 +242,34 @@ lfg1.run_mcmc_for_for_1_param(pnum1)
 # lfg1.call_mcmc()
 
 
+end_time = time.time()
+print("Time taken: ", end_time - start_time, " seconds")
+print("Model 1 over")
+
+try:
+    sp(composite=lfg1, individuals=bins_lfs, sample=True)  # calling the function
+
+except Exception as e:
+    print(f"Error in {sp.__name__}: {e}")  # Catch and report the error, but continue to the next function
+    traceback.print_exc()
+
+
+import sys
+sys.exit("\n\nThe rest is not required\n\n")
+
+duration = 3  # seconds
+frequency = 440  # Hz, the frequency of the beep sound (440Hz is standard A note)
+
+# Generate sound wave (440Hz sine wave)
+sample_rate = 44100  # samples per second
+t = np.linspace(0, duration, int(sample_rate * duration), False)
+wave = 0.5 * np.sin(2 * np.pi * frequency * t)
+
+# Play the generated sound wave
+sd.play(wave, samplerate=sample_rate)
+# sd.wait()  # Wait until the sound is finished playing
+
+
 # # sample data from earlier runs. logphi and mstar are constrained well,
 # # but not so well for alpha and beta.
 # guess =  np.array([-0.23, 0.95, -7.08, -0.29, 2.11, -5.06, -21.44, -0.14, 1.05, -1.94, 2.65, 0.06, -0.68, 2.27, -2.60, -0.52])
@@ -251,8 +279,6 @@ lfg1.run_mcmc_for_for_1_param(pnum1)
 #                         32.62, -26.22, 30.23, -29.11])
 # lfg1.mcmc_all_params(lf.sample_data_set, guess, uncertainty, pnum1)
 
-import sys
-sys.exit("\n\nTesting Purpose\n\n")
 # lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[4,4,4,4])
 
 # g1 = np.array([-7.95061036, 1.15284665, -0.12037541,

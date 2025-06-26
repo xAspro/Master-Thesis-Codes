@@ -1,6 +1,6 @@
 # The parameters of the QLF with bad points are given here.
 # The columns are as follows:
-#                   Values                    |                                   Credibility Interval
+#                   Values                                |                       Credibility Interval
 # zmean   |   phi_star     M_star     alpha     beta      |           phi_star              M_star             alpha             beta    
   0.3041  |   -5.7236      -21.4133   -2.8216   -0.4116   |       -5.8466 -5.6849     -21.8045 -21.2263   -3.0586 -2.6913   -0.9303 -0.2249
   0.4996  |   -6.3057      -23.2438   -3.2828   -1.5055   |       -6.4940 -5.8785     -23.5738 -22.3220   -3.5365 -2.8457   -1.6807 -1.0475

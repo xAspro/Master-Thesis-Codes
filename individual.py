@@ -1268,7 +1268,7 @@ class lf:
             with open("parameters_with_bp.dat", "w") as f:
                 f.write("# The parameters of the QLF with bad points are given here.\n")
                 f.write("# The columns are as follows:\n")
-                f.write("#                   Values                    |                                   Credibility Interval\n")
+                f.write("#                   Values                                |                       Credibility Interval\n")
                 f.write("# zmean   |   phi_star     M_star     alpha     beta      |           phi_star              M_star             alpha             beta    \n")
 
         with open("parameters_with_bp.dat", "a") as f:

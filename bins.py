@@ -50,6 +50,7 @@ os.makedirs(curr_date_time, exist_ok=True)
 # # WRITE_PARAMS = sys.argv[1] if len(sys.argv) > 1 else False
 # WRITE_PARAMS = True
 # if WRITE_PARAMS: 
+             
 
 qlumfiles = ['Data_new/dr7z2p2_sample.dat',
             #'Data_new/dr3z2p6_sample.dat', # This is DR3 not DR7 
@@ -69,6 +70,9 @@ qlumfiles = ['Data_new/dr7z2p2_sample.dat',
             'Data_new/willott10_cfhqsdeepsample.dat',
             'Data_new/willott10_cfhqsvwsample.dat',
             'Data_new/kashikawa15_sample.dat',
+            'Data_new/giallongo15_sample.dat',
+            'Data_new/ukidss_sample.dat',
+            'Data_new/banados_sample.dat',
             # 'Data_2019+/DESI_SV1_sample.dat',
             # 'Data_2019+/DESI_main_selection_sample.dat',
             # 'Data_2019+/CEERS_Kocevski_sample.dat',
@@ -106,6 +110,9 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards e
             ('Selmaps_with_tiles/willott10_cfhqsdeepsel.dat', 4.47, 10, r'Willott et al. 2010'),
             ('Selmaps_with_tiles/willott10_cfhqsvwsel.dat', 494.0, 10, r'Willott et al. 2010'),
             ('Selmaps_with_tiles/kashikawa15_sel.dat', 6.5, 11, r'Kashikawa et al. 2015'),
+            ('Selmaps_with_tiles/giallongo15_sel.dat', 0.047, 7, r'Giallongo et al. 2015'),
+            ('Selmaps_with_tiles/ukidss_sel_4.dat', 3370.0, 19, r'UKIDSS DXS'),
+            ('Selmaps_with_tiles/banados_sel_4.dat', 2500.0, 20, r'Banados et al. 2016'),
             # ('smooth_maps/2019+/DESI_SV1_selfunc_3_with_tiles.dat', 14000.0, 25, r'DESI SV1'),
             # ('smooth_maps/2019+/DESI_main_selection_selfunc_3_with_tiles.dat', 14000.0, 25, r'DESI Main Selection'),
             # ('smooth_maps/2019+/CEERS_Kocevski_selfunc_3_with_tiles.dat', 0.009583, 26, r'CEERS Kocevski'),

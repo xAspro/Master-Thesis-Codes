@@ -361,8 +361,8 @@ class lf:
         -------
         (numpy.ndarray) Array of QLF parameters.
         """
-        
-        return T(p)(1+z)
+        return np.polyval(p, z)
+        # return T(p)(1+z)
     
     def atz_beta(self, z, p):
         """
@@ -383,30 +383,32 @@ class lf:
         (numpy.ndarray) Array of parameters for beta.
         """
 
-        h, f0, z0, a, b = p 
-        zeta = np.log10((1.0+z)/(1.0+z0))
-        return h + f0/(10.0**(a*zeta) + 10.0**(b*zeta))
+        # h, f0, z0, a, b = p 
+        # zeta = np.log10((1.0+z)/(1.0+z0))
+        # return h + f0/(10.0**(a*zeta) + 10.0**(b*zeta))
     
-    def atz_beta2(self, z, p):
+        return np.polyval(p, z)
+    
+    # def atz_beta2(self, z, p):
 
-        """
-        Creates a Polynomial Model for redshift evolution of beta.
+    #     """
+    #     Creates a Polynomial Model for redshift evolution of beta.
 
-        Parameters
-        ----------
-        z : numpy.ndarray
-            Array of redshift values.
+    #     Parameters
+    #     ----------
+    #     z : numpy.ndarray
+    #         Array of redshift values.
 
-        p : numpy.ndarray
-            Array of parameters.
+    #     p : numpy.ndarray
+    #         Array of parameters.
 
-        Returns
-        -------
-        (numpy.ndarray) Array of parameters for beta.
-        """
+    #     Returns
+    #     -------
+    #     (numpy.ndarray) Array of parameters for beta.
+    #     """
 
-        a, b, c, d, e, *_ = p 
-        return a + b*z + c*z**2 + d*z**3 + e*z**4
+    #     a, b, c, d, e, *_ = p 
+    #     return a + b*z + c*z**2 + d*z**3 + e*z**4
 
     def getparams(self, theta):
         """
@@ -1143,8 +1145,8 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        nburns = 200
-        nprod = 1000
+        nburns = 20
+        nprod = 100
 
         walkers = 50
         ndim = degree + 4
@@ -1328,10 +1330,11 @@ class lf:
         # median_Yb = np.median(samples[:, -2])
         # median_Vb = np.median(samples[:, -1])
 
+
         is_bad = self.find_bad_points(np.poly1d, x, y, err, map_params, degree=degree)
         print(f"Bad points for {label}:", is_bad)
 
-        self.plot_bad_points(np.poly1d, x, y, err, map_params, is_bad, label, degree=degree)
+        self.plot_bad_points(samples, np.poly1d, x, y, err, map_params, is_bad, label, degree=degree)
 
         # import sys
         # sys.exit("Testing")
@@ -1344,7 +1347,7 @@ class lf:
         minus_sigma = percentiles[1] - percentiles[0]
         plus_sigma = percentiles[2] - percentiles[1]
 
-        return [map_params, minus_sigma, plus_sigma]
+        return [map_params, minus_sigma, plus_sigma], samples
     
     def find_bad_points(self, func, x, y, err, map_params, degree=3):
         """
@@ -1397,7 +1400,7 @@ class lf:
         return is_bad
 
 
-    def plot_bad_points(self, func, x, y, err, map_params, is_bad, label, degree=3):
+    def plot_bad_points(self, samples, func, x, y, err, map_params, is_bad, label, degree=3):
         """
         Plot the data points, fitted polynomial, and highlight bad points.
 
@@ -1442,6 +1445,17 @@ class lf:
         bad_y = y[is_bad]
         bad_err = err[is_bad]
         plt.errorbar(bad_x, bad_y, yerr=bad_err, fmt='o', color='orange', label='Bad points', capsize=3)
+        
+        # Compute 1-sigma error band for the fitted curve using MCMC samples
+        n_samples = min(200, samples.shape[0])
+        curve_samples = []
+        for s in samples[np.random.choice(samples.shape[0], n_samples, replace=False)]:
+            poly = func(s[:degree+1])
+            curve_samples.append(poly(x_fit))
+        curve_samples = np.array(curve_samples)
+        high = np.percentile(curve_samples, 84, axis=0)
+        low = np.percentile(curve_samples, 16, axis=0)
+        plt.fill_between(x_fit, low, high, color='gray', alpha=0.2, label='1-sigma error band')
 
         if func == np.poly1d:
             title = 'Polynomial Fit'
@@ -1469,6 +1483,7 @@ class lf:
         params = ["logphi", "M_star", "alpha", "beta"]
         coeff_list = []
         map_param = []
+        samples = []
         for i in range(len(data)):
             # if i < 3:
             #     continue
@@ -1488,10 +1503,12 @@ class lf:
             print(f"Polynomial function for {params[i]}: \n{poly_fn}")
             coeff_list.append(coeffs)
 
-            map_param.append(self.mcmc_for_1_param(
+            map_par, sample_for_one = self.mcmc_for_1_param(
                 zmean, data[i][0], (data[i][2] - data[i][1])/2.0,
                 params[i], coeffs, degree=(pnum[i]-1)
-            ))
+            )
+            map_param.append(map_par)
+            samples.append(sample_for_one)
 
         # # Save the MAP parameter estimates to a file, one row per line
         # with open("composite_map_param_estimate.dat", "w") as f:
@@ -1503,12 +1520,17 @@ class lf:
                 f.write(f"{params[i]}: {' '.join(str(x) for x in map_param[i])}\n")
 
         print("MAP: ", map_param)
-        initial_pos = map_param[:, 0]
-        uncertainties = np.array([row[1:] for row in map_param])
+        # initial_pos = map_param[:, 0]
+        # uncertainties = np.array([row[1:] for row in map_param])
 
-        self.mcmc_all_params(
-            data_full, initial_pos, uncertainties, pnum=pnum
-        )
+        # self.mcmc_all_params(
+        #     data_full, initial_pos, uncertainties, pnum=pnum
+        # )
+
+
+
+        self.map_params = [[map_param[i][0][j] for j in range(len(map_param[i][0])-3)]for i in range(len(map_param))]
+        self.samples = samples
 
 
     def log_prior_full(self, theta):

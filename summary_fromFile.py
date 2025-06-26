@@ -20,7 +20,8 @@ from scipy.optimize import curve_fit
 from scipy.interpolate import UnivariateSpline
 
 # These redshift bins are labelled "bad" and are plotted differently.
-reject = [0, 1, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+# reject = [0, 1, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+reject = []
 
 colors = ['tomato', 'forestgreen', 'goldenrod', 'saddlebrown']
 # colors = ['k', 'k', 'k', 'k'] 
@@ -29,9 +30,9 @@ nplots_y = 2
 nplots = 4
 plot_number = 0 
 
-zlims=(0.0,12.0)
+zlims=(0.0,7.0)
 zmin, zmax = zlims
-z = np.linspace(zmin, zmax, num=500)
+z = np.linspace(zmin, zmax, num=10)
 cfit = False
 
 def plot_model(composite, param_number, ax):
@@ -85,6 +86,9 @@ def plot_model_polyb(composite, param_number, ax):
     return mf, m 
 
 def getParam(individuals, param, which='old', dtype='good'):
+
+    # # setting dtype to be always good
+    # dtype = 'good'
 
     if individuals is not None: 
     
@@ -140,33 +144,50 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     ax.set_yticks(np.arange(-12, -4, 1))
 
     if compOpt is not None: 
+        print("Inside plot_phi_star, compOpt is not None")
         phi = compOpt.atz(z, compOpt.getparams(compOpt.bf.x)[0])
         ax.plot(z, phi, color='g', zorder=2, dashes=[7,2])
 
     if composite is not None: 
-        bf = np.median(composite.samples, axis=0)
+        print("Inside plot_phi_star, composite is not None")
+        # bf = np.median(composite.samples, axis=0)
+        bf = composite.map_params
         if sample:
 
             nsample = 1000
-            rsample = composite.samples[np.random.randint(len(composite.samples), size=nsample)]
+            rsample = composite.samples[0][np.random.randint(len(composite.samples[0]), size=nsample)]
             nzs = len(z) 
             phi = np.zeros((nsample, nzs))
+            # print("rsample.shape:", rsample.shape)
+            # import sys; sys.exit(0)
+            # phi = composite.atz(z, rsample[0])
 
             for i, theta in enumerate(rsample):
-                params = composite.getparams(theta)
-                phi[i] = composite.atz(z, params[0]) 
+                # print("theta:", theta)
+                # print("theta.shape:", theta.shape)
+                # params = composite.getparams(theta)
+                # print("params:", params)
+                params = theta[:-3]
+                print("params:", params)
+                print("params.shape:", params.shape)
+                phi[i] = composite.atz(z, params) 
                 
             up = np.percentile(phi, 15.87, axis=0)
             down = np.percentile(phi, 84.13, axis=0)
             ax.fill_between(z, down, y2=up, color='grey', zorder=5, alpha=0.7)
             
-        phi = np.median(phi, axis=0)
+        # phi = np.median(phi, axis=0)
+        print("bf:", bf)
+        print("bf[0]:", bf[0])
+        phi = composite.atz(z, bf[0])
         ax.plot(z, phi, color='k', zorder=5, lw=1)
 
     if lfg_break is not None: 
+        print("Inside plot_phi_star, lfg_break is not None")
         plot_model(lfg_break, 0, ax)
 
     if lfg_polyb is not None: 
+        print("Inside plot_phi_star, lfg_polyb is not None")
         plot_model_polyb(lfg_polyb, 0, ax)
 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='new', dtype='good')
@@ -213,8 +234,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     # print('max(zm):', np.max(zm))
     print('min(c):', np.min(c))
     print('max(c):', np.max(c))
-    print('min(centre):', np.min(centre))
-    print('max(centre):', np.max(centre))
+    
+    
     print()
     print("Good data:")
     for i in range(len(zmean)):
@@ -226,18 +247,19 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = 0
-    xlim_r = 12
+    xlim_r = 7
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
-    ylim_l = min(np.min(c), np.min(centre))-1
-    ylim_r = max(np.max(c), np.max(centre))+1
+    ylim_l = np.min(c) - 1
+    ylim_r = np.max(c) + 1
     ylim_r = min(4, ylim_r)
     ax.set_ylim(ylim_l, ylim_r)
     ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
     
     
     if cfit:
+        print("Using Chebyshev fit for phi*")
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 2)
         print( coeffs )
@@ -254,6 +276,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
 
     curvefit = False
     if curvefit:
+        print("Using curve_fit for phi*")
         zc = np.linspace(0, 7, 500)
         
         def func(z, h, f0, z0, a, b):
@@ -311,24 +334,37 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
         ax.plot(z, M, color='g', zorder=2, dashes=[7,2])
 
     if composite is not None:
-        bf = np.median(composite.samples, axis=0)
+        # bf = np.median(composite.samples, axis=0)
+        bf = composite.map_params
         if sample:
 
             nsample = 1000
-            rsample = composite.samples[np.random.randint(len(composite.samples), size=nsample)]
+            rsample = composite.samples[1][np.random.randint(len(composite.samples[1]), size=nsample)]
             nzs = len(z) 
             M = np.zeros((nsample, nzs))
 
             for i, theta in enumerate(rsample):
-                params = composite.getparams(theta)
-                M[i] = composite.atz(z, params[1]) 
+                # print( 'theta:', theta)
+                # print("theta.shape:", theta.shape)
+                # params = composite.getparams(theta)
+                params = theta[:-3]
+                print( 'params:', params)
+                M[i] = composite.atz(z, params) 
                 
             up = np.percentile(M, 15.87, axis=0)
             down = np.percentile(M, 84.13, axis=0)
+            print("\n\n\n\n\n\n")
+            print('up:', up)
+            print('down:', down)
+            print("M:", M)
+            print("\n\n\n\n\n\n")
             ax.fill_between(z, down, y2=up, color='grey', zorder=5, alpha=0.7)
+
             
-        M = np.median(M, axis=0)
+        # M = np.median(M, axis=0)
+        M = composite.atz(z, bf[1])
         ax.plot(z, M, color='k', zorder=5, lw=1)
+        
 
     if lfg_break is not None: 
         plot_model(lfg_break, 1, ax)
@@ -402,8 +438,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     # print('max(zm):', np.max(zm))
     print('min(c):', np.min(c))
     print('max(c):', np.max(c))
-    print('min(centre):', np.min(centre))
-    print('max(centre):', np.max(centre))
+    
+    
     print()
     print("Good data:")
     for i in range(len(zmean)):
@@ -415,12 +451,12 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = 0
-    xlim_r = 12
+    xlim_r = 7
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
-    ylim_l = min(np.min(c), np.min(centre))-1
-    ylim_r = max(np.max(c), np.max(centre))+1
+    ylim_l = np.min(c) - 1
+    ylim_r = np.max(c) + 1
     ylim_r = min(14, ylim_r)
     ax.set_ylim(ylim_l, ylim_r)
     ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
@@ -482,24 +518,26 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
                 label='likelihood maximum')
 
     if composite is not None:
-        bf = np.median(composite.samples, axis=0)
+        # bf = np.median(composite.samples, axis=0)
+        bf = composite.map_params
         if sample:
 
             nsample = 1000
-            rsample = composite.samples[np.random.randint(len(composite.samples), size=nsample)]
+            rsample = composite.samples[2][np.random.randint(len(composite.samples[2]), size=nsample)]
             nzs = len(z) 
             alpha = np.zeros((nsample, nzs))
 
             for i, theta in enumerate(rsample):
-                params = composite.getparams(theta)
-                alpha[i] = composite.atz(z, params[2]) 
+                params = theta[:-3]
+                alpha[i] = composite.atz(z, params) 
                 
             up = np.percentile(alpha, 15.87, axis=0)
             down = np.percentile(alpha, 84.13, axis=0)
             m1f = ax.fill_between(z, down, y2=up, color='grey', zorder=5, label='Model 1', alpha=0.7)
 
         
-        alpha = np.median(alpha, axis=0) 
+        # alpha = np.median(alpha, axis=0) 
+        alpha = composite.atz(z, bf[2])
         m1, = ax.plot(z, alpha, color='k', zorder=5, lw=1)
 
     if lfg_break is not None: 
@@ -580,8 +618,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     # print('max(zm):', np.max(zm))
     print('min(c):', np.min(c))
     print('max(c):', np.max(c))
-    print('min(centre):', np.min(centre))
-    print('max(centre):', np.max(centre))
+    
+    
     print()
     print("Good data:")
     for i in range(len(zmean)):
@@ -593,12 +631,12 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = 0
-    xlim_r = 12
+    xlim_r = 7
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
-    ylim_l = min(np.min(c), np.min(centre))-1
-    ylim_r = max(np.max(c), np.max(centre))+1
+    ylim_l = np.min(c) - 1
+    ylim_r = np.max(c) + 1
     ylim_r = min(14, ylim_r)
     ax.set_ylim(ylim_l, ylim_r)
     ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
@@ -663,10 +701,12 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     # ax.set_yticks(np.arange(-3, 0.2, 0.5))
     
     if compOpt is not None:
+        print("Inside plot_beta, compOpt is not None")
         beta = compOpt.atz_beta(z, compOpt.getparams(compOpt.bf.x)[3])
         ax.plot(z, beta, color='g', zorder=2, dashes=[7,2])
 
     if composite is not None:
+        print("Inside plot_beta, composite is not None")
 
 
         # bf = np.median(composite.samples, axis=0)
@@ -683,16 +723,16 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
         
         if sample:
-
+            print("Inside plot_beta, sample is True")
             nsample = 10000
             np.random.seed()
-            rsample = composite.samples[np.random.randint(len(composite.samples), size=nsample)]
+            rsample = composite.samples[3][np.random.randint(len(composite.samples[3]), size=nsample)]
             nzs = len(z) 
             beta = np.zeros((nsample, nzs))
 
             for i, theta in enumerate(rsample):
-                params = composite.getparams(theta)
-                beta[i] = composite.atz_beta(z, params[3]) 
+                params = theta[:-3]
+                beta[i] = composite.atz_beta(z, params) 
                 
             up = np.percentile(beta, 15.87, axis=0)
             down = np.percentile(beta, 84.13, axis=0)
@@ -702,16 +742,19 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
         # print( 'median beta (beta):', composite.getparams(bfs)[3])
         # print( 'median beta (samples):', composite.getparams(bf)[3])
 
-        beta = np.median(beta, axis=0)
+        # beta = np.median(beta, axis=0)
+        beta = composite.atz_beta(z, composite.map_params[3])
         ax.plot(z, beta, color='k', zorder=5, lw=1)
 
         # beta = composite.atz_beta(z, composite.getparams(bf)[3])
         # ax.plot(z, beta, color='k', zorder=2, lw=1)
 
     if lfg_break is not None: 
+        print("Inside plot_beta, lfg_break is not None")
         plot_model(lfg_break, 3, ax)
 
     if lfg_polyb is not None: 
+        print("Inside plot_beta, lfg_polyb is not None")
         plot_model_polyb(lfg_polyb, 3, ax)
 
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='new', dtype='good')
@@ -734,6 +777,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
     cfit = False
     if cfit:
+        print("Inside plot_beta, cfit is True")
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 3)
         print( coeffs)
@@ -749,6 +793,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
     polyfit = False
     if polyfit:
+        print("Inside plot_beta, polyfit is True")
         zc = np.linspace(0, 7, 500)
         p = np.polyfit(np.log10(zmean+10), c, 2)
         print( p)
@@ -757,6 +802,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
     curvefit = False
     if curvefit:
+        print("Inside plot_beta, curvefit is True")
         zc = np.linspace(0, 7, 500)
         
         def func(z, h, f0, z0, a, b):
@@ -794,8 +840,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     # print('max(zm):', np.max(zm))
     print('min(c):', np.min(c))
     print('max(c):', np.max(c))
-    print('min(centre):', np.min(centre))
-    print('max(centre):', np.max(centre))
+    
+    
     print()
     print("Good data:")
     for i in range(len(zmean)):
@@ -807,12 +853,12 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = 0
-    xlim_r = 12
+    xlim_r = 7
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
-    ylim_l = min(np.min(c), np.min(centre))-1
-    ylim_r = max(np.max(c), np.max(centre))+1
+    ylim_l = np.min(c) - 1
+    ylim_r = np.max(c) + 1
     ylim_r = min(10, ylim_r)
     ax.set_ylim(ylim_l, ylim_r)
     ax.set_yticks(np.arange(ylim_l, ylim_r, abs(ylim_r-ylim_l)/10))
