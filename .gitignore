@@ -35,3 +35,4 @@ bins_lfs_old_data.npy
 bins_lfs_old_data.npy
 *.pbs
 sync_to_cluster.sh
+convert_images_to_gifs.py

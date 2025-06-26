@@ -30,7 +30,7 @@ nplots_y = 2
 nplots = 4
 plot_number = 0 
 
-zlims=(0.0,7.0)
+zlims=(0.0,8.0)
 zmin, zmax = zlims
 z = np.linspace(zmin, zmax, num=500)
 cfit = False
@@ -246,8 +246,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
-    xlim_l = 0
-    xlim_r = 7
+    xlim_l = zmin
+    xlim_r = zmax
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
@@ -450,8 +450,8 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
-    xlim_l = 0
-    xlim_r = 7
+    xlim_l = zmin
+    xlim_r = zmax
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
@@ -630,8 +630,8 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
-    xlim_l = 0
-    xlim_r = 7
+    xlim_l = zmin
+    xlim_r = zmax
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 
@@ -852,8 +852,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
     # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
-    xlim_l = 0
-    xlim_r = 7
+    xlim_l = zmin
+    xlim_r = zmax
     ax.set_xlim(xlim_l, xlim_r)
     ax.set_xticks(np.arange(xlim_l, xlim_r, 1))
 

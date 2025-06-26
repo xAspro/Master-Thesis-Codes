@@ -794,7 +794,9 @@ class lf:
 
         zmean = [0.305, 0.500, 0.699, 0.902, 1.102, 1.298, 1.502, 1.701, 1.976, 
                  2.302, 2.446, 2.548, 2.645, 2.746, 2.850, 2.950, 3.050, 3.148, 
-                 3.246, 3.342, 3.442, 3.870, 4.343, 4.922, 5.999]
+                 3.246, 3.342, 3.442, 3.870, 4.343, 4.922, 5.999] + [7.052]
+        
+        # Should just add this to the file next time :/
 
         logphi = [
             -5.8123, -6.4152, -7.0860, -6.4479, -6.2338, -6.2530, -6.2179, -6.2102, 
@@ -1146,8 +1148,10 @@ class lf:
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
         nburns = 2000
-        nprod = 10000
+        nprod = 2000
+        # nprod = nburns
 
+        # walkers = 2 * degree + 8
         walkers = 50
         ndim = degree + 4
 
@@ -1159,13 +1163,13 @@ class lf:
         self.coeff = coeff
 
         if label == 'logphi':
-            self.rnge = 1
+            self.rnge = 2
         elif label == 'M_star':
-            self.rnge = 5.5
+            self.rnge = 6.5
         elif label == 'alpha':
             self.rnge = 1
         elif label == 'beta':
-            self.rnge = 1
+            self.rnge = 2
 
         pos_all = []
         for _ in range(n_visualize):
@@ -1245,6 +1249,75 @@ class lf:
         plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Orignal.png')
         plt.close()
 
+        # # Plot corner plots for increasing fractions of the samples
+        # n_parts = 5
+        # n_samples = samples.shape[0]
+        # for i in range(1, n_parts + 1):
+        #     frac = i / n_parts
+        #     n = int(frac * n_samples)
+        #     part_samples = samples[:n]
+        #     part_bounds = central_bounds(part_samples, q=0.90)
+        #     corner.corner(
+        #         part_samples, labels=labels, bounds=part_bounds,
+        #         quantiles=[0.16, 0.5, 0.84], bins=20,
+        #         levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
+        #         smooth=True, fill_contours=True, plot_datapoints=False,
+        #         show_titles=True, title_kwargs={"fontsize": 12}
+        #     )
+        #     plt.suptitle(f'Prior tag: {self.prior_tag} (first {int(frac*100)}%)', fontsize=14)
+        #     plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Original_part_{i}.png')
+        #     plt.close()
+
+        # # Plot chain plots for increasing fractions of the samples
+        # for i in range(1, n_parts + 1):
+        #     frac = i / n_parts
+        #     n = int(frac * nprod)
+        #     mpl.rcParams['font.size'] = '10'
+        #     fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
+        #     for param_idx in range(ndim):
+        #         ax = axes[param_idx] if ndim > 1 else axes
+        #         for walker_idx in range(walkers):
+        #             ax.plot(sampler.chain[walker_idx, :n, param_idx], color='k', alpha=0.1)
+        #     ax.set_ylabel(f'param_{param_idx}')
+        #     axes[-1].set_xlabel('step')
+        #     plt.tight_layout()
+        #     plt.savefig(f'mcmc-{label}_chains_{self.prior_tag}_part_{i}.png')
+        #     plt.close()
+
+        # # Additional: Plot corner and chain plots for each segment (part i-1 to part i)
+        # for i in range(1, n_parts + 1):
+        #     start = int((i - 1) / n_parts * n_samples)
+        #     end = int(i / n_parts * n_samples)
+        #     seg_samples = samples[start:end]
+        #     if seg_samples.shape[0] == 0:
+        #         continue
+        #     seg_bounds = central_bounds(seg_samples, q=0.90)
+        #     corner.corner(
+        #         seg_samples, labels=labels, bounds=seg_bounds,
+        #         quantiles=[0.16, 0.5, 0.84], bins=20,
+        #         levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
+        #         smooth=True, fill_contours=True, plot_datapoints=False,
+        #         show_titles=True, title_kwargs={"fontsize": 12}
+        #     )
+        #     plt.suptitle(f'Prior tag: {self.prior_tag} (segment {i-1} to {i}, {start}:{end})', fontsize=14)
+        #     plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Segment_{i}.png')
+        #     plt.close()
+
+        # for i in range(1, n_parts + 1):
+        #     start = int((i - 1) / n_parts * nprod)
+        #     end = int(i / n_parts * nprod)
+        #     mpl.rcParams['font.size'] = '10'
+        #     fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
+        #     for param_idx in range(ndim):
+        #         ax = axes[param_idx] if ndim > 1 else axes
+        #         for walker_idx in range(walkers):
+        #             ax.plot(sampler.chain[walker_idx, start:end, param_idx], color='k', alpha=0.1)
+        #     ax.set_ylabel(f'param_{param_idx}')
+        #     axes[-1].set_xlabel('step')
+        #     plt.tight_layout()
+        #     plt.savefig(f'mcmc-{label}_chains_{self.prior_tag}_Segment_{i}.png')
+        #     plt.close()
+
         corner.corner(samples, labels=labels, bounds=bounds,
                       quantiles=[0.16, 0.5, 0.84], bins=20, 
                       levels=[0.1175, 0.393, 0.676],
@@ -1280,7 +1353,7 @@ class lf:
 
         taus = []
         x_tau = []
-        for i in range(nprod // 50, nprod, nprod // 50):
+        for i in range(nprod // 20, nprod, nprod // 20):
             tau = emcee.autocorr.integrated_time(sampler.get_chain()[:i], tol=0)
             taus.append(tau)
             x_tau.append(i)
@@ -1378,9 +1451,72 @@ class lf:
         is_bad : array-like
             Boolean array indicating which points are considered "bad".
         """
+        print("degree= ", degree)
+        print("map_params.shape= ", map_params.shape)
+        print("map_params= ", map_params)
+        print("x.shape= ", x.shape)
+        print("y.shape= ", y.shape)
+        print("x= ", x)
+        print("y= ", y)
+        # import sys; sys.exit("\n\nTesting find_bad_points")
         nuisance_params = map_params[-3:]  # Last three parameters are Pb, Yb, Vb
         map_params = map_params[:-3]  # Exclude nuisance parameters for polynomial fit
         # poly_fn = T(map_params[:degree+1])
+        if func == np.poly1d:
+            poly_fn = np.poly1d(map_params[:degree+1])
+        else:
+            mag = y[1]
+            y = y[1]
+            poly_fn = lambda x: self.log10phi_full(map_params, mag, x)
+
+            params = self.getparams(map_params)
+            z = x
+            
+            # print("params = ", params)
+            # import sys; sys.exit("Testing log10phi_full")
+
+            # print("params = ", params)
+
+            log10phi_star = self.atz(z, params[0])
+            M_star = self.atz(z, params[1])
+            alpha = self.atz(z, params[2])
+            beta = self.atz_beta(z, params[3])
+            # Already removed nuisance parameters from theta
+            # Pb, Yb, Vb = params[-3:]
+
+
+
+            # print("\nlog10phi_star = ", log10phi_star)
+            # print("M_star = ", M_star)
+            # print("alpha = ", alpha)
+            # print("beta = ", beta)
+            
+
+            # print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
+            # # print(f"mag = {mag}, z = {z}")
+            # print(f"shape of mag = {mag.shape}, shape of z = {z.shape}")
+
+            # print(f"shape of log10phi_star = {log10phi_star.shape}, shape of M_star = {M_star.shape}")
+            # print(f"shape of alpha = {alpha.shape}, shape of beta = {beta.shape}")
+            # print(f"shape of M_star = {M_star.shape}, shape of mag = {mag.shape}")
+
+            # import sys; sys.exit("Testing log10phi_full")
+
+            ln10 = np.log(10)
+
+            log10_num = log10phi_star
+            log10_den = np.logaddexp(
+                0.4 * ln10 * (alpha + 1) * (mag - M_star),
+                0.4 * ln10 * (beta + 1) * (mag - M_star)
+            ) / ln10
+
+            log10phi = log10_num - log10_den
+
+            # print(f"log10phi shape = {log10phi.shape}, mag shape = {mag.shape}, z shape = {z.shape}")
+            
+            # import sys; sys.exit("Testing log10phi_full")
+            poly_fn = lambda x: self.log10phi_full(x, log10phi_star, M_star, alpha, beta)
+
         poly_fn = func(map_params[:degree+1])
         poly_fnx = poly_fn(x)
         residuals = y - poly_fnx
@@ -1454,7 +1590,7 @@ class lf:
         plt.errorbar(bad_x, bad_y, yerr=bad_err, fmt='o', color='orange', label='Bad points', capsize=3)
         
         # Compute 1-sigma error band for the fitted curve using MCMC samples
-        n_samples = min(200, samples.shape[0])
+        n_samples = min(3000, samples.shape[0])
         curve_samples = []
         for s in samples[np.random.choice(samples.shape[0], n_samples, replace=False)]:
             poly = func(s[:degree+1])
@@ -1480,7 +1616,6 @@ class lf:
 
     
     def run_mcmc_for_for_1_param(self, pnum=np.array([3,4,2,5])):
-        pnum = np.array([3, 4, 4, 2])
         # data_full = self.sample_data_set()
         data_full = self.read_parameters_with_bp()
 
@@ -1492,9 +1627,9 @@ class lf:
         map_param = []
         samples = []
         for i in range(len(data)):
-            # if i < 3:
+            # if i < 2:
             #     continue
-            # if i != 1:
+            # if i != 2:
             #     continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
@@ -1522,9 +1657,15 @@ class lf:
         #     for row in map_param:
         #         f.write(" ".join(str(x) for x in row) + "\n")
 
+        # with open("composite_map_param_estimate.dat", "w") as f:
+        #     for i in range(len(map_param)):
+        #         f.write(f"{params[i]}: {' '.join(str(x) for x in map_param[i])}\n")
+
+        # np.savetxt("composite_map_param_estimate.dat", [row[0] for row in map_param], allow_pickle=True)
         with open("composite_map_param_estimate.dat", "w") as f:
-            for i in range(len(map_param)):
-                f.write(f"{params[i]}: {' '.join(str(x) for x in map_param[i])}\n")
+            for param in map_param:
+                for arr in param:  # param[0]=main, param[1]=minus_sigma, param[2]=plus_sigma
+                    f.write(" ".join(str(x) for x in arr) + "\n")
 
         print("MAP: ", map_param)
         # initial_pos = map_param[:, 0]
@@ -1613,6 +1754,8 @@ class lf:
         """
         # print("theta = ", theta)
         params = self.getparams(theta)
+        # print("params = ", params)
+        # import sys; sys.exit("Testing log10phi_full")
 
         # print("params = ", params)
 
@@ -1743,7 +1886,10 @@ class lf:
         """
         print("In composite.py class-lf find_best_fit_full")
         print("Initial guess for parameters:", guess)
+        print("guess shape:", np.array(guess).shape)
         # import sys; sys.exit("Testing find_best_fit_full")
+
+
 
         main_bounds = [(None, None) for _ in range(len(guess) - 3)]
         nuisance_bounds = [(0, 1), (-100, 100), (0, 100)]
@@ -1774,7 +1920,6 @@ class lf:
         """
 
         print("In composite.py class-lf mcmc_all_params")
-
         zmean = data_full[1]
         data = np.array(data_full[0])
 
@@ -1798,33 +1943,33 @@ class lf:
         # Run MCMC for all parameters
         sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,))
         print("Running MCMC for all parameters...")
-        sampler.run_mcmc(pos, 2000, progress=True)
+        sampler.run_mcmc(pos, 20, progress=True)
         sampler.reset()
-        sampler.run_mcmc(None, 20000, progress=True)
+        sampler.run_mcmc(None, 200, progress=True)
         samples = sampler.get_chain(flat=True)
 
-        # Plot corner plot (same format as previous)
-        labels = [f'param_{i}' for i in range(ndim - 3)] + ['Pb', 'Yb', 'Vb']
-        corner.corner(samples, labels=labels, quantiles=[0.16, 0.5, 0.84], bins=20, 
-                      levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
-                      smooth=True, fill_contours=True, plot_datapoints=False,
-                      show_titles=True, title_kwargs={"fontsize": 12})
-        plt.suptitle('Full MCMC fit', fontsize=14)
-        plt.savefig('mcmc_full_corner.png')
-        plt.close()
+        # # Plot corner plot (same format as previous)
+        # labels = [f'param_{i}' for i in range(ndim - 3)] + ['Pb', 'Yb', 'Vb']
+        # corner.corner(samples, labels=labels, quantiles=[0.16, 0.5, 0.84], bins=20, 
+        #               levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
+        #               smooth=True, fill_contours=True, plot_datapoints=False,
+        #               show_titles=True, title_kwargs={"fontsize": 12})
+        # plt.suptitle('Full MCMC fit', fontsize=14)
+        # plt.savefig('mcmc_full_corner.png')
+        # plt.close()
 
-        # Plot chains for each parameter
-        mpl.rcParams['font.size'] = '10'
-        fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
-        for i in range(ndim):
-            ax = axes[i] if ndim > 1 else axes
-            for j in range(nwalkers):
-                ax.plot(sampler.chain[j, :, i], alpha=0.1)
-            ax.set_ylabel(labels[i])
-        axes[-1].set_xlabel('step')
-        plt.tight_layout()
-        plt.savefig('mcmc_full_chains.png')
-        plt.close()
+        # # Plot chains for each parameter
+        # mpl.rcParams['font.size'] = '10'
+        # fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
+        # for i in range(ndim):
+        #     ax = axes[i] if ndim > 1 else axes
+        #     for j in range(nwalkers):
+        #         ax.plot(sampler.chain[j, :, i], alpha=0.1)
+        #     ax.set_ylabel(labels[i])
+        # axes[-1].set_xlabel('step')
+        # plt.tight_layout()
+        # plt.savefig('mcmc_full_chains.png')
+        # plt.close()
 
         # Print autocorrelation time and acceptance rate
         try:
@@ -1834,7 +1979,7 @@ class lf:
             print("Could not compute autocorrelation time:", e)
         print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
 
-        import sys; sys.exit("Testing mcmc_all_params")
+        # import sys; sys.exit("Testing mcmc_all_params")
 
 
         
@@ -1842,35 +1987,50 @@ class lf:
         # THEN YOU CAN DO THE HISTOGRAM WITHOUT RUNNING OUT OF RAM
         
 
-        # Find MAP (maximum a posteriori) estimate
-        bins = 2
-        marginalised_samples = samples[:, :-3]
-        hist, edges = np.histogramdd(marginalised_samples, bins=bins)
-        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
-        map_params = []
-        for i in range(marginalised_samples.shape[1]):
-            bin_edges = edges[i]
-            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
-            map_params.append(center)
-        map_params = np.array(map_params)
-        print("MAP (marginalized over nuisance):", map_params)
+        # # Find MAP (maximum a posteriori) estimate
+        # bins = 2
+        # marginalised_samples = samples[:, :-3]
+        # hist, edges = np.histogramdd(marginalised_samples, bins=bins)
+        # max_idx = np.unravel_index(np.argmax(hist), hist.shape)
+        # map_params = []
+        # for i in range(marginalised_samples.shape[1]):
+        #     bin_edges = edges[i]
+        #     center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
+        #     map_params.append(center)
+        # map_params = np.array(map_params)
+        # print("MAP (marginalized over nuisance):", map_params)
+
+        # Find MAP (maximum a posteriori) estimate by maximizing log-probability
+        log_probs = np.array([self.log_prob_full(theta, data_full) for theta in samples])
+        map_idx = np.argmax(log_probs)
+        map_params = samples[map_idx]
+        print("\nMAP (maximum a posteriori) values for all parameters:")
+        for i, val in enumerate(map_params):
+            print(f"param_{i}: {val:.4f}")
+        
+        # print("Shape of data_full[0]:", data_full[0].shape)
+        # print("Shape of data_full[1]:", data_full[1].shape)
+        # import sys; sys.exit("Testing mcmc_all_params")
 
         # Median nuisance parameters
         median_Pb = np.median(samples[:, -3])
         median_Yb = np.median(samples[:, -2])
         median_Vb = np.median(samples[:, -1])
 
+        print("Shapes: ")
+        print(f"data_full[0].shape = {data_full[0].shape}")
+        print(f"data_full[1].shape = {data_full[1].shape}")
         # Find bad points
         is_bad = self.find_bad_points(self.log10phi_full,
-            data_full[1], data_full[0][0], (data_full[0][2] - data_full[0][1]) / 2.0,
-            map_params, [median_Pb, median_Yb, median_Vb], degree=(len(map_params)-1)
+            data_full[1], [data_full[0][0], data_full[0][3]], (data_full[0][2] - data_full[0][1]) / 2.0,
+            map_params, (len(map_params)-4)
         )
         print("Bad points:", is_bad)
 
         # Plot final output with bad points
-        self.plot_bad_points(self.log10phi_full,
+        self.plot_bad_points(samples, self.log10phi_full,
             data_full[1], data_full[0][0], (data_full[0][2] - data_full[0][1]) / 2.0,
-            map_params, is_bad, 'logphi', degree=(len(map_params)-1)
+            map_params, is_bad, 'logphi', (len(map_params)-4)
         )
 
     def read_datapoints_with_bp(self, filename):
@@ -1950,9 +2110,23 @@ class lf:
 
         self.pnum = pnum
 
-        guess = np.array([-0.23, 0.95, -7.08, -0.29, 2.11, -5.06, -21.44, -0.14, 1.05, -1.94, 2.65, 0.06, -0.68, 2.27, -2.60, -0.52])
+        # guess = np.array([-0.23, 0.95, -7.08, -0.29, 2.11, -5.06, -21.44, -0.14, 1.05, -1.94, 2.65, 0.06, -0.68, 2.27, -2.60, -0.52])
+        # guess = np.loadtxt("composite_map_param_estimate.dat", allow_pickle=True)
+        params = []
+        with open("composite_map_param_estimate.dat") as f:
+            lines = f.readlines()
+            for i in range(0, len(lines), 3):
+                main = [float(x) for x in lines[i].split()]
+                plus = [float(x) for x in lines[i+1].split()]
+                minus = [float(x) for x in lines[i+2].split()]
+                params.append([main[:-3], plus[:-3], minus[:-3]])
 
+        # guess = np.array(guess).flatten()
+        # print("\n\nguess:", guess)
+        guess = np.concatenate([params[i][0] for i in range(len(params))])
+        print("\n\nconcatenated guess:", guess)
         database = self.read_datapoints_with_bp("datapoints_with_bp.dat")
+
 
         # Extract the data from the structured array
         zmin = database['zmin']
@@ -1993,16 +2167,15 @@ class lf:
             zmean
         ]
 
-        print("\nData for full fit:")
-        print(data_full)
+        # print("\nData for full fit:")
+        # print(data_full)
         print(f"shape of data_full[0]: {data_full[0].shape}, shape of data_full[1]: {data_full[1].shape}")
-
 
         nuisance_param_guess = np.array([0.0, -5, 2])
 
         guess = np.concatenate((guess, nuisance_param_guess))
 
-        self.find_best_fit_full(data_full, guess)
+        # self.find_best_fit_full(data_full, guess)
 
         # Plot each parameter (logphi, M_star, alpha, beta) separately with its data points
         params = ["logphi", "M_star", "alpha", "beta"]
@@ -2013,48 +2186,50 @@ class lf:
 
         param_data = self.sample_data_set()
 
-        for i, param in enumerate(params):
-            # Use sample_data_set for plotting the parameter evolution
-            sample_data = param_data[0]
-            sample_zmean = param_data[1]
-            y_data = sample_data[i][0]
-            yerr = (np.array(sample_data[i][2]) - np.array(sample_data[i][1])) / 2.0
-            yerr = np.abs(yerr)
-            coeffs = self.bf_full.x[param_indices[i]:param_indices[i+1]]
-            # degree = len(coeffs) - 1
+        # for i, param in enumerate(params):
+        #     # Use sample_data_set for plotting the parameter evolution
+        #     sample_data = param_data[0]
+        #     sample_zmean = param_data[1]
+        #     y_data = sample_data[i][0]
+        #     yerr = (np.array(sample_data[i][2]) - np.array(sample_data[i][1])) / 2.0
+        #     yerr = np.abs(yerr)
+        #     coeffs = self.bf_full.x[param_indices[i]:param_indices[i+1]]
+        #     # degree = len(coeffs) - 1
 
-            # Use the correct function for each parameter
-            z_fit = np.linspace(np.min(sample_zmean), np.max(sample_zmean), 200)
-            params_split = self.getparams(self.bf_full.x[:-3])
-            if param == "logphi":
-                y_fit = self.atz(z_fit, params_split[0])
-            elif param == "M_star":
-                y_fit = self.atz(z_fit, params_split[1])
-            elif param == "alpha":
-                y_fit = self.atz(z_fit, params_split[2])
-            elif param == "beta":
-                y_fit = self.atz_beta(z_fit, params_split[3])
+        #     # Use the correct function for each parameter
+        #     z_fit = np.linspace(np.min(sample_zmean), np.max(sample_zmean), 200)
+        #     params_split = self.getparams(self.bf_full.x[:-3])
+        #     if param == "logphi":
+        #         y_fit = self.atz(z_fit, params_split[0])
+        #     elif param == "M_star":
+        #         y_fit = self.atz(z_fit, params_split[1])
+        #     elif param == "alpha":
+        #         y_fit = self.atz(z_fit, params_split[2])
+        #     elif param == "beta":
+        #         y_fit = self.atz_beta(z_fit, params_split[3])
 
-            print(f"Plotting {param} with coefficients: {coeffs}")
+        #     print(f"Plotting {param} with coefficients: {coeffs}")
 
 
-            plt.figure(figsize=(8, 5))
-            plt.errorbar(sample_zmean, y_data, yerr=yerr, fmt='o', label='Sample Data', capsize=3)
-            plt.plot(z_fit, y_fit, 'r-', label='Best-fit function')
-            plt.xlabel('z')
-            plt.ylabel(param)
-            plt.title(f'{param} vs z')
-            plt.legend()
-            plt.tight_layout()
-            plt.savefig(f'best_fit_{param}_with_sample_data.png')
-            plt.close()
+        #     plt.figure(figsize=(8, 5))
+        #     plt.errorbar(sample_zmean, y_data, yerr=yerr, fmt='o', label='Sample Data', capsize=3)
+        #     plt.plot(z_fit, y_fit, 'r-', label='Best-fit function')
+        #     plt.xlabel('z')
+        #     plt.ylabel(param)
+        #     plt.title(f'{param} vs z')
+        #     plt.legend()
+        #     plt.tight_layout()
+        #     plt.savefig(f'best_fit_{param}_with_sample_data.png')
+        #     plt.close()
 
         # import sys; sys.exit("Testing call_mcmc")
 
         # Set the best fit line to be 0.1 in all its parameters with alternating signs, starting with -0.1 for each parameter group
         # Determine the split locations for each parameter group
         splitlocs = np.cumsum(pnum)
-        max_full_x = np.zeros_like(self.bf_full.x[:-3])
+
+        print("guess:", guess)
+        max_full_x = np.zeros_like(guess[:-3])
         start = 0
         for end in splitlocs:
             # if end == splitlocs[-1]:
@@ -2106,6 +2281,13 @@ class lf:
         
         # FOR THIS 19 DIMENSIONAL PLOT AND HISTOGRAM, SAVE EACH DIMENSION SEPARATELY
         # THEN YOU CAN DO THE HISTOGRAM WITHOUT RUNNING OUT OF RAM
+
+        print("data_full:", data_full)
+        print("data_full[0]:", data_full[0])
+        print("data_full[1]:", data_full[1])
+        print("data_full[0].shape:", data_full[0].shape)
+        print("data_full[0][0].shape:", data_full[0][0].shape)
+
 
         self.mcmc_all_params(data_full, guess, pnum=pnum)
 
