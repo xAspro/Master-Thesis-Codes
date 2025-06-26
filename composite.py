@@ -1145,8 +1145,8 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        nburns = 20
-        nprod = 100
+        nburns = 20000
+        nprod = 100000
 
         walkers = 50
         ndim = degree + 4
@@ -1309,26 +1309,29 @@ class lf:
 
 
 
-        # marginalised_samples = samples[:, :-3]
+        marginalised_samples = samples[:, :-3]
 
-        # bins = 20
-        # hist, edges = np.histogramdd(marginalised_samples, bins=bins)
+        bins = 20
+        hist, edges = np.histogramdd(marginalised_samples, bins=bins)
 
-        # max_idx = np.unravel_index(np.argmax(hist), hist.shape)
+        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
 
-        # map_params = []
-        # for i in range(degree+1):
-        #     # Bin edges for this dimension
-        #     bin_edges = edges[i]
-        #     # Center of the bin
-        #     center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
-        #     map_params.append(center)
-        # map_params = np.array(map_params)
-        # print(f"MAP (marginalized over nuisance) for {label}:", map_params)
+        map_params = []
+        for i in range(degree+1):
+            # Bin edges for this dimension
+            bin_edges = edges[i]
+            # Center of the bin
+            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
+            map_params.append(center)
+        map_params = np.array(map_params)
+        print(f"MAP (marginalized over nuisance) for {label}:", map_params)
 
-        # median_Pb = np.median(samples[:, -3])
-        # median_Yb = np.median(samples[:, -2])
-        # median_Vb = np.median(samples[:, -1])
+        median_Pb = np.median(samples[:, -3])
+        median_Yb = np.median(samples[:, -2])
+        median_Vb = np.median(samples[:, -1])
+
+        map_params = np.append(map_params, [median_Pb, median_Yb, median_Vb])
+        print(f"MAP (including nuisance) for {label}:", map_params)
 
 
         is_bad = self.find_bad_points(np.poly1d, x, y, err, map_params, degree=degree)

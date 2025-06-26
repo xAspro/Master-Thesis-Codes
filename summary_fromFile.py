@@ -32,7 +32,7 @@ plot_number = 0
 
 zlims=(0.0,7.0)
 zmin, zmax = zlims
-z = np.linspace(zmin, zmax, num=10)
+z = np.linspace(zmin, zmax, num=500)
 cfit = False
 
 def plot_model(composite, param_number, ax):

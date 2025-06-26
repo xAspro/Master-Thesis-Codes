@@ -1091,7 +1091,7 @@ class lf:
 
         self.prior_tag = prior_tag
 
-        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 20
+        self.ndim_with_bp, self.nwalkers_with_bp = self.bf.x.size + 3, 100
         self.mcmc_start = self.bf.x 
         # If due to one bad point in the faint end, if the best fit has beta > 0,
         # manually setting the guess for beta to be negative.
@@ -1100,9 +1100,10 @@ class lf:
 
         # self.mcmc_start = [-5.7, -21.3, -2.74, -1.0]
 
-        pos_with_bp = np.hstack((np.array([self.bf.x 
-                    + 1e-2*np.random.randn(self.bf.x.size) for i 
-                    in range(self.nwalkers_with_bp)]), self.find_Pb_Yb_Vb()))
+        pos_with_bp = np.hstack([
+            self.bf.x + 1 * np.random.uniform(-1, 1, size=(self.nwalkers_with_bp, self.bf.x.size)),
+            self.find_Pb_Yb_Vb()
+        ])
         
         self.get_qlf_data()
 
@@ -1130,7 +1131,7 @@ class lf:
         print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
 
 
-        DISCARD = 5000
+        DISCARD = 20000
 
         self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
         self.sampler_with_bp.reset()
@@ -1251,15 +1252,26 @@ class lf:
         return corner.corner(samples, range=bounds, **kwargs)
     
     def marginalise_and_find_MAP(self):
+        # print("\nFinding MAP (maximum a posteriori) values with bad points...")
+        # log_probs = np.array([self._lnposterior_with_bad_points(theta) for theta in self.samples_with_bp])
+        # map_idx = np.argmax(log_probs)
+        # self.map_params = self.samples_with_bp[map_idx]
+        # print("\nMAP (maximum a posteriori) values with bad points:")
+        # labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        # for i, val in enumerate(self.map_params):
+        #     print(f"{labels[i]}: {val:.4f}")
+        # print("\nMAP (maximum a posteriori) values with bad points stored in self.map_params.")
+
         print("\nFinding MAP (maximum a posteriori) values with bad points...")
-        log_probs = np.array([self._lnposterior_with_bad_points(theta) for theta in self.samples_with_bp])
-        map_idx = np.argmax(log_probs)
-        self.map_params = self.samples_with_bp[map_idx]
+        marginalized_samples = self.samples_with_bp[:, :-3]
+        H, edges = np.histogramdd(marginalized_samples, bins=50, density=True)
+        max_idx = np.unravel_index(np.argmax(H), H.shape)
+        self.map_params = np.array([edges[i][max_idx[i]] for i in range(len(edges))])
         print("\nMAP (maximum a posteriori) values with bad points:")
-        labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
+        labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$']
         for i, val in enumerate(self.map_params):
             print(f"{labels[i]}: {val:.4f}")
-        print("\nMAP (maximum a posteriori) values with bad points saved in self.map_params.")
+        print("\nMAP (maximum a posteriori) values with bad points stored in self.map_params.")
 
 
 

@@ -570,14 +570,17 @@ def find_bad_points(lf):
 
     epsilon = 1e-10  # To avoid division by zero or log(0) issues
 
-    # func_params = lf.map_params
-    # Pb = np.median(lf.samples_with_bp[:, 4])
-    # Yb = np.median(lf.samples_with_bp[:, 5])
-    # safe_Vb = np.median(lf.samples_with_bp[:, 6]) + epsilon
+    func_params = lf.map_params[:4]
+    Pb = np.median(lf.samples_with_bp[:, 4])
+    Yb = np.median(lf.samples_with_bp[:, 5])
+    safe_Vb = np.median(lf.samples_with_bp[:, 6]) + epsilon
 
-    func_params = lf.map_params[:-3]
-    Pb, Yb, Vb = lf.map_params[-3:]
-    safe_Vb = Vb + epsilon
+    print("Pb= ", Pb, "\tYb= ", Yb, "\tsafe_Vb= ", safe_Vb)
+    print("func_params= ", func_params)
+
+    # func_params = lf.map_params[:-3]
+    # Pb, Yb, Vb = lf.map_params[-3:]
+    # safe_Vb = Vb + epsilon
 
     updated_data = []
     print("lf.data= ", lf.data)
@@ -637,7 +640,7 @@ def dsl(lf, i):
     return
 
 def find_error(lf):
-    logphi_graph = lf.log10phi(lf.map_params[:-3], lf.data.mag)
+    logphi_graph = lf.log10phi(lf.map_params[:4], lf.data.mag)
     residual = lf.data.logphi - logphi_graph
     sigma_diff = residual / lf.data.log_err
 
