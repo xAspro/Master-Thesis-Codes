@@ -1455,7 +1455,7 @@ class lf:
         print("map_params.shape= ", map_params.shape)
         print("map_params= ", map_params)
         print("x.shape= ", x.shape)
-        print("y.shape= ", y.shape)
+        print("y.shape= ", np.array(y).shape)
         print("x= ", x)
         print("y= ", y)
         # import sys; sys.exit("\n\nTesting find_bad_points")
@@ -1466,58 +1466,58 @@ class lf:
             poly_fn = np.poly1d(map_params[:degree+1])
         else:
             mag = y[1]
-            y = y[1]
+            y = y[0]
             poly_fn = lambda x: self.log10phi_full(map_params, mag, x)
 
-            params = self.getparams(map_params)
-            z = x
+            # params = self.getparams(map_params)
+            # z = x
             
-            # print("params = ", params)
-            # import sys; sys.exit("Testing log10phi_full")
+            # # print("params = ", params)
+            # # import sys; sys.exit("Testing log10phi_full")
 
-            # print("params = ", params)
+            # # print("params = ", params)
 
-            log10phi_star = self.atz(z, params[0])
-            M_star = self.atz(z, params[1])
-            alpha = self.atz(z, params[2])
-            beta = self.atz_beta(z, params[3])
-            # Already removed nuisance parameters from theta
-            # Pb, Yb, Vb = params[-3:]
+            # log10phi_star = self.atz(z, params[0])
+            # M_star = self.atz(z, params[1])
+            # alpha = self.atz(z, params[2])
+            # beta = self.atz_beta(z, params[3])
+            # # Already removed nuisance parameters from theta
+            # # Pb, Yb, Vb = params[-3:]
 
 
 
-            # print("\nlog10phi_star = ", log10phi_star)
-            # print("M_star = ", M_star)
-            # print("alpha = ", alpha)
-            # print("beta = ", beta)
+            # # print("\nlog10phi_star = ", log10phi_star)
+            # # print("M_star = ", M_star)
+            # # print("alpha = ", alpha)
+            # # print("beta = ", beta)
             
 
-            # print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
-            # # print(f"mag = {mag}, z = {z}")
-            # print(f"shape of mag = {mag.shape}, shape of z = {z.shape}")
+            # # print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
+            # # # print(f"mag = {mag}, z = {z}")
+            # # print(f"shape of mag = {mag.shape}, shape of z = {z.shape}")
 
-            # print(f"shape of log10phi_star = {log10phi_star.shape}, shape of M_star = {M_star.shape}")
-            # print(f"shape of alpha = {alpha.shape}, shape of beta = {beta.shape}")
-            # print(f"shape of M_star = {M_star.shape}, shape of mag = {mag.shape}")
+            # # print(f"shape of log10phi_star = {log10phi_star.shape}, shape of M_star = {M_star.shape}")
+            # # print(f"shape of alpha = {alpha.shape}, shape of beta = {beta.shape}")
+            # # print(f"shape of M_star = {M_star.shape}, shape of mag = {mag.shape}")
 
-            # import sys; sys.exit("Testing log10phi_full")
+            # # import sys; sys.exit("Testing log10phi_full")
 
-            ln10 = np.log(10)
+            # ln10 = np.log(10)
 
-            log10_num = log10phi_star
-            log10_den = np.logaddexp(
-                0.4 * ln10 * (alpha + 1) * (mag - M_star),
-                0.4 * ln10 * (beta + 1) * (mag - M_star)
-            ) / ln10
+            # log10_num = log10phi_star
+            # log10_den = np.logaddexp(
+            #     0.4 * ln10 * (alpha + 1) * (mag - M_star),
+            #     0.4 * ln10 * (beta + 1) * (mag - M_star)
+            # ) / ln10
 
-            log10phi = log10_num - log10_den
+            # log10phi = log10_num - log10_den
 
-            # print(f"log10phi shape = {log10phi.shape}, mag shape = {mag.shape}, z shape = {z.shape}")
+            # # print(f"log10phi shape = {log10phi.shape}, mag shape = {mag.shape}, z shape = {z.shape}")
             
-            # import sys; sys.exit("Testing log10phi_full")
-            poly_fn = lambda x: self.log10phi_full(x, log10phi_star, M_star, alpha, beta)
+            # # import sys; sys.exit("Testing log10phi_full")
+            # poly_fn = lambda x: self.log10phi_full(x, log10phi_star, M_star, alpha, beta)
 
-        poly_fn = func(map_params[:degree+1])
+
         poly_fnx = poly_fn(x)
         residuals = y - poly_fnx
 
@@ -1568,8 +1568,16 @@ class lf:
         y = np.asarray(y)
         err = np.asarray(err)
 
-        # poly_fn = T(map_params[:degree+1])
-        poly_fn = func(map_params[:degree+1])
+        if func == np.poly1d:
+            # poly_fn = T(map_params[:degree+1])
+            poly_fn = func(map_params[:degree+1])
+
+        else:
+            # THIS WONT WORK ACTUALLY. ITS A 3D PLOT. I NEED TO DISSECT IT ONLY.
+            mag = y[1]
+            y = y[0]
+            poly_fn = lambda x: self.log10phi_full(map_params, mag, x)
+
         x_fit = np.linspace(np.min(x), np.max(x), 200)
         y_fit = poly_fn(x_fit)
 
@@ -1948,28 +1956,28 @@ class lf:
         sampler.run_mcmc(None, 200, progress=True)
         samples = sampler.get_chain(flat=True)
 
-        # # Plot corner plot (same format as previous)
-        # labels = [f'param_{i}' for i in range(ndim - 3)] + ['Pb', 'Yb', 'Vb']
-        # corner.corner(samples, labels=labels, quantiles=[0.16, 0.5, 0.84], bins=20, 
-        #               levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
-        #               smooth=True, fill_contours=True, plot_datapoints=False,
-        #               show_titles=True, title_kwargs={"fontsize": 12})
-        # plt.suptitle('Full MCMC fit', fontsize=14)
-        # plt.savefig('mcmc_full_corner.png')
-        # plt.close()
+        # Plot corner plot (same format as previous)
+        labels = [f'param_{i}' for i in range(ndim - 3)] + ['Pb', 'Yb', 'Vb']
+        corner.corner(samples, labels=labels, quantiles=[0.16, 0.5, 0.84], bins=20, 
+                      levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
+                      smooth=True, fill_contours=True, plot_datapoints=False,
+                      show_titles=True, title_kwargs={"fontsize": 12})
+        plt.suptitle('Full MCMC fit', fontsize=14)
+        plt.savefig('mcmc_full_corner.png')
+        plt.close()
 
-        # # Plot chains for each parameter
-        # mpl.rcParams['font.size'] = '10'
-        # fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
-        # for i in range(ndim):
-        #     ax = axes[i] if ndim > 1 else axes
-        #     for j in range(nwalkers):
-        #         ax.plot(sampler.chain[j, :, i], alpha=0.1)
-        #     ax.set_ylabel(labels[i])
-        # axes[-1].set_xlabel('step')
-        # plt.tight_layout()
-        # plt.savefig('mcmc_full_chains.png')
-        # plt.close()
+        # Plot chains for each parameter
+        mpl.rcParams['font.size'] = '10'
+        fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
+        for i in range(ndim):
+            ax = axes[i] if ndim > 1 else axes
+            for j in range(nwalkers):
+                ax.plot(sampler.chain[j, :, i], alpha=0.1)
+            ax.set_ylabel(labels[i])
+        axes[-1].set_xlabel('step')
+        plt.tight_layout()
+        plt.savefig('mcmc_full_chains.png')
+        plt.close()
 
         # Print autocorrelation time and acceptance rate
         try:
@@ -2017,21 +2025,25 @@ class lf:
         median_Yb = np.median(samples[:, -2])
         median_Vb = np.median(samples[:, -1])
 
-        print("Shapes: ")
-        print(f"data_full[0].shape = {data_full[0].shape}")
-        print(f"data_full[1].shape = {data_full[1].shape}")
+        # print("Shapes: ")
+        # print(f"data_full[0].shape = {data_full[0].shape}")
+        # print(f"data_full[1].shape = {data_full[1].shape}")
         # Find bad points
-        is_bad = self.find_bad_points(self.log10phi_full,
-            data_full[1], [data_full[0][0], data_full[0][3]], (data_full[0][2] - data_full[0][1]) / 2.0,
-            map_params, (len(map_params)-4)
-        )
-        print("Bad points:", is_bad)
+        # is_bad = self.find_bad_points(self.log10phi_full,
+        #     data_full[1], [data_full[0][0], data_full[0][3]], (data_full[0][2] - data_full[0][1]) / 2.0,
+        #     map_params, (len(map_params)-4)
+        # )
+        # print("Bad points:", is_bad)
 
-        # Plot final output with bad points
-        self.plot_bad_points(samples, self.log10phi_full,
-            data_full[1], data_full[0][0], (data_full[0][2] - data_full[0][1]) / 2.0,
-            map_params, is_bad, 'logphi', (len(map_params)-4)
-        )
+        # # Plot final output with bad points
+        # self.plot_bad_points(samples, self.log10phi_full,
+        #     data_full[1], [data_full[0][0], data_full[0][3]], (data_full[0][2] - data_full[0][1]) / 2.0,
+        #     map_params, is_bad, 'logphi', (len(map_params)-4)
+        # )
+
+        print("MAP (including nuisance) for all parameters:", map_params)
+        for i in range(len(map_params) - 3):
+            print(f"param_{i}: {map_params[i]:.4f}, \t +1sigma: {np.percentile(samples[:, i], 84) - np.percentile(samples[:, i], 50):.4f}, \t -1sigma: {np.percentile(samples[:, i], 50) - np.percentile(samples[:, i], 16):.4f}")
 
     def read_datapoints_with_bp(self, filename):
         """
