@@ -1309,22 +1309,26 @@ class lf:
 
 
 
-        marginalised_samples = samples[:, :-3]
+        # marginalised_samples = samples[:, :-3]
 
-        bins = 20
-        hist, edges = np.histogramdd(marginalised_samples, bins=bins)
+        # bins = 20
+        # hist, edges = np.histogramdd(marginalised_samples, bins=bins)
 
-        max_idx = np.unravel_index(np.argmax(hist), hist.shape)
+        # max_idx = np.unravel_index(np.argmax(hist), hist.shape)
 
-        map_params = []
-        for i in range(degree+1):
-            # Bin edges for this dimension
-            bin_edges = edges[i]
-            # Center of the bin
-            center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
-            map_params.append(center)
-        map_params = np.array(map_params)
-        print(f"MAP (marginalized over nuisance) for {label}:", map_params)
+        # map_params = []
+        # for i in range(degree+1):
+        #     # Bin edges for this dimension
+        #     bin_edges = edges[i]
+        #     # Center of the bin
+        #     center = 0.5 * (bin_edges[max_idx[i]] + bin_edges[max_idx[i]+1])
+        #     map_params.append(center)
+        # map_params = np.array(map_params)
+        # print(f"MAP (marginalized over nuisance) for {label}:", map_params)
+
+        # Set map_params to the median of each parameter (excluding nuisance)
+        map_params = np.median(samples[:, :-3], axis=0)
+        print(f"Median (marginalized over nuisance) for {label}:", map_params)
 
         median_Pb = np.median(samples[:, -3])
         median_Yb = np.median(samples[:, -2])
@@ -1490,8 +1494,8 @@ class lf:
         for i in range(len(data)):
             # if i < 3:
             #     continue
-            if i != 1:
-                continue
+            # if i != 1:
+            #     continue
             print(f"(x, y): {(zmean, data[i][0])}")
             print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
             print(f"Degree of polynomial for {params[i]}: {pnum[i]}")

@@ -1252,6 +1252,7 @@ class lf:
         return corner.corner(samples, range=bounds, **kwargs)
     
     def marginalise_and_find_MAP(self):
+        # OG Method
         # print("\nFinding MAP (maximum a posteriori) values with bad points...")
         # log_probs = np.array([self._lnposterior_with_bad_points(theta) for theta in self.samples_with_bp])
         # map_idx = np.argmax(log_probs)
@@ -1262,13 +1263,22 @@ class lf:
         #     print(f"{labels[i]}: {val:.4f}")
         # print("\nMAP (maximum a posteriori) values with bad points stored in self.map_params.")
 
-        print("\nFinding MAP (maximum a posteriori) values with bad points...")
-        marginalized_samples = self.samples_with_bp[:, :-3]
-        H, edges = np.histogramdd(marginalized_samples, bins=50, density=True)
-        max_idx = np.unravel_index(np.argmax(H), H.shape)
-        self.map_params = np.array([edges[i][max_idx[i]] for i in range(len(edges))])
+        # Method 2
+        # print("\nFinding MAP (maximum a posteriori) values with bad points...")
+        # marginalized_samples = self.samples_with_bp[:, :-3]
+        # H, edges = np.histogramdd(marginalized_samples, bins=50, density=True)
+        # max_idx = np.unravel_index(np.argmax(H), H.shape)
+        # self.map_params = np.array([edges[i][max_idx[i]] for i in range(len(edges))])
+        # print("\nMAP (maximum a posteriori) values with bad points:")
+        # labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$']
+        # for i, val in enumerate(self.map_params):
+        #     print(f"{labels[i]}: {val:.4f}")
+        # print("\nMAP (maximum a posteriori) values with bad points stored in self.map_params.")
+
+        # But Better Method
+        self.map_params = np.median(self.samples_with_bp, axis=0)
         print("\nMAP (maximum a posteriori) values with bad points:")
-        labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$']
+        labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
         for i, val in enumerate(self.map_params):
             print(f"{labels[i]}: {val:.4f}")
         print("\nMAP (maximum a posteriori) values with bad points stored in self.map_params.")
