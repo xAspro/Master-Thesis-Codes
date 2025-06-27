@@ -1951,9 +1951,13 @@ class lf:
         # Run MCMC for all parameters
         sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,))
         print("Running MCMC for all parameters...")
-        sampler.run_mcmc(pos, 20, progress=True)
+        sampler.run_mcmc(pos, 200000, progress=True)
         sampler.reset()
-        sampler.run_mcmc(None, 200, progress=True)
+        sampler.run_mcmc(None, 200000, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, 200000, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, 10000, progress=True)
         samples = sampler.get_chain(flat=True)
 
         # Plot corner plot (same format as previous)
@@ -2044,6 +2048,14 @@ class lf:
         print("MAP (including nuisance) for all parameters:", map_params)
         for i in range(len(map_params) - 3):
             print(f"param_{i}: {map_params[i]:.4f}, \t +1sigma: {np.percentile(samples[:, i], 84) - np.percentile(samples[:, i], 50):.4f}, \t -1sigma: {np.percentile(samples[:, i], 50) - np.percentile(samples[:, i], 16):.4f}")
+
+        # Save the MAP (maximum a posteriori) parameter estimates and 1-sigma errors for all parameters to a file
+        with open("Global_QLF_Estimate.dat", "w") as f:
+            for i, val in enumerate(map_params):
+                plus_sigma = np.percentile(samples[:, i], 84) - np.percentile(samples[:, i], 50)
+                minus_sigma = np.percentile(samples[:, i], 50) - np.percentile(samples[:, i], 16)
+                f.write(f"{val:.5f} {minus_sigma:.5f} {plus_sigma:.5f}\n")
+        print("Saved MAP parameter estimates and 1-sigma errors to Global_QLF_Estimate.dat")
 
     def read_datapoints_with_bp(self, filename):
         """
