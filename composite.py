@@ -911,15 +911,15 @@ class lf:
         with open(filename, 'r') as f:
             print(f"Reading parameters from {filename}...")
             for line in f:
-                print(line)
+                # print(line)
                 line = line.strip()
                 # Skip comments and empty lines
                 if not line or line.startswith('#'):
                     continue
-                print(f"Processing line: {line}")
+                # print(f"Processing line: {line}")
                 # Split by the two '|' separators
                 if line.count('|') == 2:
-                    print(f"Line has 2 '|' separators: {line}")
+                    # print(f"Line has 2 '|' separators: {line}")
                     parts = line.split('|')
                     left = parts[0].strip()
                     middle = parts[1].strip()
@@ -941,7 +941,7 @@ class lf:
         zmean = np.array(zmean)
         values = np.array(values)
         intervals = np.array(intervals)  # shape (N, 4, 2)
-        print(f"zmean shape: {zmean.shape}, values shape: {values.shape}, intervals shape: {intervals.shape}")
+        # print(f"zmean shape: {zmean.shape}, values shape: {values.shape}, intervals shape: {intervals.shape}")
 
         ret = []
         for i in range(len(zmean)):
@@ -1051,18 +1051,8 @@ class lf:
         #     return -np.inf
         if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
             return -np.inf
+        
         rnge = self.rnge
-        # print("\nPrior coeff =", self.coeff, "Range =", rnge)
-        # print("arr =", arr)
-        # print("self.coeff - rnge =", self.coeff - rnge, "self.coeff + rnge =", self.coeff + rnge)
-
-        # print("arr < self.coeff - rnge =", np.any(arr < self.coeff - rnge))
-        # print("arr > self.coeff + rnge =", np.any(arr > self.coeff + rnge))
-
-        # print("np.any((arr < self.coeff - rnge) | (arr > self.coeff + rnge)) =", np.any((arr < self.coeff - rnge) | (arr > self.coeff + rnge)))
-
-        # Check if any coefficient is outside the range of [coeff - rnge, coeff + rnge]
-        # if np.any((arr < self.coeff - rnge) | (arr >
         if np.any((arr < self.coeff - rnge) | (arr > self.coeff + rnge)):
             return -np.inf
         
@@ -1147,9 +1137,9 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        nburns = 2000
-        nprod = 2000
-        # nprod = nburns
+        nburns = 5000
+        nprod = 5000
+        nprod = nburns
 
         # walkers = 2 * degree + 8
         walkers = 50
@@ -1202,8 +1192,8 @@ class lf:
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
         sampler.run_mcmc(pos, nburns, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, nprod, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, nprod, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1240,7 +1230,6 @@ class lf:
         corner.corner(samples, labels=labels, bounds=bounds,
                       quantiles=[0.16, 0.5, 0.84], bins=20, 
                       levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
-                    #   levels=[0.1175, 0.393, 0.676, 0.865],
                       smooth=True,
                       fill_contours=True,
                       plot_datapoints=False,
@@ -1249,79 +1238,9 @@ class lf:
         plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Orignal.png')
         plt.close()
 
-        # # Plot corner plots for increasing fractions of the samples
-        # n_parts = 5
-        # n_samples = samples.shape[0]
-        # for i in range(1, n_parts + 1):
-        #     frac = i / n_parts
-        #     n = int(frac * n_samples)
-        #     part_samples = samples[:n]
-        #     part_bounds = central_bounds(part_samples, q=0.90)
-        #     corner.corner(
-        #         part_samples, labels=labels, bounds=part_bounds,
-        #         quantiles=[0.16, 0.5, 0.84], bins=20,
-        #         levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
-        #         smooth=True, fill_contours=True, plot_datapoints=False,
-        #         show_titles=True, title_kwargs={"fontsize": 12}
-        #     )
-        #     plt.suptitle(f'Prior tag: {self.prior_tag} (first {int(frac*100)}%)', fontsize=14)
-        #     plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Original_part_{i}.png')
-        #     plt.close()
-
-        # # Plot chain plots for increasing fractions of the samples
-        # for i in range(1, n_parts + 1):
-        #     frac = i / n_parts
-        #     n = int(frac * nprod)
-        #     mpl.rcParams['font.size'] = '10'
-        #     fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
-        #     for param_idx in range(ndim):
-        #         ax = axes[param_idx] if ndim > 1 else axes
-        #         for walker_idx in range(walkers):
-        #             ax.plot(sampler.chain[walker_idx, :n, param_idx], color='k', alpha=0.1)
-        #     ax.set_ylabel(f'param_{param_idx}')
-        #     axes[-1].set_xlabel('step')
-        #     plt.tight_layout()
-        #     plt.savefig(f'mcmc-{label}_chains_{self.prior_tag}_part_{i}.png')
-        #     plt.close()
-
-        # # Additional: Plot corner and chain plots for each segment (part i-1 to part i)
-        # for i in range(1, n_parts + 1):
-        #     start = int((i - 1) / n_parts * n_samples)
-        #     end = int(i / n_parts * n_samples)
-        #     seg_samples = samples[start:end]
-        #     if seg_samples.shape[0] == 0:
-        #         continue
-        #     seg_bounds = central_bounds(seg_samples, q=0.90)
-        #     corner.corner(
-        #         seg_samples, labels=labels, bounds=seg_bounds,
-        #         quantiles=[0.16, 0.5, 0.84], bins=20,
-        #         levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
-        #         smooth=True, fill_contours=True, plot_datapoints=False,
-        #         show_titles=True, title_kwargs={"fontsize": 12}
-        #     )
-        #     plt.suptitle(f'Prior tag: {self.prior_tag} (segment {i-1} to {i}, {start}:{end})', fontsize=14)
-        #     plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Segment_{i}.png')
-        #     plt.close()
-
-        # for i in range(1, n_parts + 1):
-        #     start = int((i - 1) / n_parts * nprod)
-        #     end = int(i / n_parts * nprod)
-        #     mpl.rcParams['font.size'] = '10'
-        #     fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
-        #     for param_idx in range(ndim):
-        #         ax = axes[param_idx] if ndim > 1 else axes
-        #         for walker_idx in range(walkers):
-        #             ax.plot(sampler.chain[walker_idx, start:end, param_idx], color='k', alpha=0.1)
-        #     ax.set_ylabel(f'param_{param_idx}')
-        #     axes[-1].set_xlabel('step')
-        #     plt.tight_layout()
-        #     plt.savefig(f'mcmc-{label}_chains_{self.prior_tag}_Segment_{i}.png')
-        #     plt.close()
-
         corner.corner(samples, labels=labels, bounds=bounds,
                       quantiles=[0.16, 0.5, 0.84], bins=20, 
                       levels=[0.1175, 0.393, 0.676],
-                    #   levels=[0.1175, 0.393, 0.676, 0.865],
                       smooth=True,
                       fill_contours=True,
                       plot_datapoints=False,
@@ -1451,13 +1370,13 @@ class lf:
         is_bad : array-like
             Boolean array indicating which points are considered "bad".
         """
-        print("degree= ", degree)
-        print("map_params.shape= ", map_params.shape)
-        print("map_params= ", map_params)
-        print("x.shape= ", x.shape)
-        print("y.shape= ", np.array(y).shape)
-        print("x= ", x)
-        print("y= ", y)
+        # print("degree= ", degree)
+        # print("map_params.shape= ", map_params.shape)
+        # print("map_params= ", map_params)
+        # print("x.shape= ", x.shape)
+        # print("y.shape= ", np.array(y).shape)
+        # print("x= ", x)
+        # print("y= ", y)
         # import sys; sys.exit("\n\nTesting find_bad_points")
         nuisance_params = map_params[-3:]  # Last three parameters are Pb, Yb, Vb
         map_params = map_params[:-3]  # Exclude nuisance parameters for polynomial fit
@@ -1468,54 +1387,6 @@ class lf:
             mag = y[1]
             y = y[0]
             poly_fn = lambda x: self.log10phi_full(map_params, mag, x)
-
-            # params = self.getparams(map_params)
-            # z = x
-            
-            # # print("params = ", params)
-            # # import sys; sys.exit("Testing log10phi_full")
-
-            # # print("params = ", params)
-
-            # log10phi_star = self.atz(z, params[0])
-            # M_star = self.atz(z, params[1])
-            # alpha = self.atz(z, params[2])
-            # beta = self.atz_beta(z, params[3])
-            # # Already removed nuisance parameters from theta
-            # # Pb, Yb, Vb = params[-3:]
-
-
-
-            # # print("\nlog10phi_star = ", log10phi_star)
-            # # print("M_star = ", M_star)
-            # # print("alpha = ", alpha)
-            # # print("beta = ", beta)
-            
-
-            # # print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
-            # # # print(f"mag = {mag}, z = {z}")
-            # # print(f"shape of mag = {mag.shape}, shape of z = {z.shape}")
-
-            # # print(f"shape of log10phi_star = {log10phi_star.shape}, shape of M_star = {M_star.shape}")
-            # # print(f"shape of alpha = {alpha.shape}, shape of beta = {beta.shape}")
-            # # print(f"shape of M_star = {M_star.shape}, shape of mag = {mag.shape}")
-
-            # # import sys; sys.exit("Testing log10phi_full")
-
-            # ln10 = np.log(10)
-
-            # log10_num = log10phi_star
-            # log10_den = np.logaddexp(
-            #     0.4 * ln10 * (alpha + 1) * (mag - M_star),
-            #     0.4 * ln10 * (beta + 1) * (mag - M_star)
-            # ) / ln10
-
-            # log10phi = log10_num - log10_den
-
-            # # print(f"log10phi shape = {log10phi.shape}, mag shape = {mag.shape}, z shape = {z.shape}")
-            
-            # # import sys; sys.exit("Testing log10phi_full")
-            # poly_fn = lambda x: self.log10phi_full(x, log10phi_star, M_star, alpha, beta)
 
 
         poly_fnx = poly_fn(x)
@@ -1639,18 +1510,18 @@ class lf:
             #     continue
             # if i != 2:
             #     continue
-            print(f"(x, y): {(zmean, data[i][0])}")
-            print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
-            print(f"Degree of polynomial for {params[i]}: {pnum[i]}")
-            print(f"Label for {params[i]}: {params[i]}")
+            # print(f"(x, y): {(zmean, data[i][0])}")
+            # print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
+            # print(f"Degree of polynomial for {params[i]}: {pnum[i]}")
+            # print(f"Label for {params[i]}: {params[i]}")
             d = (zmean, data[i][0])
             err = ((data[i][2] - data[i][1])/2.0)
             coeffs, poly_fn = self.fit_polynomial_curve(
                 d, err,
                 params[i], degree=(pnum[i]-1)
             )
-            print(f"Fitted coefficients for {params[i]}: {coeffs}")
-            print(f"Polynomial function for {params[i]}: \n{poly_fn}")
+            # print(f"Fitted coefficients for {params[i]}: {coeffs}")
+            # print(f"Polynomial function for {params[i]}: \n{poly_fn}")
             coeff_list.append(coeffs)
 
             map_par, sample_for_one = self.mcmc_for_1_param(

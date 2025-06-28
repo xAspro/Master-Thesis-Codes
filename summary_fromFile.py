@@ -168,8 +168,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
                 # params = composite.getparams(theta)
                 # print("params:", params)
                 params = theta[:-3]
-                print("params:", params)
-                print("params.shape:", params.shape)
+                # print("params:", params)
+                # print("params.shape:", params.shape)
                 phi[i] = composite.atz(z, params) 
                 
             up = np.percentile(phi, 15.87, axis=0)

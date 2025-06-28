@@ -42,7 +42,7 @@ print("\n\n\n")
 ###############################################################################################
 ###############################################################################################
 
-pnum1 = [3, 4, 5, 2]
+pnum1 = [3, 4, 4, 2]
 g1 = np.array([-7.95061036, 1.15284665, -0.12037541,
               -18.64592897, -4.52638114, 0.47207865, -0.01890026,
               -3.35945526, -0.26211017,
@@ -238,8 +238,8 @@ selnfiles = []
 
 lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum1)
 
-# lfg1.run_mcmc_for_for_1_param(pnum1)
-lfg1.call_mcmc(pnum1)
+lfg1.run_mcmc_for_for_1_param(pnum1)
+# lfg1.call_mcmc(pnum1)
 
 
 end_time = time.time()
