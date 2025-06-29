@@ -91,7 +91,104 @@ def rhoqso(loglf, theta, mlim, z, fit='individual', mbright=-35.0):
     
     return np.trapezoid(farr, m) # cMpc^-3
 
+# def read_parameters_with_bp():
+#     """
+#     Copied from composite.py
+#     Reads the parameters from the file 'parameters_with_bp.dat'.
+#     """
+#     filename = 'parameters_with_bp.dat'
+#     zmean = []
+#     values = []
+#     intervals = []
+#     with open(filename, 'r') as f:
+#         print(f"Reading parameters from {filename}...")
+#         for line in f:
+#             line = line.strip()
+#             # Skip comments and empty lines
+#             if not line or line.startswith('#'):
+#                 continue
+#             # Split by the two '|' separators
+#             if line.count('|') == 2:
+#                 parts = line.split('|')
+#                 left = parts[0].strip()
+#                 middle = parts[1].strip()
+#                 right = parts[2].strip()
+#                 # left: zmean
+#                 z = float(left)
+#                 # middle: 4 parameter values
+#                 vals = [float(x) for x in middle.split()]
+#                 # right: 4 pairs of intervals (lower upper for each param)
+#                 right_parts = right.split()
+#                 interval_pairs = []
+#                 for i in range(0, 8, 2):
+#                     interval_pairs.append([float(right_parts[i]), float(right_parts[i+1])])
+#                 zmean.append(z)
+#                 values.append(vals)
+#                 intervals.append(interval_pairs)
+    
+#     print(f"Read {len(zmean)} redshift bins from {filename}.")
+#     zmean = np.array(zmean)
+#     values = np.array(values)
+#     intervals = np.array(intervals)  # shape (N, 4, 2)
+#     ret = []
+#     for i in range(len(zmean)):
+#         ret.append([[values[i][0], intervals[i][0][0], intervals[i][0][1]],
+#                     [values[i][1], intervals[i][1][0], intervals[i][1][1]],
+#                     [values[i][2], intervals[i][2][0], intervals[i][2][1]],
+#                     [values[i][3], intervals[i][3][0], intervals[i][3][1]]])
+
+#     ret = np.transpose(ret, (1, 2, 0))  # shape (4, 3, N)
+#     return ret, zmean
+
+
+def read_parameters_with_bp(filename="parameters_with_bp_new.dat"):
+    # Read the parameter file, skipping comments
+    zlist = []
+    params = []
+    with open(filename) as f:
+        for line in f:
+            if line.strip().startswith("#") or not line.strip():
+                continue
+            parts = line.split('|')
+            zmean = float(parts[0].split()[0])
+            vals = [float(x) for x in parts[1].split()]
+            zlist.append(zmean)
+            params.append(vals)
+    return np.array(zlist), np.array(params)
+
+def get_rhoqso_from_file(mlim, z, mbright=-35.0, filename="parameters_with_bp.dat"):
+    zlist, params = read_parameters_with_bp(filename)
+    print(f"shape of zlist: {zlist.shape}, shape of params: {params.shape}")
+    print(f"params: {params}")
+    print(f"zlist: {zlist}")
+    # Find the closest z in the file
+    idx = np.abs(zlist - z).argmin()
+    param = params[idx]  # [phi_star, M_star, alpha, beta]
+    # You may need to adjust this depending on your QLF/rhoqso function signature
+    # Example: call your QLF function with these params
+    m = np.linspace(mbright, mlim, num=1000)
+    # Example QLF calculation (replace with your actual function):
+    phi_star, M_star, alpha, beta = param
+    # Example: double power law (replace with your actual formula)
+    phi = 10.0**phi_star / (10.0**(0.4*(alpha+1)*(m-M_star)) + 10.0**(0.4*(beta+1)*(m-M_star)))
+    rho = np.trapezoid(phi, m)
+    return rho, param, zlist[idx]
+
+
 def get_rhoqso(lfi, mlim, z, fit='individual', mbright=-35.0):
+    # lfi is just a placeholder, not used here
+    # Use get_rhoqso_from_file to get rhoqso and parameter uncertainties
+    rho, param, z_actual = get_rhoqso_from_file(mlim, z, mbright=mbright)
+    # Set dummy uncertainties (0) since we don't have samples
+    u = rho
+    l = rho
+    c = rho
+    # Attach to lfi for compatibility with rest of code
+    lfi.rhoqso = [u, l, c]
+
+    return
+
+def get_rhoqso2(lfi, mlim, z, fit='individual', mbright=-35.0):
 
     rindices = np.random.randint(len(lfi.samples), size=300)
     n = np.array([rhoqso(lfi.log10phi, theta, mlim, z, mbright=mbright) 
@@ -261,24 +358,9 @@ def get_rhoqso(lfi, mlim, z, fit='individual', mbright=-35.0):
 
 def global_cumulative(ax, theta, mlim, color, **kwargs):
     # In this composite just is just a set of n parameter values
-    nzs = 500
-    z = np.linspace(0, 7, nzs)
-    # nsample = 300
-    # rsample = composite.samples[np.random.randint(len(composite.samples), size=nsample)]
-
-    # bf = np.median(composite.samples, axis=0)
-    # r = np.array([rhoqso(composite.log10phi, bf, mlim, x, fit='composite') for x in z])
-    # ax.plot(z, r, color='k', zorder=7)
-
-    # r = np.zeros((nsample, nzs))
-    # for i, theta in enumerate(rsample):
-    #     r[i] = np.array([rhoqso(composite.log10phi, theta, mlim, x, fit='composite') for x in z])
-
-    # up = np.percentile(r, 15.87, axis=0)
-    # down = np.percentile(r, 84.13, axis=0)
-    # f = ax.fill_between(z, down, y2=up, color=color, zorder=6, alpha=0.7, **kwargs)
-
-    # c = np.median(r, axis=0)
+    nzs = 5000
+    z = np.linspace(0, 30, nzs)
+    
 
     c = np.array([rhoqso(lf.log10phi,theta, mlim, zi, fit='composite') for zi in z])
     # Set f as a very thin band around c (±0.0001)
@@ -513,47 +595,47 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
     # These redshift bins are labelled "bad" and are plotted differently.
     # reject = [0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-    print("\n\nIn individuals_cumulative_multiple")
-    print("individuals=", individuals)
-    print("mlim=", mlim)
-    print("len(individuals)=", len(individuals))
+    # print("\n\nIn individuals_cumulative_multiple")
+    # print("individuals=", individuals)
+    # print("mlim=", mlim)
+    # print("len(individuals)=", len(individuals))
 
     reject = []
 
     # reject = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
 
-    print("reject=", reject)
+    # print("reject=", reject)
     m = np.ones(len(individuals), dtype=bool)
-    print("m=", m)
-    print("m[reject]=", m[reject])
+    # print("m=", m)
+    # print("m[reject]=", m[reject])
     m[reject] = False
     
     minv = np.logical_not(m)
 
-    print("reject=", reject)
-    print("m=", m)
-    print("len(m)=", len(m))
+    # print("reject=", reject)
+    # print("m=", m)
+    # print("len(m)=", len(m))
 
-    for i, x in enumerate(individuals):
-        print("i=", i)
-        print("x=", x)
+    # for i, x in enumerate(individuals):
+    #     print("i=", i)
+    #     print("x=", x)
 
-        print("i in set(reject)=", i in set(reject))
+    #     print("i in set(reject)=", i in set(reject))
 
     individuals_good = [x for i, x in enumerate(individuals) if i not in set(reject)]
-    print("individuals_good=", individuals_good)
+    # print("individuals_good=", individuals_good)
     individuals_bad = [x for i, x in enumerate(individuals) if i in set(reject)]
-    print("individuals_bad=", individuals_bad)
+    # print("individuals_bad=", individuals_bad)
     
     for x in individuals:
         get_rhoqso(x, mlim, x.z.mean())
-        print("x=", x)
+        # print("x=", x)
     
     c = np.array([x.rhoqso[2] for x in individuals_good])
     u = np.array([x.rhoqso[0] for x in individuals_good])
     l = np.array([x.rhoqso[1] for x in individuals_good])
 
-    print("[u, l, c]=", [u, l, c])
+    print("\n\n\n\n\n\t[u, l, c]=", [u, l, c])
 
     rho = c
     rho_up = np.abs(u - c)
@@ -561,7 +643,12 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
 
     print("[rho_up, rho_low]=", [rho_up, rho_low])
     print("rho=", rho)
-    
+
+    with open("check.dat", "a") as fcheck:
+        for i in range(len(c)):
+            fcheck.write(f"{u[i]:.6g} {l[i]:.6g} {c[i]:.6g} {rho_up[i]:.6g} {rho_low[i]:.6g}\n")
+    import sys; sys.exit(0)
+
     zs = np.array([x.z.mean() for x in individuals_good])
     uz = np.array([x.zlims[0] for x in individuals_good])
     lz = np.array([x.zlims[1] for x in individuals_good])
@@ -583,34 +670,6 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
     ax.scatter(zs, rho, c=color, edgecolor='None',
                s=42, zorder=10, linewidths=2) 
     
-    # print("\n\n\n******************************************************************\n\n\n")
-    # print('\nzs=', zs)
-    # print('\nrho=', rho)
-    # print('\nuz=', uz)
-    # print('\nlz=', lz)
-    # print('\nuzerr=', uzerr)
-    # print('\nlzerr=', lzerr)
-    # print('\nrho_up=', rho_up)
-    # print('\nrho_low=', rho_low)
-    # print('\nu=', u)
-    # print('\nl=', l)
-    # print('\nc=', c)
-    # print('\n\n\n******************************************************************\n\n\n')
-    # # Check if all uzerr and lzerr are negative
-    # if np.all(uzerr < 0):
-    #     print("All uzerr values are negative.")
-    # elif np.all(uzerr > 0):
-    #     print("All uzerr values are positive.")
-    # else:
-    #     print("Not all uzerr values are negative.")
-
-    # if np.all(lzerr < 0):
-    #     print("All lzerr values are negative.")
-    # elif np.all(lzerr > 0):
-    #     print("All lzerr values are positive.")
-    # else:
-    #     print("Not all lzerr values are negative.")
-
 
     ax.errorbar(zs, rho, ecolor=color, capsize=0, fmt='None', elinewidth=1,
                 yerr=np.vstack((rho_low, rho_up)),
@@ -795,10 +854,10 @@ def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rh
 
     ax.set_ylabel(r'$\rho(z, M_{1450} < M_\mathrm{lim})$ [cMpc$^{-3}$]')
     ax.set_xlabel('$z$')
-    ax.set_xlim(0.,7)
+    ax.set_xlim(0.,30)
 
     ax.set_yscale('log')
-    ax.set_ylim(1.0e-11, 1.0e-3)
+    ax.set_ylim(1.0e-11, 1000000000.0)
 
     mlim = -18
     individuals_cumulative_multiple(ax, individuals, mlim, 'k', '$M<-18$')
