@@ -122,7 +122,7 @@ def getParam(individuals, param, which='old', dtype='good'):
         """Truncate the array to the given redshift limits."""
         return arr[(zm >= zmin) & (zm <= zmax)]
     
-    lim = (0, 2.55)
+    lim = (0, 8)
     zl = truncate(zl, zmean, *lim)
     zu = truncate(zu, zmean, *lim)
     u = truncate(u, zmean, *lim)

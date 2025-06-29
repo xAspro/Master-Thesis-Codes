@@ -5,5 +5,23 @@
 \paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\f0\fs24 \cf0 Checked until 1.70\
-Even if corner looks like the point is going outside the range. Rest assured. It\'92s only because we are plotting just the top 90 percentile or something. Check for the number. But yeah, in chains it is evident that it is not trying to run outside the range}
+\f0\fs24 \cf0 \
+Even if corner looks like the point is going outside the range. Rest assured. It\'92s only because we are plotting just the top 90 percentile or something. Check for the number. But yeah, in chains it is evident that it is not trying to run outside the range\
+\
+\
+\
+\
+3.25, 3.35, 5.99, 7.05 is bad \
+4.9 a little wrong\
+\
+\
+\
+\
+7.05 is bad because very less data and very close. Makes sense. Trying to fit 4 parameter function on three parameters. It\'92s fine though because error bars are high. \
+\
+5.99 is bad because all the points lie on one single slope, because of my priors it chose beta to be well defined and alpha comes after Mstar which is after the data point. Therefore, alpha could literally be anything. It is confined by my prior only. Still, it has big error bars, so it\'92s fine.\
+\
+3.35 and 3.25 are bad for the same reason as 5.99. and alpha one extra peak at the right hand side, that is alpha = beta side. So anyways, all the points lie on same line, hence the mstar is after all the points. Alpha not defined.\
+\
+\
+4.99 is similar too, but at least the mstar is having 2 points of the left, however they have very high uncertainty, therefore alpha also has high uncertainty and also it tries fitting for alpha = beta too.}
