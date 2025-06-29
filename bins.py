@@ -169,6 +169,9 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
 
 # zls = [(2.2, 2.4)]
 
+
+filename = 'bins_old_2.dat'
+
 def main(cores):
     print("In main of bins.py")
 
@@ -177,7 +180,7 @@ def main(cores):
     # Notes down the parameters for it to be later used in summary files.
     WRITE_PARAMS2 = True
     if WRITE_PARAMS2: 
-        with open('bins.dat', 'w') as f:
+        with open(filename, 'w') as f:
             f.write('# zmean zmin  zmax  phi_star  phi_star_err    M_star  M_star_err        alpha  alpha_err        beta    beta_err\n')
 
     for i, zl in enumerate(zls):
@@ -216,29 +219,22 @@ def main(cores):
 
         assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
         
-        lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
+        # lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
+        # lfi.get_percentiles()
+        # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
 
-        print("Running MCMC")
-        # lfi.run_mcmc(ncores=int(cores))
-        print("lfi.bf.x:", lfi.bf.x)
-        print("Getting percentiles")
+
+
+        lfi.run_mcmc(ncores=int(cores))
         lfi.get_percentiles()
-        print("lfi.phi_star:", lfi.phi_star)
-        print("lfi.M_star:", lfi.M_star)
-        print("lfi.alpha:", lfi.alpha)
-        print("lfi.beta:", lfi.beta)
-        print("\nEND!")
-        print()
-        
-
-        drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
+        drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=False)
         print("Drawn the LF for this bin.")
 
 
         
         # FOR SUMMARY (Fig 4)
         if WRITE_PARAMS2: 
-            with open('bins.dat', 'a') as f:
+            with open(filename, 'a') as f:
                 output = ([lfi.z.mean()] + list(zl) + lfi.phi_star
                         + lfi.M_star + lfi.alpha + lfi.beta)
                 f.write(('{:.3f}  '*len(output)).format(*output))

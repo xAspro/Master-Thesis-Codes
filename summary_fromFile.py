@@ -220,28 +220,28 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     ax.scatter(zm, centre, color='#ffffff', edgecolor='grey', zorder=6, s=27)
 
 
-    # print('zmean:', zmean)
-    # print('zm:', zm)
-    # print('len(zmean):', len(zmean))
-    # print('len(zm):', len(zm))
-    # print('zm[:10]:', zm[:10])
-    # print('zmean[:10]:', zmean[:10])
-    print('c:', c)
-    print('centre:', centre)
-    # print('min(zmean[:10]):', np.min(zmean[:10]))
-    # print('max(zmean[:10]):', np.max(zmean[:10]))
-    # print('min(zm):', np.min(zm))
-    # print('max(zm):', np.max(zm))
-    print('min(c):', np.min(c))
-    print('max(c):', np.max(c))
+    # # print('zmean:', zmean)
+    # # print('zm:', zm)
+    # # print('len(zmean):', len(zmean))
+    # # print('len(zm):', len(zm))
+    # # print('zm[:10]:', zm[:10])
+    # # print('zmean[:10]:', zmean[:10])
+    # print('c:', c)
+    # print('centre:', centre)
+    # # print('min(zmean[:10]):', np.min(zmean[:10]))
+    # # print('max(zmean[:10]):', np.max(zmean[:10]))
+    # # print('min(zm):', np.min(zm))
+    # # print('max(zm):', np.max(zm))
+    # print('min(c):', np.min(c))
+    # print('max(c):', np.max(c))
     
     
-    print()
-    print("Good data:")
-    for i in range(len(zmean)):
-        print(f"{i}: {zmean[i]}, {c[i]}")
-    print()
-    print()
+    # print()
+    # print("Good data:")
+    # for i in range(len(zmean)):
+    #     print(f"{i}: {zmean[i]}, {c[i]}")
+    # print()
+    # print()
 
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
@@ -430,22 +430,22 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     # print('len(zm):', len(zm))
     # print('zm[:10]:', zm[:10])
     # print('zmean[:10]:', zmean[:10])
-    print('c:', c)
-    print('centre:', centre)
-    # print('min(zmean[:10]):', np.min(zmean[:10]))
-    # print('max(zmean[:10]):', np.max(zmean[:10]))
-    # print('min(zm):', np.min(zm))
-    # print('max(zm):', np.max(zm))
-    print('min(c):', np.min(c))
-    print('max(c):', np.max(c))
+    # print('c:', c)
+    # print('centre:', centre)
+    # # print('min(zmean[:10]):', np.min(zmean[:10]))
+    # # print('max(zmean[:10]):', np.max(zmean[:10]))
+    # # print('min(zm):', np.min(zm))
+    # # print('max(zm):', np.max(zm))
+    # print('min(c):', np.min(c))
+    # print('max(c):', np.max(c))
     
     
-    print()
-    print("Good data:")
-    for i in range(len(zmean)):
-        print(f"{i}: {zmean[i]}, {c[i]}")
-    print()
-    print()
+    # print()
+    # print("Good data:")
+    # for i in range(len(zmean)):
+    #     print(f"{i}: {zmean[i]}, {c[i]}")
+    # print()
+    # print()
 
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
@@ -610,22 +610,22 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     # print('len(zm):', len(zm))
     # print('zm[:10]:', zm[:10])
     # print('zmean[:10]:', zmean[:10])
-    print('c:', c)
-    print('centre:', centre)
-    # print('min(zmean[:10]):', np.min(zmean[:10]))
-    # print('max(zmean[:10]):', np.max(zmean[:10]))
-    # print('min(zm):', np.min(zm))
-    # print('max(zm):', np.max(zm))
-    print('min(c):', np.min(c))
-    print('max(c):', np.max(c))
+    # print('c:', c)
+    # print('centre:', centre)
+    # # print('min(zmean[:10]):', np.min(zmean[:10]))
+    # # print('max(zmean[:10]):', np.max(zmean[:10]))
+    # # print('min(zm):', np.min(zm))
+    # # print('max(zm):', np.max(zm))
+    # print('min(c):', np.min(c))
+    # print('max(c):', np.max(c))
     
     
-    print()
-    print("Good data:")
-    for i in range(len(zmean)):
-        print(f"{i}: {zmean[i]}, {c[i]}")
-    print()
-    print()
+    # print()
+    # print("Good data:")
+    # for i in range(len(zmean)):
+    #     print(f"{i}: {zmean[i]}, {c[i]}")
+    # print()
+    # print()
 
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
@@ -832,22 +832,22 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     # print('len(zm):', len(zm))
     # print('zm[:10]:', zm[:10])
     # print('zmean[:10]:', zmean[:10])
-    print('c:', c)
-    print('centre:', centre)
-    # print('min(zmean[:10]):', np.min(zmean[:10]))
-    # print('max(zmean[:10]):', np.max(zmean[:10]))
-    # print('min(zm):', np.min(zm))
-    # print('max(zm):', np.max(zm))
-    print('min(c):', np.min(c))
-    print('max(c):', np.max(c))
+    # print('c:', c)
+    # print('centre:', centre)
+    # # print('min(zmean[:10]):', np.min(zmean[:10]))
+    # # print('max(zmean[:10]):', np.max(zmean[:10]))
+    # # print('min(zm):', np.min(zm))
+    # # print('max(zm):', np.max(zm))
+    # print('min(c):', np.min(c))
+    # print('max(c):', np.max(c))
     
     
-    print()
-    print("Good data:")
-    for i in range(len(zmean)):
-        print(f"{i}: {zmean[i]}, {c[i]}")
-    print()
-    print()
+    # print()
+    # print("Good data:")
+    # for i in range(len(zmean)):
+    #     print(f"{i}: {zmean[i]}, {c[i]}")
+    # print()
+    # print()
 
 
     # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1

@@ -660,13 +660,13 @@ def savedata_with_bp(lf):
     sigma_diff = res[2]
     prob = res[3]
     if zlims == (0.1, 0.4):
-        with open('datapoints_with_bp.dat', 'w') as f:
+        with open('datapoints_with_bp_new.dat', 'w') as f:
             f.write('# The data points with bad points for the QLF at different redshift bins are given here.\n')
             f.write('# badness 1 implies the points are the bad points. \n')
             f.write('# The columns are as follows:\n')
             f.write('# zmin   zmax   label                     badness   bad_prob   mag       mag_err    logphi    map_log_phi   uperr    downerr   log_err  residual   sig_dif   prob\n')
 
-    with open('datapoints_with_bp.dat', 'a') as f:
+    with open('datapoints_with_bp_new.dat', 'a') as f:
         print("data.sid= ", data.sid)
         print("data.is_bad= ", data.is_bad)
         print("data.bad_prob= ", data.bad_prob)
@@ -1029,8 +1029,10 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
             ax.scatter(mags, logphi, c="#ff0000", edgecolor=cs[i], zorder=5, s=16, label=dsl(lf, i)+' erroneous bin')
 
 
+        savedata_with_bp(lf)
+
+
     savedata(data)
-    savedata_with_bp(lf)
 
     if showMockSample:
         for i in sids:

@@ -1137,9 +1137,9 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        nburns = 5000
-        nprod = 5000
-        nprod = nburns
+        nburns = 20000
+        nprod = 60000
+        # nprod = nburns
 
         # walkers = 2 * degree + 8
         walkers = 50
@@ -1177,9 +1177,9 @@ class lf:
             title_fmt=".2f",
             title_kwargs={"fontsize": 12}
         )
-        plt.suptitle("Initial Walker Distribution (Poly Coeffs)", fontsize=14)
+        # plt.suptitle("Initial Walker Distribution (Poly Coeffs)", fontsize=14)
         figure.tight_layout()
-        figure.savefig(f'initial_pos_cornerstyle_{label}.png')
+        # figure.savefig(f'initial_pos_cornerstyle_{label}.png')
         plt.close()
 
         pos = pos_all[:walkers]
@@ -1192,8 +1192,8 @@ class lf:
         sampler = emcee.EnsembleSampler(walkers, ndim, self.logpos_for_1_param,
                                         args=(x, y, err, degree))
         sampler.run_mcmc(pos, nburns, progress=True)
-        # sampler.reset()
-        # sampler.run_mcmc(None, nprod, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, nprod, progress=True)
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
@@ -1234,7 +1234,7 @@ class lf:
                       fill_contours=True,
                       plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
-        plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
+        # plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
         plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Orignal.png')
         plt.close()
 
@@ -1245,7 +1245,7 @@ class lf:
                       fill_contours=True,
                       plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
-        plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
+        # plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
         plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Clean.png')
         plt.close()
 
@@ -1270,25 +1270,25 @@ class lf:
             print("Could not compute autocorrelation time:", e)
         print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
 
-        taus = []
-        x_tau = []
-        for i in range(nprod // 20, nprod, nprod // 20):
-            tau = emcee.autocorr.integrated_time(sampler.get_chain()[:i], tol=0)
-            taus.append(tau)
-            x_tau.append(i)
+        # taus = []
+        # x_tau = []
+        # for i in range(nprod // 20, nprod, nprod // 20):
+        #     tau = emcee.autocorr.integrated_time(sampler.get_chain()[:i], tol=0)
+        #     taus.append(tau)
+        #     x_tau.append(i)
 
-        # Plot autocorrelation time as a function of steps
-        taus = np.array(taus)
-        plt.figure(figsize=(8, 4))
-        for i in range(ndim):
-            plt.plot(x_tau, taus[:, i], label=f'param_{i}')
-        plt.xlabel('Number of steps')
-        plt.ylabel('Autocorrelation time')
-        plt.title('Autocorrelation time vs steps')
-        plt.legend()
-        plt.tight_layout()
-        plt.savefig(f'mcmc-{label}_autocorr_{self.prior_tag}.png')
-        plt.close()
+        # # Plot autocorrelation time as a function of steps
+        # taus = np.array(taus)
+        # plt.figure(figsize=(8, 4))
+        # for i in range(ndim):
+        #     plt.plot(x_tau, taus[:, i], label=f'param_{i}')
+        # plt.xlabel('Number of steps')
+        # plt.ylabel('Autocorrelation time')
+        # plt.title('Autocorrelation time vs steps')
+        # plt.legend()
+        # plt.tight_layout()
+        # plt.savefig(f'mcmc-{label}_autocorr_{self.prior_tag}.png')
+        # plt.close()
 
         # Print MAP (maximum a posteriori) estimate
         # Compute the log-probability for each sample and find the MAP estimate
@@ -1510,18 +1510,13 @@ class lf:
             #     continue
             # if i != 2:
             #     continue
-            # print(f"(x, y): {(zmean, data[i][0])}")
-            # print(f"Errors: {(data[i][2] - data[i][1])/2.0}")
-            # print(f"Degree of polynomial for {params[i]}: {pnum[i]}")
-            # print(f"Label for {params[i]}: {params[i]}")
+            
             d = (zmean, data[i][0])
             err = ((data[i][2] - data[i][1])/2.0)
             coeffs, poly_fn = self.fit_polynomial_curve(
                 d, err,
                 params[i], degree=(pnum[i]-1)
             )
-            # print(f"Fitted coefficients for {params[i]}: {coeffs}")
-            # print(f"Polynomial function for {params[i]}: \n{poly_fn}")
             coeff_list.append(coeffs)
 
             map_par, sample_for_one = self.mcmc_for_1_param(
@@ -1531,16 +1526,7 @@ class lf:
             map_param.append(map_par)
             samples.append(sample_for_one)
 
-        # # Save the MAP parameter estimates to a file, one row per line
-        # with open("composite_map_param_estimate.dat", "w") as f:
-        #     for row in map_param:
-        #         f.write(" ".join(str(x) for x in row) + "\n")
 
-        # with open("composite_map_param_estimate.dat", "w") as f:
-        #     for i in range(len(map_param)):
-        #         f.write(f"{params[i]}: {' '.join(str(x) for x in map_param[i])}\n")
-
-        # np.savetxt("composite_map_param_estimate.dat", [row[0] for row in map_param], allow_pickle=True)
         with open("composite_map_param_estimate.dat", "w") as f:
             for param in map_param:
                 for arr in param:  # param[0]=main, param[1]=minus_sigma, param[2]=plus_sigma
@@ -1837,7 +1823,7 @@ class lf:
                       levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
                       smooth=True, fill_contours=True, plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
-        plt.suptitle('Full MCMC fit', fontsize=14)
+        # plt.suptitle('Full MCMC fit', fontsize=14)
         plt.savefig('mcmc_full_corner.png')
         plt.close()
 

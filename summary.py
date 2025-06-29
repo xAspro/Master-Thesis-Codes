@@ -15,16 +15,17 @@ from scipy.optimize import curve_fit
 from scipy.interpolate import UnivariateSpline
 
 # These redshift bins are labelled "bad" and are plotted differently.
-reject = [0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+reject = np.array([0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
 
 colors = ['tomato', 'forestgreen', 'goldenrod', 'saddlebrown']
+colors2 = ['royalblue', 'coral', 'slateblue', 'darkturquoise']
 #colors = ['k', 'k', 'k', 'k'] 
 nplots_x = 2
 nplots_y = 2
 nplots = 4
 plot_number = 0 
 
-zlims=(0.0,7.0)
+zlims=(0.0,3.0)
 zmin, zmax = zlims
 z = np.linspace(zmin, zmax, num=500)
 cfit = False
@@ -81,7 +82,7 @@ def plot_model_polyb(composite, param_number, ax):
 
 
 def getParam(individuals, param, which='old', dtype='good'):
-
+    # getParam(individuals, 0, which='new', dtype='good')
 
     if individuals is not None: 
     
@@ -108,9 +109,36 @@ def getParam(individuals, param, which='old', dtype='good'):
 
     else:
 
-        zmean, zl, zu, u, l, c = np.loadtxt('bins.dat',
+        zmean, zl, zu, u, l, c = np.loadtxt('bins_old.dat',
                                             usecols=(0,1,2,3+param*3,4+param*3,5+param*3),
                                             unpack=True)
+    print("zmean=", zmean)
+    print("zl=", zl)
+    print("zu=", zu)
+    print("u=", u)
+    print("l=", l)
+    print("c=", c)
+
+    def truncate(arr, zm, zmin, zmax):
+        """Truncate the array to the given redshift limits."""
+        return arr[(zm >= zmin) & (zm <= zmax)]
+    
+    lim = (0, 2.55)
+    zl = truncate(zl, zmean, *lim)
+    zu = truncate(zu, zmean, *lim)
+    u = truncate(u, zmean, *lim)
+    l = truncate(l, zmean, *lim)
+    c = truncate(c, zmean, *lim)
+
+    zmean = truncate(zmean, zmean, *lim)
+
+
+    global reject
+    mask = reject < len(zmean)
+    print("mask=", mask)
+    reject = reject[mask]
+    print("reject=", reject)
+
 
     m = np.ones_like(zmean, dtype=bool)
     m[reject] = False
@@ -120,6 +148,24 @@ def getParam(individuals, param, which='old', dtype='good'):
         return zmean[m], zl[m], zu[m], u[m], l[m], c[m]
     else:
         return zmean[minv], zl[minv], zu[minv], u[minv], l[minv], c[minv]
+    
+def getParamsNew(param):
+    # getParamsNew(0)  # phi
+    # getParamsNew(1)  # M_star
+    # getParamsNew(2)  # alpha
+    # getParamsNew(3)  # beta
+
+    zmean, zl, zu, u, l, c = np.loadtxt('bins.dat',
+                                        usecols=(0,1,2,3+param*3,4+param*3,5+param*3),
+                                        unpack=True)
+    print("zmean=", zmean)
+    print("zl=", zl)
+    print("zu=", zu)
+    print("u=", u)
+    print("l=", l)
+    print("c=", c)
+
+    return zmean, zl, zu, u, l, c
 
         
 def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, lfg_break=None, lfg_polyb=None):
@@ -194,6 +240,19 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
     ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[0], zorder=6, s=27)
+
+
+    zmean, zl, zu, u, l, c = getParamsNew(0)
+    left = zmean-zl
+    right = zu-zmean
+    uperr = abs(u-c)
+    downerr = abs(c-l)
+    ax.errorbar(zmean, c, ecolor=colors2[0], capsize=0,
+                xerr=np.vstack((left, right)), 
+                yerr=np.vstack((uperr, downerr)),
+                fmt='None', zorder=4)
+    ax.scatter(zmean, c, color=colors2[0], edgecolor='None', zorder=4, s=30)
+
     
     if cfit:
         zc = np.linspace(0, 7, 500)
@@ -324,6 +383,18 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
     ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[1], zorder=6, s=27)
+
+
+    zmean, zl, zu, u, l, c = getParamsNew(1)
+    left = zmean-zl
+    right = zu-zmean
+    uperr = abs(u-c)
+    downerr = abs(c-l)
+    ax.errorbar(zmean, c, ecolor=colors2[1], capsize=0,
+                xerr=np.vstack((left, right)),
+                yerr=np.vstack((uperr, downerr)),
+                fmt='None', zorder=4)
+    ax.scatter(zmean, c, color=colors2[1], edgecolor='None', zorder=4, s=30)
         
     curvefit = False
     if curvefit:
@@ -416,6 +487,17 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
     ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[2], zorder=6, s=27)
+
+    zmean, zl, zu, u, l, c = getParamsNew(2)
+    left = zmean-zl
+    right = zu-zmean
+    uperr = abs(u-c)
+    downerr = abs(c-l)
+    ax.errorbar(zmean, c, ecolor=colors2[2], capsize=0,
+                xerr=np.vstack((left, right)), 
+                yerr=np.vstack((uperr, downerr)),
+                fmt='None', zorder=4)
+    ax.scatter(zmean, c, color=colors2[2], edgecolor='None', zorder=4, s=30)
 
     cfit = False
     if cfit: 
@@ -577,6 +659,19 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
     ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[3], zorder=6, s=27)
+
+
+
+    zmean, zl, zu, u, l, c = getParamsNew(3)
+    left = zmean-zl
+    right = zu-zmean
+    uperr = abs(u-c)
+    downerr = abs(c-l)
+    ax.errorbar(zmean, c, ecolor=colors2[3], capsize=0,
+                xerr=np.vstack((left, right)), 
+                yerr=np.vstack((uperr, downerr)),
+                fmt='None', zorder=4)
+    ax.scatter(zmean, c, color=colors2[3], edgecolor='None', zorder=4, s=30)
         
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
     #                                     usecols=(0,7,8,9), unpack=True)

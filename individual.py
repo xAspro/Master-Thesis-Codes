@@ -800,7 +800,7 @@ class lf:
             The log-probability of the QLF model given the parameters. Returns -np.inf
             if the log prior is not finite.
         """
-        time.sleep(0.01)  # Simulate some CPU time for testing purposes
+        # time.sleep(0.01)  # Simulate some CPU time for testing purposes
         lp = self._lnprior(theta)
         
         if not np.isfinite(lp):
@@ -838,11 +838,14 @@ class lf:
         pool = Pool(ncores)
         print("Using multiprocessing pool with {} cores...\n\n\n".format(ncores))
 
-        lnprob_pickable = dill.loads(dill.dumps(self._lnprob))
+        # lnprob_pickable = dill.loads(dill.dumps(self._lnprob))
+        # self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
+        #                                     lnprob_pickable, pool=None)
+
         self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
-                                            lnprob_pickable, pool=None)
+                                             self._lnprob)
         print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers, self.ndim))
-        self.sampler.run_mcmc(pos, 1500, progress=True)
+        self.sampler.run_mcmc(pos, 1000, progress=True)
 
         self.samples = self.sampler.chain[:, 500:, :].reshape((-1, self.ndim))
         
@@ -1063,7 +1066,7 @@ class lf:
         #               fill_contours=True,
         #               plot_datapoints=False,
         #               show_titles=True, title_kwargs={"fontsize": 12})
-        fig.suptitle(f"Prior Model: {prior_tag}\nrun_counter: {run_counter}", fontsize=16)
+        # fig.suptitle(f"Prior Model: {prior_tag}\nrun_counter: {run_counter}", fontsize=16)
         # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
         plt.savefig(f"{dirname}Corner_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points_{run_counter}.png")
         plt.savefig(f"{dirname}Corner_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points_{run_counter}.pdf")
@@ -1287,13 +1290,13 @@ class lf:
 
     def savedata_with_bp(self):
         if self.zlims == (0.1, 0.4):
-            with open("parameters_with_bp.dat", "w") as f:
+            with open("parameters_with_bp_new.dat", "w") as f:
                 f.write("# The parameters of the QLF with bad points are given here.\n")
                 f.write("# The columns are as follows:\n")
                 f.write("#                   Values                                |                       Credibility Interval\n")
                 f.write("# zmean   |   phi_star     M_star     alpha     beta      |           phi_star              M_star             alpha             beta    \n")
 
-        with open("parameters_with_bp.dat", "a") as f:
+        with open("parameters_with_bp_new.dat", "a") as f:
             f.write(" {:7.4f}  | {:9.4f}   {:11.4f}   {:7.4f}   {:7.4f}   |       {:7.4f} {:7.4f}     {:7.4f} {:7.4f}   {:7.4f} {:7.4f}   {:7.4f} {:7.4f}\n".format(
                 np.mean(self.z), self.map_params[0], self.map_params[1], self.map_params[2], self.map_params[3],
                 self.cred_interval[0][0], self.cred_interval[0][1], self.cred_interval[1][0], self.cred_interval[1][1],
