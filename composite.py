@@ -1851,8 +1851,9 @@ class lf:
         # import sys; sys.exit("Testing mcmc_all_params")
 
 
+
         
-        # FOR THIS 19 DIMENSIONAL PLOT AND HISTOGRAM, SAVE EACH DIMENSION SEPARATELY
+        # FOR THIS highhh DIMENSIONAL PLOT AND HISTOGRAM, SAVE EACH DIMENSION SEPARATELY
         # THEN YOU CAN DO THE HISTOGRAM WITHOUT RUNNING OUT OF RAM
         
 
@@ -1907,12 +1908,25 @@ class lf:
             print(f"param_{i}: {map_params[i]:.4f}, \t +1sigma: {np.percentile(samples[:, i], 84) - np.percentile(samples[:, i], 50):.4f}, \t -1sigma: {np.percentile(samples[:, i], 50) - np.percentile(samples[:, i], 16):.4f}")
 
         # Save the MAP (maximum a posteriori) parameter estimates and 1-sigma errors for all parameters to a file
-        with open("Global_QLF_Estimate.dat", "w") as f:
+        with open("Global_QLF_Estimate_using_logprob.dat", "w") as f:
             for i, val in enumerate(map_params):
                 plus_sigma = np.percentile(samples[:, i], 84) - np.percentile(samples[:, i], 50)
                 minus_sigma = np.percentile(samples[:, i], 50) - np.percentile(samples[:, i], 16)
                 f.write(f"{val:.5f} {minus_sigma:.5f} {plus_sigma:.5f}\n")
-        print("Saved MAP parameter estimates and 1-sigma errors to Global_QLF_Estimate.dat")
+        print("Saved MAP parameter estimates and 1-sigma errors to Global_QLF_Estimate_using_logprob.dat")
+
+        median_values = np.array([np.median(samples[:, i]) for i in range(len(map_params))])
+        errors = np.array([
+            np.percentile(samples[:, i], 84) - np.percentile(samples[:, i], 50,
+            np.percentile(samples[:, i], 50) - np.percentile(samples[:, i], 16)
+        ])
+        print("Median values for all parameters:", median_values)
+        print("1-sigma errors for all parameters:", errors)
+
+        with open("composite_map_param_estimate_using_median.dat", "w") as f:
+            for i in range(len(map_params)):
+                f.write(f"{median_values[i]:.5f} {errors[i][0]:.5f} {errors[i][1]:.5f}\n")
+        print("Saved median parameter estimates and 1-sigma errors to composite_map_param_estimate_using_median.dat")
 
     def read_datapoints_with_bp(self, filename):
         """

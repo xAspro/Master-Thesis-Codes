@@ -25,7 +25,7 @@ nplots_y = 2
 nplots = 4
 plot_number = 0 
 
-zlims=(0.0,3.0)
+zlims=(0.0,8.0)
 zmin, zmax = zlims
 z = np.linspace(zmin, zmax, num=500)
 cfit = False
@@ -178,8 +178,8 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     ax.tick_params('both', which='minor', length=2, width=1, direction='in')
     
     ax.set_xlim(zmin, zmax)
-    ax.set_ylim(-12, -5)
-    ax.set_yticks(np.arange(-12, -4, 1))
+    ax.set_ylim(-12, -4)
+    ax.set_yticks(np.arange(-12, -3, 1))
 
     if compOpt is not None: 
         phi = compOpt.atz(z, compOpt.getparams(compOpt.bf.x)[0])
@@ -227,7 +227,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color=colors[0], edgecolor='None', zorder=6, s=30)
+    ax.scatter(zmean, c, color=colors[0], edgecolor='None', zorder=6, label="Kulkarni et al. 2019\n(included data)", s=30)
 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='new', dtype='bad')
     left = zmean-zl
@@ -238,7 +238,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[0], zorder=6, s=27)
+    ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[0], zorder=6, label="Kulkarni et al. 2019\n(excluded data)", s=27)
 
 
     zmean, zl, zu, u, l, c = getParamsNew(0)
@@ -250,7 +250,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=4)
-    ax.scatter(zmean, c, color=colors2[0], edgecolor='None', zorder=4, s=30)
+    ax.scatter(zmean, c, color=colors2[0], edgecolor='None', zorder=7, label="This Project", s=30)
 
     
     if cfit:
@@ -288,11 +288,14 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     #             fmt='None', zorder=4)
     # ax.scatter(zm, cm, color='#ffffff', edgecolor='grey', zorder=4, s=30)
 
-    ax.set_xticks((0,1,2,3,4,5,6,7))
+    ax.set_xticks((0,1,2,3,4,5,6,7,8))
     ax.set_ylabel(r'$\log_{10}\left(\phi_*/\mathrm{mag}^{-1}'+
                   r'\mathrm{cMpc}^{-3}\right)$')
     ax.yaxis.labelpad = 8
     ax.set_xticklabels('')
+    ax.legend(loc='upper right', fontsize=6, handlelength=3,
+              frameon=False, framealpha=0.0, labelspacing=.1,
+              handletextpad=0.4, borderpad=0.2, markerscale=.5)
 
     return
 
@@ -348,7 +351,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color=colors[1], edgecolor='None', zorder=6, s=30)
+    ax.scatter(zmean, c, color=colors[1], edgecolor='None', zorder=6, label="Kulkarni et al. 2019\n(included data)", s=30)
 
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
     #                                     usecols=(0,4,5,6), unpack=True)
@@ -381,7 +384,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[1], zorder=6, s=27)
+    ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[1], zorder=6, label="Kulkarni et al. 2019\n(excluded data)", s=27)
 
 
     zmean, zl, zu, u, l, c = getParamsNew(1)
@@ -393,7 +396,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
                 xerr=np.vstack((left, right)),
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=4)
-    ax.scatter(zmean, c, color=colors2[1], edgecolor='None', zorder=4, s=30)
+    ax.scatter(zmean, c, color=colors2[1], edgecolor='None', zorder=7, label="This Project", s=30)
         
     curvefit = False
     if curvefit:
@@ -416,10 +419,13 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
         print( popt)
         plt.plot(zc, func(zc, *popt), lw=1, c='r', dashes=[7,2])
         
-    ax.set_xticks((0,1,2,3,4,5,6,7))
+    ax.set_xticks((0,1,2,3,4,5,6,7,8))
     ax.set_ylabel(r'$M_*$')
     ax.yaxis.labelpad = 12
     ax.set_xticklabels('')
+    ax.legend(loc='upper right', fontsize=6, handlelength=3,
+              frameon=False, framealpha=0.0, labelspacing=.1,
+              handletextpad=0.4, borderpad=0.2, markerscale=.5)
 
     return
 
@@ -474,7 +480,7 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color=colors[2], edgecolor='None', zorder=6, s=30)
+    ax.scatter(zmean, c, color=colors[2], edgecolor='None', zorder=6, label="Kulkarni et al. 2019\n(included data)", s=30)
 
     zmean, zl, zu, u, l, c = getParam(individuals, 2, which='new', dtype='bad')
     left = zmean-zl
@@ -485,7 +491,7 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[2], zorder=6, s=27)
+    ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[2], zorder=6, label="Kulkarni et al. 2019\n(excluded data)", s=27)
 
     zmean, zl, zu, u, l, c = getParamsNew(2)
     left = zmean-zl
@@ -496,7 +502,7 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=4)
-    ax.scatter(zmean, c, color=colors2[2], edgecolor='None', zorder=4, s=30)
+    ax.scatter(zmean, c, color=colors2[2], edgecolor='None', zorder=7, label="This Project", s=30)
 
     cfit = False
     if cfit: 
@@ -531,10 +537,12 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
                frameon=False, framealpha=0.0, labelspacing=.1,
                handletextpad=0.1, borderpad=0.01, scatterpoints=1)
 
-    ax.set_xticks((0,1,2,3,4,5,6,7))
+    ax.set_xticks((0,1,2,3,4,5,6,7,8))
     ax.set_ylabel(r'$\alpha$ (bright-end slope)')
     ax.set_xlabel('$z$')
-
+    ax.legend(loc='upper right', fontsize=6, handlelength=3,
+              frameon=False, framealpha=0.0, labelspacing=.1,
+              handletextpad=0.4, borderpad=0.2, markerscale=.5)
     return
 
 def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_break=None, lfg_polyb=None):
@@ -610,7 +618,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color=colors[3], edgecolor='None', zorder=6, s=30)
+    ax.scatter(zmean, c, color=colors[3], edgecolor='None', zorder=6, label="Kulkarni et al. 2019\n(included data)", s=30)
 
     cfit = False
     if cfit:
@@ -657,7 +665,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[3], zorder=6, s=27)
+    ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[3], zorder=6, label="Kulkarni et al. 2019\n(excluded data)", s=27)
 
 
 
@@ -670,7 +678,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
                 fmt='None', zorder=4)
-    ax.scatter(zmean, c, color=colors2[3], edgecolor='None', zorder=4, s=30)
+    ax.scatter(zmean, c, color=colors2[3], edgecolor='None', zorder=7, label="This Project", s=30)
         
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
     #                                     usecols=(0,7,8,9), unpack=True)
@@ -679,9 +687,12 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     #             fmt='None', zorder=4)
     # ax.scatter(zm, cm, color='#ffffff', edgecolor='grey', zorder=4, s=30)
     
-    ax.set_xticks((0,1,2,3,4,5,6,7))
+    ax.set_xticks((0,1,2,3,4,5,6,7,8))
     ax.set_ylabel(r'$\beta$ (faint-end slope)')
     ax.set_xlabel('$z$')
+    ax.legend(loc='upper right', fontsize=6, handlelength=3,
+              frameon=False, framealpha=0.0, labelspacing=.1,
+              handletextpad=0.4, borderpad=0.2, markerscale=.5)
 
     return 
 
