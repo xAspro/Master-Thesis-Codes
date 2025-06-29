@@ -1134,11 +1134,11 @@ class lf:
         print("Running MCMC with {} walkers and {} dimensions...".format(self.nwalkers_with_bp, self.ndim_with_bp))
 
 
-        DISCARD = 20000
+        DISCARD = 5000
 
         self.sampler_with_bp.run_mcmc(pos_with_bp, DISCARD, progress=True)
         self.sampler_with_bp.reset()
-        self.sampler_with_bp.run_mcmc(None, 100000, progress=True)
+        self.sampler_with_bp.run_mcmc(None, 5000, progress=True)
         
         self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
 
@@ -1220,6 +1220,28 @@ class lf:
 
         return
     
+    def sample_samples(self, n_samples=1000):
+        """
+        Sample the posterior distribution of the QLF parameters.
+
+        This method samples the posterior distribution of the QLF parameters
+        using the stored MCMC samples. It returns a random sample of size `n_samples`
+        from the posterior distribution.
+
+        Parameters
+        ----------
+        - n_samples : int, optional
+            The number of samples to draw from the posterior distribution.
+            The default is 1000.
+        """
+        if self.samples_with_bp is not None:
+            idx = np.random.choice(self.samples_with_bp.shape[0], size=n_samples, replace=False)
+            self.samples_with_bp = self.samples_with_bp[idx]
+        if self.samples is not None:
+            idx = np.random.choice(self.samples.shape[0], size=n_samples, replace=False)
+            self.samples = self.samples[idx]
+
+
     def clear_samples(self):
         """
         Clear the stored samples and reset the sampler.
@@ -1303,6 +1325,16 @@ class lf:
                 self.cred_interval[2][0], self.cred_interval[2][1], self.cred_interval[3][0], self.cred_interval[3][1]
             ))
         return
+
+
+
+
+    # def plot_bins_for_params(self, params):
+
+
+
+
+
 
 
 

@@ -1587,6 +1587,9 @@ class lf:
         # print(f"alpha_atz6 < -4.0 = {alpha_atz6 < -4.0}")
         # import sys; sys.exit("Testing log_prior_full")
 
+        # print("theta[:-3] = ", theta[:-3])
+        # print("self.prior_max_values[:-3] = ", self.prior_max_values[:-3])
+        # print("self.prior_min_values[:-3] = ", self.prior_min_values[:-3])
 
         if (np.all(theta[:-3] < self.prior_max_values[:-3]) and
             np.all(theta[:-3] > self.prior_min_values[:-3]) and
@@ -1814,15 +1817,15 @@ class lf:
         # Run MCMC for all parameters
         sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,), a=scale)
         print("Running MCMC for all parameters...")
-        sampler.run_mcmc(pos, 200000, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, 200000, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, 200000, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, 200000, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, 50000, progress=True)
+        sampler.run_mcmc(pos, 20000, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, 200000, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, 200000, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, 200000, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, 50000, progress=True)
         samples = sampler.get_chain(flat=True)
 
         # Plot corner plot (same format as previous)
@@ -2141,7 +2144,8 @@ class lf:
         # Determine the split locations for each parameter group
         splitlocs = np.cumsum(pnum)
 
-        print("guess:", guess)
+        # print("guess:", guess)
+        # import sys; sys.exit("Testing call_mcmc")
         max_full_x = np.zeros_like(guess[:-3])
         start = 0
         for end in splitlocs:
@@ -2162,38 +2166,46 @@ class lf:
         # self.max_prior_full = np.where(half > double, half, double)
         # assert np.all(self.min_prior_full < self.max_prior_full)
 
-        self.min_prior_full = np.concatenate([np.array(-1 * max_full_x), np.array([0, -100, 0])])
-        self.max_prior_full = np.concatenate([np.array(max_full_x), np.array([1, 100, 100])])
+        # self.min_prior_full = np.concatenate([np.array(-1 * max_full_x), np.array([0, -100, 0])])
+        # self.max_prior_full = np.concatenate([np.array(max_full_x), np.array([1, 100, 100])])
 
-        def shift_prior(index, dir):
-            """
-            Shift the prior for some specific parameter index in the direction specified by dir,
-            by 40% of the prior range.
-            dir = 1 for upper shift, -1 for lower shift.
-            """
-            range = self.max_prior_full[index] - self.min_prior_full[index]
-            if dir == 1:
+
+        self.min_prior_full = np.concatenate([np.minimum(guess[:-3] / 2, guess[:-3] * 2), np.array([0, -100, 0])])
+        self.max_prior_full = np.concatenate([np.maximum(guess[:-3] / 2, guess[:-3] * 2), np.array([1, 100, 100])])
+        print("guess:", guess)
+        print("min_prior_full:", self.min_prior_full)
+        print("max_prior_full:", self.max_prior_full)
+        # import sys; sys.exit("Testing call_mcmc")
+
+        # def shift_prior(index, dir):
+        #     """
+        #     Shift the prior for some specific parameter index in the direction specified by dir,
+        #     by 40% of the prior range.
+        #     dir = 1 for upper shift, -1 for lower shift.
+        #     """
+        #     range = self.max_prior_full[index] - self.min_prior_full[index]
+        #     if dir == 1:
                 
-                self.min_prior_full[index] += 0.4 * range
-                self.max_prior_full[index] += 0.4 * range
-            elif dir == -1:
-                self.min_prior_full[index] -= 0.4 * range
-                self.max_prior_full[index] -= 0.4 * range
+        #         self.min_prior_full[index] += 0.4 * range
+        #         self.max_prior_full[index] += 0.4 * range
+        #     elif dir == -1:
+        #         self.min_prior_full[index] -= 0.4 * range
+        #         self.max_prior_full[index] -= 0.4 * range
 
 
-        right_shift_indx = [0, 9]
-        left_shift_indx = [3, 4, 5, 6]
+        # right_shift_indx = [0, 9]
+        # left_shift_indx = [3, 4, 5, 6]
 
 
-        # # Print min_prior_full and max_prior_full with at least 4 significant figures
-        # np.set_printoptions(precision=4, suppress=True)
-        # print("\n\nmin_prior_full:", self.min_prior_full)
-        # print("max_prior_full:", self.max_prior_full)
+        # # # Print min_prior_full and max_prior_full with at least 4 significant figures
+        # # np.set_printoptions(precision=4, suppress=True)
+        # # print("\n\nmin_prior_full:", self.min_prior_full)
+        # # print("max_prior_full:", self.max_prior_full)
 
-        for i in right_shift_indx:
-            shift_prior(i, 1)
-        for i in left_shift_indx:
-            shift_prior(i, -1)
+        # for i in right_shift_indx:
+        #     shift_prior(i, 1)
+        # for i in left_shift_indx:
+        #     shift_prior(i, -1)
 
         # # Print min_prior_full and max_prior_full with at least 4 significant figures
         # np.set_printoptions(precision=4, suppress=True)

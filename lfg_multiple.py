@@ -255,6 +255,8 @@ except Exception as e:
     traceback.print_exc()
 
 
+np.save('lfg1.npy', lfg1)
+
 import sys
 sys.exit("\n\nThe rest is not required\n\n")
 

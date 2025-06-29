@@ -170,7 +170,7 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
 # zls = [(2.2, 2.4)]
 
 
-filename = 'bins_old.dat'
+filename = 'bins_ultra_new_2.dat'
 
 def main(cores):
     print("In main of bins.py")
@@ -219,16 +219,16 @@ def main(cores):
 
         assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
         
-        # lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
-        # lfi.get_percentiles()
-        # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
-
-
-
-        lfi.run_mcmc(ncores=int(cores))
+        lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
         lfi.get_percentiles()
-        drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=False)
-        print("Drawn the LF for this bin.")
+        drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
+
+
+
+        # lfi.run_mcmc(ncores=int(cores))
+        # lfi.get_percentiles()
+        # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=False)
+        # print("Drawn the LF for this bin.")
 
 
         
@@ -245,7 +245,8 @@ def main(cores):
         # mosaic.draw(lfs)
 
 
-        lfi.clear_samples()
+        # lfi.clear_samples()
+        lfi.sample_samples()
 
     end_time = time.time()
 
@@ -259,7 +260,8 @@ def main(cores):
     print("\n\n\nlfs:", lfs)
 
 
-    np.save('bins_lfs_1.npy', lfs)
+    # np.save('bins_lfs_1.npy', lfs)
+    np.save('bins_lfs_ultra_new_2.npy', lfs)
 
     print(type(lfs))
     print(dir(lfs))

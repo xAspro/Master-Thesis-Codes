@@ -7,14 +7,16 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
 mpl.rcParams['text.usetex'] = True 
-mpl.rcParams['font.family'] = 'serif'
-mpl.rcParams['font.serif'] = 'cm'
+# mpl.rcParams['font.family'] = 'serif'
+# mpl.rcParams['font.serif'] = 'cm'
 mpl.rcParams['font.size'] = '22'
 import matplotlib.pyplot as plt
 # import fit_emissivity
 import sounddevice as sd
 import time
 from composite import lf
+import warnings
+warnings.filterwarnings("ignore", message="findfont: Generic family")
 
 output_data_file = 'rhoqso_output_data_2.txt'
 
@@ -85,6 +87,7 @@ def rhoqso(loglf, theta, mlim, z, fit='individual', mbright=-35.0):
 
     m = np.linspace(mbright, mlim, num=1000)
     if fit == 'composite':
+        # print("mlim = ", mlim)
         farr = f2(loglf, theta, m, z, fit='composite')
     else:
         farr = f(loglf, theta, m, z, fit='individual')
@@ -156,7 +159,7 @@ def read_parameters_with_bp(filename="parameters_with_bp_new.dat"):
             params.append(vals)
     return np.array(zlist), np.array(params)
 
-def get_rhoqso_from_file(mlim, z, mbright=-35.0, filename="parameters_with_bp.dat"):
+def get_rhoqso_from_file(mlim, z, mbright=-35.0, filename="parameters_with_bp_new.dat"):
     zlist, params = read_parameters_with_bp(filename)
     print(f"shape of zlist: {zlist.shape}, shape of params: {params.shape}")
     print(f"params: {params}")
@@ -628,37 +631,37 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
     # print("individuals_bad=", individuals_bad)
     
     for x in individuals:
-        get_rhoqso(x, mlim, x.z.mean())
+        get_rhoqso2(x, mlim, x.z.mean())
         # print("x=", x)
     
     c = np.array([x.rhoqso[2] for x in individuals_good])
     u = np.array([x.rhoqso[0] for x in individuals_good])
     l = np.array([x.rhoqso[1] for x in individuals_good])
 
-    print("\n\n\n\n\n\t[u, l, c]=", [u, l, c])
+    # print("\n\n\n\n\n\t[u, l, c]=", [u, l, c])
 
     rho = c
     rho_up = np.abs(u - c)
     rho_low = np.abs(c - l)
 
-    print("[rho_up, rho_low]=", [rho_up, rho_low])
-    print("rho=", rho)
+    # print("[rho_up, rho_low]=", [rho_up, rho_low])
+    # print("rho=", rho)
 
-    with open("check.dat", "a") as fcheck:
+    with open("check.dat", "w") as fcheck:
         for i in range(len(c)):
             fcheck.write(f"{u[i]:.6g} {l[i]:.6g} {c[i]:.6g} {rho_up[i]:.6g} {rho_low[i]:.6g}\n")
-    import sys; sys.exit(0)
+    # import sys; sys.exit(0)
 
     zs = np.array([x.z.mean() for x in individuals_good])
     uz = np.array([x.zlims[0] for x in individuals_good])
     lz = np.array([x.zlims[1] for x in individuals_good])
 
-    print("[uz, zs, lz]=", [uz, zs, lz])
+    # print("[uz, zs, lz]=", [uz, zs, lz])
     
     uzerr = np.abs(uz - zs)
     lzerr = np.abs(zs - lz)
 
-    print("[uzerr, lzerr]=", [uzerr, lzerr])
+    # print("[uzerr, lzerr]=", [uzerr, lzerr])
     print("\n*************************************************************\n")
 
     with open(output_data_file, 'a') as f:
@@ -854,43 +857,44 @@ def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rh
 
     ax.set_ylabel(r'$\rho(z, M_{1450} < M_\mathrm{lim})$ [cMpc$^{-3}$]')
     ax.set_xlabel('$z$')
-    ax.set_xlim(0.,30)
+    ax.set_xlim(0.,8)
 
     ax.set_yscale('log')
-    ax.set_ylim(1.0e-11, 1000000000.0)
+    # ax.set_ylim(1.0e-11, 1000000000.0)
+    ax.set_ylim(1.0e-10, 1.0e3)
 
-    mlim = -18
-    individuals_cumulative_multiple(ax, individuals, mlim, 'k', '$M<-18$')
-    global_cumulative(ax, c1, mlim, 'grey', label='Model 1')
-    global_cumulative(ax, c2, mlim, 'forestgreen', label='Model 2')
-    global_cumulative(ax, c3, mlim, 'peru', label='Model 3')
+    # mlim = -18
+    # individuals_cumulative_multiple(ax, individuals, mlim, 'k', '$M<-18$')
+    # global_cumulative(ax, c1, mlim, 'grey', label='Model 1')
+    # global_cumulative(ax, c2, mlim, 'forestgreen', label='Model 2')
+    # global_cumulative(ax, c3, mlim, 'peru', label='Model 3')
 
-    plt.text(0.7, 1.2e-4, '$M_{1450}<-18$', rotation=52, fontsize=14, ha='center')
+    # plt.text(0.7, 1.2e-4, '$M_{1450}<-18$', rotation=52, fontsize=14, ha='center')
 
-    mlim = -21
-    individuals_cumulative_multiple(ax, individuals, mlim, 'k', '$M<-21$')
-    global_cumulative(ax, c1, mlim, 'grey')
-    global_cumulative(ax, c2, mlim, 'forestgreen')
-    global_cumulative(ax, c3, mlim, 'peru')
+    # mlim = -21
+    # individuals_cumulative_multiple(ax, individuals, mlim, '#fa3243', '$M<-21$')
+    # global_cumulative(ax, c1, mlim, 'grey')
+    # global_cumulative(ax, c2, mlim, 'forestgreen')
+    # global_cumulative(ax, c3, mlim, 'peru')
 
-    plt.text(0.7, 1.2e-5, '$M_{1450}<-21$', rotation=55, fontsize=14, ha='center')
+    # plt.text(0.7, 1.2e-5, '$M_{1450}<-21$', rotation=55, fontsize=14, ha='center')
         
-    mlim = -24
-    individuals_cumulative_multiple(ax, individuals, mlim, 'k', '$M<-24$')
-    global_cumulative(ax, c1, mlim, 'grey')
-    global_cumulative(ax, c2, mlim, 'forestgreen')
-    global_cumulative(ax, c3, mlim, 'peru')
+    # mlim = -24
+    # individuals_cumulative_multiple(ax, individuals, mlim, "#4A22EC", '$M<-24$')
+    # global_cumulative(ax, c1, mlim, 'grey')
+    # global_cumulative(ax, c2, mlim, 'forestgreen')
+    # global_cumulative(ax, c3, mlim, 'peru')
 
-    plt.text(0.5, 2e-7, '$M_{1450}<-24$', rotation=72, fontsize=14, ha='center')
+    # plt.text(0.5, 2e-7, '$M_{1450}<-24$', rotation=72, fontsize=14, ha='center')
 
-    mlim = -27
-    c = '#17becf'
-    individuals_cumulative_multiple(ax, individuals, mlim, 'k', '$M<-27$')
+    # mlim = -27
+    # c = '#17becf'
+    # individuals_cumulative_multiple(ax, individuals, mlim, "#0ECAB7", '$M<-27$')
     m1f, m1 = global_cumulative(ax, c1, mlim, 'grey')
     m2f, m2 = global_cumulative(ax, c2, mlim, 'forestgreen')
     m3f, m3 = global_cumulative(ax, c3, mlim, 'peru')
 
-    plt.text(1, 2.0e-9, '$M_{1450}<-27$', rotation=67, fontsize=14, ha='center')
+    # plt.text(1, 2.0e-9, '$M_{1450}<-27$', rotation=67, fontsize=14, ha='center')
 
     handles, labels = [], []
     handles.append((m1f, m1))
@@ -1256,7 +1260,8 @@ if __name__ == '__main__':
     # lfg1 = np.load('lfg1_old_data.npy', allow_pickle=True)
     # lfg2 = np.load('lfg2_old_data.npy', allow_pickle=True)
     # lfg3 = np.load('lfg3_old_data.npy', allow_pickle=True)
-    bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)
+    # bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)
+    bins_lfs = np.load('bins_lfs_ultra_new_2.npy', allow_pickle=True)
 
     # lfg1 = lfg1.tolist()
     # lfg2 = lfg2.tolist()
@@ -1264,6 +1269,9 @@ if __name__ == '__main__':
     bins_lfs = bins_lfs.tolist()
 
     lfg1 = [0.04689, -0.17632, 0.23130, -0.00477, -0.04919, -0.49998, -4.94620, -0.02253, 0.07626, -1.43122, 0.23785, -1.44757, 0.59961, -7.14684, 1.42234]
+    # lfg1 = [-0.33, 1.22, -7.25, -0.05, 0.32, -1.61, -23.35, -0.05, 0.14, -3.68, -0.16, -1.43]
+    # lfg1 = [-0.32800534, 1.21827609, -7.25317654, -0.0453531 , 0.31980522, -1.61333716 -23.35463542, -0.05491733, 0.13915991, -3.68318441, -0.16158751, -1.43097968]
+    # lfg1 = [-0.33, 1.22, -7.25, -0.06, 0.32, -1.61, -23.35, -0.04, 0.14, -3.68, -0.16, -1.43]
     lfg1 = lfg1[:-3]
     lfg2 = lfg1
     lfg3 = lfg1
