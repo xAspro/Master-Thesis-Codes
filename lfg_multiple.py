@@ -239,7 +239,7 @@ selnfiles = []
 
 lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum1)
 
-lfg1.run_mcmc_for_for_1_param(pnum1)
+# lfg1.run_mcmc_for_for_1_param(pnum1)
 lfg1.call_mcmc(pnum1)
 
 

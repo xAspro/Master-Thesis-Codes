@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 # import fit_emissivity
 import sounddevice as sd
 import time
+from composite import lf
 
 output_data_file = 'rhoqso_output_data_2.txt'
 
@@ -27,39 +28,64 @@ cnt = 0
 # cnt changes at 7500, 465000, 922500, 1380000, and goes to the end :/
 
 last_fit = None
+pnum = [3, 4, 3, 2]
 
 def f(loglf, theta, m, z, fit='individual'):
     global cnt, last_fit
     cnt += 1
     if fit == 'composite':
-        # if last_fit is None:
-        #     last_fit = 'composite'
-        #     print(f'\n\n\t\t\t{cnt}. Last fit was None. Now fit=composite')
-        #     time.sleep(5.5)
-        # elif last_fit != 'composite':
-        #     print(f"\n\n\t\t\t{cnt}. In f() with fit='composite'")
-        #     time.sleep(5.5)
-        #     last_fit = 'composite'
-        # print(f"\t\t\t{cnt}. In f() with fit='composite'")
-        return 10.0**loglf(theta, m, z)
-    
+        # print('\ntheta:', theta)
+        # print('m:', m)
+        # print('z:', z)
 
-    # if last_fit is None:
-    #     last_fit = 'individual'
-    #     print(f'\n\n\t\t{cnt}. Last fit was None. Now fit=individual')
-    #     time.sleep(5.5)
-    # elif last_fit != 'individual':
-    #     print(f"\n\n\t\t{cnt}. In f() with fit='individual'")
-    #     time.sleep(5.5)
-    #     last_fit = 'individual'
-    # print(f"\t\t{cnt}. In f() with fit='individual'")
+        
+        return 10.0**loglf(theta, m, z)
+
     return 10.0**loglf(theta, m)
+
+def f2(loglf, theta, m, z, fit='individual'):
+    global cnt, last_fit
+    cnt += 1
+    if fit == 'composite':
+        # print('\ntheta:', theta)
+        # print('m:', m)
+        # print('z:', z)
+        # QUICK SHORT HAND. NEED TO CHANGE THIS THOUGH!!!
+
+        def getparams(theta):
+            if isinstance(pnum, int):
+                # Case 1: `self.pnum` is a single integer.
+                # Each parameter group has the same number of parameters (`self.pnum`).
+                splitlocs = pnum*np.array([1,2,3])
+            else:
+                # Case 2: `self.pnum` is an array or list.
+                # Each parameter group has a different number of parameters.
+                # The number of parameters for each group is given by `self.pnum[i]`.
+                splitlocs = np.cumsum(pnum)
+
+            return np.split(theta,splitlocs)
+        params = getparams(theta)
+
+        def atz(z, p):
+            return np.polyval(p, z)
+
+        log10phi_star = atz(z, params[0])
+        M_star = atz(z, params[1])
+        alpha = atz(z, params[2])
+        beta = atz(z, params[3])
+        phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(m-M_star)) +
+                                     10.0**(0.4*(beta+1)*(m-M_star)))
+        return phi
+        
+
+    return 10.0**loglf(theta, m)
+
 
 def rhoqso(loglf, theta, mlim, z, fit='individual', mbright=-35.0):
 
     m = np.linspace(mbright, mlim, num=1000)
     if fit == 'composite':
-        farr = f(loglf, theta, m, z, fit='composite')
+        farr = f2(loglf, theta, m, z, fit='composite')
     else:
         farr = f(loglf, theta, m, z, fit='individual')
     
@@ -233,7 +259,44 @@ def get_rhoqso(lfi, mlim, z, fit='individual', mbright=-35.0):
 
 #     return
 
-def global_cumulative(ax, composite, mlim, color, **kwargs):
+def global_cumulative(ax, theta, mlim, color, **kwargs):
+    # In this composite just is just a set of n parameter values
+    nzs = 500
+    z = np.linspace(0, 7, nzs)
+    # nsample = 300
+    # rsample = composite.samples[np.random.randint(len(composite.samples), size=nsample)]
+
+    # bf = np.median(composite.samples, axis=0)
+    # r = np.array([rhoqso(composite.log10phi, bf, mlim, x, fit='composite') for x in z])
+    # ax.plot(z, r, color='k', zorder=7)
+
+    # r = np.zeros((nsample, nzs))
+    # for i, theta in enumerate(rsample):
+    #     r[i] = np.array([rhoqso(composite.log10phi, theta, mlim, x, fit='composite') for x in z])
+
+    # up = np.percentile(r, 15.87, axis=0)
+    # down = np.percentile(r, 84.13, axis=0)
+    # f = ax.fill_between(z, down, y2=up, color=color, zorder=6, alpha=0.7, **kwargs)
+
+    # c = np.median(r, axis=0)
+
+    c = np.array([rhoqso(lf.log10phi,theta, mlim, zi, fit='composite') for zi in z])
+    # Set f as a very thin band around c (±0.0001)
+    f = ax.fill_between(z, c - 1e-15, c + 1e-15, color=color, alpha=0.3, zorder=6)
+
+    if color == 'forestgreen':
+        p, = ax.plot(z, c, color=color, zorder=7)
+    
+    if color == 'peru': 
+        p, = ax.plot(z, c, color='brown', zorder=7)
+
+    if color == 'grey': 
+        p, = ax.plot(z, c, color='k', zorder=7)
+        
+    return f, p 
+
+
+def global_cumulative2(ax, composite, mlim, color, **kwargs):
 
     nzs = 500
     z = np.linspace(0, 7, nzs)
@@ -720,6 +783,9 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
 #     return
 
 def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rhoqso_withGlobal_multiple.pdf'):
+    # bins.py data is individual
+    # c1, c2, c3 are composite models
+    # I will use jst c1 and c2
 
     fig = plt.figure(figsize=(7, 11), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
@@ -1074,48 +1140,77 @@ def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rh
 
 
 
+# if __name__ == '__main__':
+#     import time
+
+#     start_time = time.time()
+#     print("Start time:", start_time)
+
+#     lfg1 = np.load('lfg1_old_data.npy', allow_pickle=True)
+#     lfg2 = np.load('lfg2_old_data.npy', allow_pickle=True)
+#     lfg3 = np.load('lfg3_old_data.npy', allow_pickle=True)
+#     bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)
+
+#     lfg1 = lfg1.tolist()
+#     lfg2 = lfg2.tolist()
+#     lfg3 = lfg3.tolist()
+#     bins_lfs = bins_lfs.tolist()
+
+#     print("\n\n\n")
+#     print(type(lfg1))
+#     print(dir(lfg1))
+#     print("\n\n\n")
+#     print(type(bins_lfs))
+#     print(dir(bins_lfs))
+#     print("\n\n\n")
+
+#     # lfg3 = None
+
+#     # import sys
+#     # sys.exit(0)
+#     draw_withGlobal_multiple(lfg1, lfg2, lfg3, bins_lfs, select=False, filename='rhoqso_withGlobal_multiple2.pdf')
+
+#     duration = 3  # seconds
+#     frequency = 440  # Hz, the frequency of the beep sound (440Hz is standard A note)
+
+#     # Generate sound wave (440Hz sine wave)
+#     sample_rate = 44100  # samples per second
+#     t = np.linspace(0, duration, int(sample_rate * duration), False)
+#     wave = 0.5 * np.sin(2 * np.pi * frequency * t)
+
+#     # Play the generated sound wave
+#     sd.play(wave, samplerate=sample_rate)
+
+#     sd.wait()  # Wait until the sound is finished playing
+
+#     end_time = time.time()
+#     print("End time:", end_time)
+#     print("Duration:", end_time - start_time)
+
+
 if __name__ == '__main__':
     import time
 
     start_time = time.time()
     print("Start time:", start_time)
 
-    lfg1 = np.load('lfg1_old_data.npy', allow_pickle=True)
-    lfg2 = np.load('lfg2_old_data.npy', allow_pickle=True)
-    lfg3 = np.load('lfg3_old_data.npy', allow_pickle=True)
+    # lfg1 = np.load('lfg1_old_data.npy', allow_pickle=True)
+    # lfg2 = np.load('lfg2_old_data.npy', allow_pickle=True)
+    # lfg3 = np.load('lfg3_old_data.npy', allow_pickle=True)
     bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)
 
-    lfg1 = lfg1.tolist()
-    lfg2 = lfg2.tolist()
-    lfg3 = lfg3.tolist()
+    # lfg1 = lfg1.tolist()
+    # lfg2 = lfg2.tolist()
+    # lfg3 = lfg3.tolist()
     bins_lfs = bins_lfs.tolist()
 
-    print("\n\n\n")
-    print(type(lfg1))
-    print(dir(lfg1))
-    print("\n\n\n")
-    print(type(bins_lfs))
-    print(dir(bins_lfs))
-    print("\n\n\n")
+    lfg1 = [0.04689, -0.17632, 0.23130, -0.00477, -0.04919, -0.49998, -4.94620, -0.02253, 0.07626, -1.43122, 0.23785, -1.44757, 0.59961, -7.14684, 1.42234]
+    lfg1 = lfg1[:-3]
+    lfg2 = lfg1
+    lfg3 = lfg1
 
-    # lfg3 = None
 
-    # import sys
-    # sys.exit(0)
-    draw_withGlobal_multiple(lfg1, lfg2, lfg3, bins_lfs, select=False, filename='rhoqso_withGlobal_multiple2.pdf')
-
-    duration = 3  # seconds
-    frequency = 440  # Hz, the frequency of the beep sound (440Hz is standard A note)
-
-    # Generate sound wave (440Hz sine wave)
-    sample_rate = 44100  # samples per second
-    t = np.linspace(0, duration, int(sample_rate * duration), False)
-    wave = 0.5 * np.sin(2 * np.pi * frequency * t)
-
-    # Play the generated sound wave
-    sd.play(wave, samplerate=sample_rate)
-
-    sd.wait()  # Wait until the sound is finished playing
+    draw_withGlobal_multiple(lfg1, lfg2, lfg3, bins_lfs, select=False, filename='rhoqso_withGlobal_multiple.pdf')
 
     end_time = time.time()
     print("End time:", end_time)

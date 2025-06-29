@@ -249,7 +249,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     ax.errorbar(zmean, c, ecolor=colors2[0], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
-                fmt='None', zorder=4)
+                fmt='None', zorder=7)
     ax.scatter(zmean, c, color=colors2[0], edgecolor='None', zorder=7, label="This Project", s=30)
 
     
@@ -395,7 +395,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     ax.errorbar(zmean, c, ecolor=colors2[1], capsize=0,
                 xerr=np.vstack((left, right)),
                 yerr=np.vstack((uperr, downerr)),
-                fmt='None', zorder=4)
+                fmt='None', zorder=7)
     ax.scatter(zmean, c, color=colors2[1], edgecolor='None', zorder=7, label="This Project", s=30)
         
     curvefit = False
@@ -501,7 +501,7 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     ax.errorbar(zmean, c, ecolor=colors2[2], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
-                fmt='None', zorder=4)
+                fmt='None', zorder=7)
     ax.scatter(zmean, c, color=colors2[2], edgecolor='None', zorder=7, label="This Project", s=30)
 
     cfit = False
@@ -677,7 +677,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     ax.errorbar(zmean, c, ecolor=colors2[3], capsize=0,
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((uperr, downerr)),
-                fmt='None', zorder=4)
+                fmt='None', zorder=7)
     ax.scatter(zmean, c, color=colors2[3], edgecolor='None', zorder=7, label="This Project", s=30)
         
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',

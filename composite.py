@@ -458,7 +458,7 @@ class lf:
         (numpy.ndarray) log10 of the quasar luminosity function 
                         at the given data points.
         """
-
+        print("In composite.py class-lf log10phi")
         params = self.getparams(theta)
 
         log10phi_star = self.atz(z, params[0])
@@ -1803,10 +1803,16 @@ class lf:
         for i in range(ndim):
             pos[:, i] = initial_guess[i] - 0.0001 * np.random.uniform(0, 1, nwalkers)
 
+        # prior_range = self.prior_max_values - self.prior_min_values
+        # pos = np.zeros((nwalkers, ndim))
+        # for i in range(ndim):
+        #     pos[:, i] = np.random.uniform(self.prior_min_values[i] + prior_range[i]/4, self.prior_max_values[i] - prior_range[i]/4, nwalkers)
+
+        scale = 2.5
 
 
         # Run MCMC for all parameters
-        sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,))
+        sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,), a=scale)
         print("Running MCMC for all parameters...")
         sampler.run_mcmc(pos, 200000, progress=True)
         sampler.reset()
@@ -1814,7 +1820,9 @@ class lf:
         sampler.reset()
         sampler.run_mcmc(None, 200000, progress=True)
         sampler.reset()
-        sampler.run_mcmc(None, 10000, progress=True)
+        sampler.run_mcmc(None, 200000, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, 50000, progress=True)
         samples = sampler.get_chain(flat=True)
 
         # Plot corner plot (same format as previous)
@@ -1824,7 +1832,9 @@ class lf:
                       smooth=True, fill_contours=True, plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
         # plt.suptitle('Full MCMC fit', fontsize=14)
-        plt.savefig('mcmc_full_corner.png')
+        plt.suptitle(f"scale = {scale}", fontsize=14)
+        plt.savefig(f'mcmc_full_corner_{scale}.png')
+        
         plt.close()
 
         # Plot chains for each parameter
@@ -1837,7 +1847,9 @@ class lf:
             ax.set_ylabel(labels[i])
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        plt.savefig('mcmc_full_chains.png')
+        plt.suptitle(f"scale = {scale}", fontsize=14)
+        plt.savefig(f'mcmc_full_chains_{scale}.png')
+        
         plt.close()
 
         # Print autocorrelation time and acceptance rate
@@ -1916,16 +1928,22 @@ class lf:
         print("Saved MAP parameter estimates and 1-sigma errors to Global_QLF_Estimate_using_logprob.dat")
 
         median_values = np.array([np.median(samples[:, i]) for i in range(len(map_params))])
-        errors = np.array([
-            np.percentile(samples[:, i], 84) - np.percentile(samples[:, i], 50,
-            np.percentile(samples[:, i], 50) - np.percentile(samples[:, i], 16)
+        errors = np.array([[
+            np.percentile(samples[:, i], 84) - np.percentile(samples[:, i], 50)
+            for i in range(len(map_params))
+            ],
+            [np.percentile(samples[:, i], 50) - np.percentile(samples[:, i], 16)
+            for i in range(len(map_params))]
         ])
         print("Median values for all parameters:", median_values)
         print("1-sigma errors for all parameters:", errors)
 
         with open("composite_map_param_estimate_using_median.dat", "w") as f:
+            f.write("# Median parameter estimates and 1-sigma errors\n")
+            f.write(f"# len(map_params) = {len(map_params)}\n")
             for i in range(len(map_params)):
-                f.write(f"{median_values[i]:.5f} {errors[i][0]:.5f} {errors[i][1]:.5f}\n")
+                print(f"print line {i}")
+                f.write(f"{median_values[i]:.5f} {errors[0][i]:.5f} {errors[1][i]:.5f}\n")
         print("Saved median parameter estimates and 1-sigma errors to composite_map_param_estimate_using_median.dat")
 
     def read_datapoints_with_bp(self, filename):
@@ -2146,6 +2164,43 @@ class lf:
 
         self.min_prior_full = np.concatenate([np.array(-1 * max_full_x), np.array([0, -100, 0])])
         self.max_prior_full = np.concatenate([np.array(max_full_x), np.array([1, 100, 100])])
+
+        def shift_prior(index, dir):
+            """
+            Shift the prior for some specific parameter index in the direction specified by dir,
+            by 40% of the prior range.
+            dir = 1 for upper shift, -1 for lower shift.
+            """
+            range = self.max_prior_full[index] - self.min_prior_full[index]
+            if dir == 1:
+                
+                self.min_prior_full[index] += 0.4 * range
+                self.max_prior_full[index] += 0.4 * range
+            elif dir == -1:
+                self.min_prior_full[index] -= 0.4 * range
+                self.max_prior_full[index] -= 0.4 * range
+
+
+        right_shift_indx = [0, 9]
+        left_shift_indx = [3, 4, 5, 6]
+
+
+        # # Print min_prior_full and max_prior_full with at least 4 significant figures
+        # np.set_printoptions(precision=4, suppress=True)
+        # print("\n\nmin_prior_full:", self.min_prior_full)
+        # print("max_prior_full:", self.max_prior_full)
+
+        for i in right_shift_indx:
+            shift_prior(i, 1)
+        for i in left_shift_indx:
+            shift_prior(i, -1)
+
+        # # Print min_prior_full and max_prior_full with at least 4 significant figures
+        # np.set_printoptions(precision=4, suppress=True)
+        # print("\n\nmin_prior_full:", np.array2string(self.min_prior_full, precision=4, floatmode='unique'))
+        # print("max_prior_full:", np.array2string(self.max_prior_full, precision=4, floatmode='unique'))
+
+        # import sys; sys.exit("Testing call_mcmc")
 
         # print("Prior min values for full fit:", self.min_prior_full)
         # print("Prior max values for full fit:", self.max_prior_full)
