@@ -82,7 +82,6 @@ def plot_model_polyb(composite, param_number, ax):
 
 
 def getParam(individuals, param, which='old', dtype='good'):
-    # getParam(individuals, 0, which='new', dtype='good')
 
     if individuals is not None: 
     
@@ -109,7 +108,7 @@ def getParam(individuals, param, which='old', dtype='good'):
 
     else:
 
-        zmean, zl, zu, u, l, c = np.loadtxt('bins_old.dat',
+        zmean, zl, zu, u, l, c = np.loadtxt('bins_old_2.dat',
                                             usecols=(0,1,2,3+param*3,4+param*3,5+param*3),
                                             unpack=True)
     print("zmean=", zmean)

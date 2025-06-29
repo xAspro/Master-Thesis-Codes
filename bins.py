@@ -170,7 +170,7 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
 # zls = [(2.2, 2.4)]
 
 
-filename = 'bins_old_2.dat'
+filename = 'bins_old.dat'
 
 def main(cores):
     print("In main of bins.py")
