@@ -1847,7 +1847,19 @@ class lf:
         # for i in range(ndim):
         #     pos[:, i] = np.random.uniform(self.prior_min_values[i] + prior_range[i]/4, self.prior_max_values[i] - prior_range[i]/4, nwalkers)
 
+        
+        # Try to load the last state if it exists, otherwise use the initial pos
+        try:
+            last_state = np.load("mcmc_full_last_state.npy")
+            pos = last_state
+            print("Loaded last MCMC state from mcmc_full_last_state.npy")
+        except Exception as e:
+            print("Could not load last state, using initial pos. Reason:", e)
+            pos = pos
+
         scale = 2
+
+
 
 
         # Run MCMC for all parameters
@@ -1863,6 +1875,13 @@ class lf:
         # sampler.reset()
         # sampler.run_mcmc(None, 50000, progress=True)
         samples = sampler.get_chain(flat=True)
+
+        # Save the last state of the sampler (all walkers' last positions)
+        np.save("mcmc_full_last_state.npy", sampler.get_last_sample().coords)
+
+        # To resume later, you can load with:
+        # last_state = np.load("mcmc_full_last_state.npy")
+        # sampler.run_mcmc(last_state, nsteps, progress=True)
 
 
         # Print autocorrelation time and acceptance rate
