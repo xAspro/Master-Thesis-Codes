@@ -1576,12 +1576,48 @@ class lf:
         
         # import sys; sys.exit("Testing log_prior_full")
 
+
+
+        # if np.any(alpha > beta):
+        #     print("Alpha is greater than Beta")
+        #     return -np.inf
+
+
+        # if np.any(alpha < beta):
+        #     print("Alpha is greater than Beta")
+        #     return -np.inf
+        
+        # if np.any(beta > 0):
+        #     print("Beta is greater than 0")
+        #     return -np.inf
+        
+        if Pb < 0 or Pb > 1:
+            print("Pb is out of bounds")
+            return -np.inf
+        
+        if Yb < -100 or Yb > 100:
+            print("Yb is out of bounds")
+            return -np.inf
+        
+        if Vb < 0 or Vb > 100:
+            print("Vb is out of bounds")
+            return -np.inf
+        
+        # print("Returning 0!!")
+        return 0.0 
+        # Sample Pb from a beta distribution with alpha=2, beta=6
+        # return beta_dist.pdf(Pb, a=2, b=6)
+
         if (np.all(theta[:-3] > self.min_prior_full[:-3]) and
             np.all(theta[:-3] < self.max_prior_full[:-3])):
 
             # if np.any(alpha > beta):
             #     print("Alpha is greater than Beta")
             #     return -np.inf
+
+            if np.any(alpha > beta):
+                print("Alpha is greater than Beta")
+                return -np.inf
             
             # if np.any(beta > 0):
             #     print("Beta is greater than 0")
@@ -1755,7 +1791,7 @@ class lf:
         bounds = main_bounds + nuisance_bounds
 
         
-        result = op.minimize(self.neg_log_like_full,
+        result = op.minimize(self.log_prob_full,
                              guess,
                              args=(data_full,),
                              bounds=bounds,
@@ -1767,7 +1803,7 @@ class lf:
             print('Likelihood optimisation did not converge.')
 
         self.bf_full = result
-        print("Best fit parameters for full dataset:", result.x)
+        print("Best fit parameters for full dataset:", (result.x).tolist())
         import sys; sys.exit("Testing find_best_fit_full")
         return result
 
@@ -2173,7 +2209,7 @@ class lf:
   5.72862137e-01, -7.10983973e+00,  1.40129912e+00]
 
 
-        # self.find_best_fit_full(data_full, guess)
+        self.find_best_fit_full(data_full, guess)
 
         # Plot each parameter (logphi, M_star, alpha, beta) separately with its data points
         params = ["logphi", "M_star", "alpha", "beta"]
