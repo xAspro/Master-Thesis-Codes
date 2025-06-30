@@ -1564,38 +1564,7 @@ class lf:
 
         Pb, Yb, Vb = theta[-3:]
 
-        # print("Pb = ", Pb, "\tYb = ", Yb, "\tVb = ", Vb)
-        # print("params = ", params)
-        # print("theta = ", theta)
 
-        # print(f"self.prior_min_values = {self.prior_min_values}")
-        # print(f"self.prior_max_values = {self.prior_max_values}")
-
-        # print(f"size of self.prior_min_values = {self.prior_min_values.size}")
-        # print(f"size of self.prior_max_values = {self.prior_max_values.size}")
-        # print(f"size of theta = {theta.size}")
-
-
-
-        # print(f"theta[:-3] = {theta[:-3]}")
-        # print(f"self.prior_max_values[:-3] = {self.prior_max_values[:-3]}")
-        # print(f"self.prior_min_values[:-3] = {self.prior_min_values[:-3]}")
-        # print(f"alpha_atz6 = {alpha_atz6}")
-        # print(f"theta[:-3] < self.prior_max_values[:-3] = {(theta[:-3] < self.prior_max_values[:-3])}")
-        # print(f"theta[:-3] > self.prior_min_values[:-3] = {(theta[:-3] > self.prior_min_values[:-3])}")
-        # print(f"np.all(theta[:-3] < self.prior_max_values[:-3]) = {np.all(theta[:-3] < self.prior_max_values[:-3])}")
-        # print(f"np.all(theta[:-3] > self.prior_min_values[:-3]) = {np.all(theta[:-3] > self.prior_min_values[:-3])}")
-        # print(f"alpha_atz6 < -4.0 = {alpha_atz6 < -4.0}")
-        # import sys; sys.exit("Testing log_prior_full")
-
-        # print("theta[:-3] = ", theta[:-3])
-        # print("self.prior_max_values[:-3] = ", self.prior_max_values[:-3])
-        # print("self.prior_min_values[:-3] = ", self.prior_min_values[:-3])
-
-        # if (np.all(theta[:-3] < self.prior_max_values[:-3]) and
-        #     np.all(theta[:-3] > self.prior_min_values[:-3]) and
-        #     # alpha_atz6 < -4.0):
-        #     1):
 
         # print("theta: ", theta)
         # print("min prior: ", self.min_prior_full)
@@ -1610,32 +1579,32 @@ class lf:
         if (np.all(theta[:-3] > self.min_prior_full[:-3]) and
             np.all(theta[:-3] < self.max_prior_full[:-3])):
 
-            if np.any(alpha > beta):
-                # print("Alpha is greater than Beta")
-                return -np.inf
+            # if np.any(alpha > beta):
+            #     print("Alpha is greater than Beta")
+            #     return -np.inf
             
-            if np.any(beta > 0):
-                # print("Beta is greater than 0")
-                return -np.inf
+            # if np.any(beta > 0):
+            #     print("Beta is greater than 0")
+            #     return -np.inf
             
             if Pb < 0 or Pb > 1:
-                # print("Pb is out of bounds")
+                print("Pb is out of bounds")
                 return -np.inf
             
             if Yb < -100 or Yb > 100:
-                # print("Yb is out of bounds")
+                print("Yb is out of bounds")
                 return -np.inf
             
             if Vb < 0 or Vb > 100:
-                # print("Vb is out of bounds")
+                print("Vb is out of bounds")
                 return -np.inf
             
-            # # print("Returning 0!!")
+            # print("Returning 0!!")
             return 0.0 
             # Sample Pb from a beta distribution with alpha=2, beta=6
             # return beta_dist.pdf(Pb, a=2, b=6)
         
-        # print("Prior out of bounds")
+        print("Prior out of bounds")
         return -np.inf
         
     def log10phi_full(self, theta, mag, z):
@@ -1799,7 +1768,7 @@ class lf:
 
         self.bf_full = result
         print("Best fit parameters for full dataset:", result.x)
-        # import sys; sys.exit("Testing find_best_fit_full")
+        import sys; sys.exit("Testing find_best_fit_full")
         return result
 
     def mcmc_all_params(self, data_full, guess, pnum=np.array([3,4,2,5])):
@@ -1860,21 +1829,50 @@ class lf:
 
         scale = 2
 
+        self.max_prior_full[0] += 0.5
+        # self.min_prior_full[0] += 0.15
+
+        self.min_prior_full[1] -= 2.5
+        # self.max_prior_full[1] -= 0.5
+
+        self.min_prior_full[3] -= 0.01
+        # self.max_prior_full[3] -= 0.005
+
+        # self.min_prior_full[4] -= 0.1
+        self.max_prior_full[4] += 0.05
+
+        self.min_prior_full[5] -= 1.5
+        # self.max_prior_full[5] -= 0.5
+
+        self.min_prior_full[6] += 2
+
+        self.min_prior_full = np.minimum(self.min_prior_full / 2, self.min_prior_full * 2)
+        self.max_prior_full = np.maximum(self.max_prior_full / 2, self.max_prior_full * 2)
+
+        initial_pos = [5.10163203e-01, -2.71960085e+00,  4.72086148e+00, -1.67611059e-03,
+  2.10997687e-02, -9.30498997e-01,  3.86334707e+00, -5.69653797e-02,
+  2.80685425e-01, -1.70526140e+00,  3.20228984e-01, -1.71859028e+00,
+  2.52822097e-01, -7.11719319e+00,  1.24162139e+00]
+        for i in range(ndim):
+            # pos[:, i] = initial_pos[i] + 0.0000001 * prior_range[i] * np.random.uniform(-1, 1, nwalkers)
+            pos[:, i] = initial_pos[i] + 0.000000001 * prior_range[i] * np.random.uniform(-1, 1, nwalkers)
+        
+
 
 
 
         # Run MCMC for all parameters
         sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,), a=scale)
         print("Running MCMC for all parameters...")
-        sampler.run_mcmc(pos, 200000, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, 200000, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, 200000, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, 200000, progress=True)
-        sampler.reset()
-        sampler.run_mcmc(None, 50000, progress=True)
+        sampler.run_mcmc(pos, 2000, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, 200000, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, 200000, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, 200000, progress=True)
+        # sampler.reset()
+        # sampler.run_mcmc(None, 50000, progress=True)
         samples = sampler.get_chain(flat=True)
 
         # To resume later, you can load with:
@@ -1919,7 +1917,7 @@ class lf:
 
         # Ask user for yes/no input and save the response to a file
         response = input("Do you want to save the results? (yes/no): ").strip().lower()
-        if response in ['yes', 'y']:
+        if response not in ['no', 'n']:
             
             # Ask if user wants to overwrite or save with a different name
             save_choice = input(f"Do you want to overwrite the existing file {filename}? (yes/no): ").strip().lower()
@@ -1930,6 +1928,10 @@ class lf:
             print(f"Saved MCMC sampler state to {filename}")
         else:
             print("Results were not saved.")
+
+        # Print the median values for all parameters after MCMC
+        median_values = np.median(samples, axis=0)
+        print("Median values for all parameters:", median_values)
 
 
 
@@ -2164,6 +2166,12 @@ class lf:
         nuisance_param_guess = np.array([0.0, -5, 2])
 
         guess = np.concatenate((guess, nuisance_param_guess))
+
+        guess = [4.15052863e-01, -2.24984120e+00,  4.25513894e+00, -2.90936334e-03,
+  9.18359568e-02, -1.39847220e+00,  4.82932642e+00,-4.79319494e-02,
+  2.31025046e-01, -1.65543230e+00,  2.66869863e-01, -1.65078483e+00,
+  5.72862137e-01, -7.10983973e+00,  1.40129912e+00]
+
 
         # self.find_best_fit_full(data_full, guess)
 
