@@ -1329,7 +1329,97 @@ class lf:
 
 
 
-    # def plot_bins_for_params(self, params):
+    def plot_bins_for_params(self, params):
+        """
+        Inputs the data from get_qlf_data() and plots the bin for the parameters.
+        Run this function for the zlims, using params as the parameter for log10phi().
+
+        Parameters
+        ----------
+        params : list of list
+            The parameters for the QLF model, typically containing values for phi_star, M_star, alpha, and beta.
+        zlims : tuple
+            A tuple containing the redshift limits (zmin, zmax) for which the bin is to be plotted.
+
+        Returns
+        -------
+        None
+        """
+        # params[0] = logphi params
+        # params[1] = M_star params
+        # params[2] = alpha params
+        # params[3] = beta params
+        print("params = ", params)
+        print("zlims = ", self.zlims)
+        self.get_qlf_data()
+
+        def f(coeff, z):
+            """
+            Return a polynomial function using the coefficients provided at z.
+            """
+            print("coeff = ", coeff)
+            print("z = ", z)
+            return np.polyval(coeff, z)
+
+
+        mag = np.arange(-34, -12, 0.1)
+
+        log10phi_star, M_star, alpha, beta = [f(coeff, np.mean(self.z)) for coeff in params]
+        # print("log10phi_star = ", log10phi_star)
+        # print("M_star = ", M_star)
+        # print("alpha = ", alpha)
+        # print("beta = ", beta)
+
+        phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(mag-M_star)) +
+                                     10.0**(0.4*(beta+1)*(mag-M_star)))
+        
+        phi = np.log10(phi)
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.plot(mag, phi, label=f'z = {np.mean(self.z):.2f}', lw=2, c='k')
+        ax.set_xlabel('Absolute Magnitude (M1450)')
+        ax.set_ylabel(r'$\log_{10}(\phi)$')
+        ax.set_title(f'QLF at z = {np.mean(self.z):.2f}')
+        ax.axhline(0, color='gray', linestyle='--', lw=1, alpha=0.5)
+        ax.axvline(M_star, color='red', linestyle='--', lw=1, alpha=0.5, label='M_star')
+        # Plot the binned QLF data points for this redshift bin
+        if hasattr(self, "data"):
+            mask = (self.data.mag >= np.min(mag)) & (self.data.mag <= np.max(mag))
+            ax.errorbar(
+                self.data.mag[mask],
+                self.data.logphi[mask],
+                yerr=[self.data.downerr[mask], self.data.uperr[mask]],
+                fmt='o',
+                color='blue',
+                label='Binned QLF data'
+            )
+        ax.legend()
+        ax.set_xlim(-12, -34)
+        ax.set_ylim(-16, 0)
+        plt.tight_layout()
+        plt.savefig(f"QLF_bins_z_{np.mean(self.z):.2f}.png")
+
+
+            
+    # def plot_bins_for_params_with_composite(self, params):
+
+    #     def f(coeff, z):
+    #         """
+    #         Return a polynomial function using the coefficients provided at z.
+    #         """
+    #         print("coeff = ", coeff)
+    #         print("z = ", z)
+    #         return np.polyval(coeff, z)
+        
+
+    #     labels = ["logphi", "M_star", "alpha", "beta"]
+    #     par = 
+    #     for i in range(len(params)):
+    #         label = labels[i]
+    #         samples_loaded = np.load(f"{label}_sample.npy")
+    #         print(samples_loaded.shape)
+
+
 
 
 

@@ -239,8 +239,8 @@ selnfiles = []
 
 lfg1 = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=pnum1)
 
-# lfg1.run_mcmc_for_for_1_param(pnum1)
-lfg1.call_mcmc(pnum1)
+lfg1.run_mcmc_for_for_1_param(pnum1)
+# lfg1.call_mcmc(pnum1)
 
 
 end_time = time.time()
@@ -255,7 +255,7 @@ except Exception as e:
     traceback.print_exc()
 
 
-np.save('lfg1.npy', lfg1)
+np.save('lfg1_2.npy', lfg1)
 
 import sys
 sys.exit("\n\nThe rest is not required\n\n")

@@ -1,6 +1,10 @@
 # Checked once. Runs without error. No implementation of this file in this file.
 print("In composite.py")
 
+
+    # THE ERROR MUST BE BECAUSE THE CODE WAS FOR SINGLE QUASAR DATA. NOW I AM USING THE BINNED DATA. HENCE EACH BIN IS 
+    # POSSIBLY GETTING COUNTED MULTIPLE NUMBER OF TIMES AND HENCE THE VALUE IS VERY HIGH!!!
+
 import numpy as np
 import scipy.optimize as op
 import emcee
@@ -1291,14 +1295,14 @@ class lf:
         # plt.savefig(f'mcmc-{label}_autocorr_{self.prior_tag}.png')
         # plt.close()
 
-        # Print MAP (maximum a posteriori) estimate
-        # Compute the log-probability for each sample and find the MAP estimate
-        log_probs = np.array([self.logpos_for_1_param(theta, x, y, err, degree) for theta in samples])
-        map_idx = np.argmax(log_probs)
-        map_params = samples[map_idx]
-        print("\nMAP (maximum a posteriori) values:")
-        for i, val in enumerate(map_params):
-            print(f"param_{i}: {val:.4f}")
+        # # Print MAP (maximum a posteriori) estimate
+        # # Compute the log-probability for each sample and find the MAP estimate
+        # log_probs = np.array([self.logpos_for_1_param(theta, x, y, err, degree) for theta in samples])
+        # map_idx = np.argmax(log_probs)
+        # map_params = samples[map_idx]
+        # print("\nMAP (maximum a posteriori) values:")
+        # for i, val in enumerate(map_params):
+        #     print(f"param_{i}: {val:.4f}")
 
 
 
@@ -1346,6 +1350,23 @@ class lf:
         percentiles = np.percentile(samples, [16, 50, 84], axis=0)
         minus_sigma = percentiles[1] - percentiles[0]
         plus_sigma = percentiles[2] - percentiles[1]
+
+
+        with open(f'map_params_{label}.txt', 'w') as f:
+            f.write(f"MAP parameters for {label}:\n")
+            for i, val in enumerate(map_params):
+                f.write(f"{val:.4f}, {minus_sigma[i]:.4f}, {plus_sigma[i]:.4f}\n")
+
+        
+        # Save 500 random samples to a .npy file
+        n_save = 500
+        if samples.shape[0] > n_save:
+            idx = np.random.choice(samples.shape[0], n_save, replace=False)
+            samples_to_save = samples[idx]
+        else:
+            samples_to_save = samples
+        np.save(f"{label}_sample.npy", samples_to_save)
+
 
         return [map_params, minus_sigma, plus_sigma], samples
     

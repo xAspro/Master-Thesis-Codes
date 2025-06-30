@@ -170,6 +170,28 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
 # zls = [(2.2, 2.4)]
 
 
+if True:
+    params = [[-0.3261, 1.2184, -7.2610],
+              [-0.0439, 0.3283, -1.6293, -23.3691],
+              [-0.0552, 0.1424, -3.6888],
+              [-0.1612, -1.4329]]
+    
+    for i, zl in enumerate(zls):
+
+        lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
+        lfi.plot_bins_for_params(params)
+        # lfi.plot_bins_for_params_with_composite(params)
+        # import sys
+        # sys.exit("Exiting early for testing purposes.")
+
+
+    import sys
+    sys.exit("Exiting early for testing purposes.")
+
+
+
+
+
 filename = 'bins_ultra_new_2.dat'
 
 def main(cores):
