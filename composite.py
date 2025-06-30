@@ -1597,37 +1597,37 @@ class lf:
         #     # alpha_atz6 < -4.0):
         #     1):
 
-        print("theta: ", theta)
-        print("min prior: ", self.min_prior_full)
-        print("max prior: ", self.max_prior_full)
-        print("theta[:-3]>self.min_prior_full[:-3]: ", theta[:-3] > self.min_prior_full[:-3])
-        print("theta[:-3]<self.max_prior_full[:-3]: ", theta[:-3] < self.max_prior_full[:-3])
-        print("np.all(theta[:-3] > self.min_prior_full[:-3]): ", np.all(theta[:-3] > self.min_prior_full[:-3]))
-        print("np.all(theta[:-3] < self.max_prior_full[:-3]): ", np.all(theta[:-3] < self.max_prior_full[:-3]))
+        # print("theta: ", theta)
+        # print("min prior: ", self.min_prior_full)
+        # print("max prior: ", self.max_prior_full)
+        # print("theta[:-3]>self.min_prior_full[:-3]: ", theta[:-3] > self.min_prior_full[:-3])
+        # print("theta[:-3]<self.max_prior_full[:-3]: ", theta[:-3] < self.max_prior_full[:-3])
+        # print("np.all(theta[:-3] > self.min_prior_full[:-3]): ", np.all(theta[:-3] > self.min_prior_full[:-3]))
+        # print("np.all(theta[:-3] < self.max_prior_full[:-3]): ", np.all(theta[:-3] < self.max_prior_full[:-3]))
         
-        import sys; sys.exit("Testing log_prior_full")
+        # import sys; sys.exit("Testing log_prior_full")
 
         if (np.all(theta[:-3] > self.min_prior_full[:-3]) and
             np.all(theta[:-3] < self.max_prior_full[:-3])):
 
             if np.any(alpha > beta):
-                print("Alpha is greater than Beta")
+                # print("Alpha is greater than Beta")
                 return -np.inf
             
             if np.any(beta > 0):
-                print("Beta is greater than 0")
+                # print("Beta is greater than 0")
                 return -np.inf
             
             if Pb < 0 or Pb > 1:
-                print("Pb is out of bounds")
+                # print("Pb is out of bounds")
                 return -np.inf
             
             if Yb < -100 or Yb > 100:
-                print("Yb is out of bounds")
+                # print("Yb is out of bounds")
                 return -np.inf
             
             if Vb < 0 or Vb > 100:
-                print("Vb is out of bounds")
+                # print("Vb is out of bounds")
                 return -np.inf
             
             # # print("Returning 0!!")
@@ -1635,7 +1635,7 @@ class lf:
             # Sample Pb from a beta distribution with alpha=2, beta=6
             # return beta_dist.pdf(Pb, a=2, b=6)
         
-        print("Prior out of bounds")
+        # print("Prior out of bounds")
         return -np.inf
         
     def log10phi_full(self, theta, mag, z):
@@ -1828,14 +1828,14 @@ class lf:
         prior_range = self.prior_max_values - self.prior_min_values
 
 
-        initial_guess = [-0.33, 1.22, -7.25, -0.05, 0.32, -1.61, -23.35, -0.05, 0.14, -3.68, -0.16, -1.43] + [0.1, -5, 2]
-        self.min_prior_full = [-0.27, 1.18, -7.15, -0.03, 0.27, -1.56, -23.28, -0.03, 0.11, -3.62, -0.13, -1.39] + [0.0, -15, 0.0]
-        self.max_prior_full = [-0.39, 1.26, -7.35, -0.07, 0.37, -1.66, -23.42, -0.07, 0.17, -3.74, -0.19, -1.47] + [1.0, 1, 100]
-        initial_guess = np.array(initial_guess)
-        self.min_prior_full = np.array(self.min_prior_full)
-        self.max_prior_full = np.array(self.max_prior_full)
+        # initial_guess = [-0.33, 1.22, -7.25, -0.05, 0.32, -1.61, -23.35, -0.05, 0.14, -3.68, -0.16, -1.43] + [0.1, -5, 2]
+        # self.min_prior_full = [-0.27, 1.18, -7.15, -0.03, 0.27, -1.56, -23.28, -0.03, 0.11, -3.62, -0.13, -1.39] + [0.0, -15, 0.0]
+        # self.max_prior_full = [-0.39, 1.26, -7.35, -0.07, 0.37, -1.66, -23.42, -0.07, 0.17, -3.74, -0.19, -1.47] + [1.0, 1, 100]
+        # initial_guess = np.array(initial_guess)
+        # self.min_prior_full = np.array(self.min_prior_full)
+        # self.max_prior_full = np.array(self.max_prior_full)
 
-        prior_range = self.max_prior_full - self.min_prior_full
+        # prior_range = self.max_prior_full - self.min_prior_full
 
         pos = np.zeros((nwalkers, ndim))
         for i in range(ndim):
@@ -1849,10 +1849,11 @@ class lf:
 
         
         # Try to load the last state if it exists, otherwise use the initial pos
+        filename = "mcmc_full_last_state.npy"
         try:
-            last_state = np.load("mcmc_full_last_state.npy")
+            last_state = np.load(filename)
             pos = last_state
-            print("Loaded last MCMC state from mcmc_full_last_state.npy")
+            print(f"Loaded last MCMC state from {filename}")
         except Exception as e:
             print("Could not load last state, using initial pos. Reason:", e)
             pos = pos
@@ -1865,19 +1866,16 @@ class lf:
         # Run MCMC for all parameters
         sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,), a=scale)
         print("Running MCMC for all parameters...")
-        sampler.run_mcmc(pos, 200, progress=True)
-        # sampler.reset()
-        # sampler.run_mcmc(None, 200000, progress=True)
-        # sampler.reset()
-        # sampler.run_mcmc(None, 200000, progress=True)
-        # sampler.reset()
-        # sampler.run_mcmc(None, 200000, progress=True)
-        # sampler.reset()
-        # sampler.run_mcmc(None, 50000, progress=True)
+        sampler.run_mcmc(pos, 200000, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, 200000, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, 200000, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, 200000, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(None, 50000, progress=True)
         samples = sampler.get_chain(flat=True)
-
-        # Save the last state of the sampler (all walkers' last positions)
-        np.save("mcmc_full_last_state.npy", sampler.get_last_sample().coords)
 
         # To resume later, you can load with:
         # last_state = np.load("mcmc_full_last_state.npy")
@@ -1918,6 +1916,21 @@ class lf:
         plt.savefig(f'mcmc_full_chains_{scale}.png')
         
         plt.close()
+
+        # Ask user for yes/no input and save the response to a file
+        response = input("Do you want to save the results? (yes/no): ").strip().lower()
+        if response in ['yes', 'y']:
+            
+            # Ask if user wants to overwrite or save with a different name
+            save_choice = input(f"Do you want to overwrite the existing file {filename}? (yes/no): ").strip().lower()
+            if not save_choice in ['yes', 'y']:
+                num = input("Enter a number to append to the filename: ").strip()
+                filename = f"mcmc_full_last_state_{num}.npy"
+            np.save(filename, sampler.get_last_sample().coords)
+            print(f"Saved MCMC sampler state to {filename}")
+        else:
+            print("Results were not saved.")
+
 
 
         import sys; sys.exit("Testing mcmc_all_params")
