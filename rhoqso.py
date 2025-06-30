@@ -90,7 +90,7 @@ def rhoqso(loglf, theta, mlim, z, fit='individual', mbright=-35.0):
         # print("mlim = ", mlim)
         farr = f2(loglf, theta, m, z, fit='composite')
     else:
-        farr = f(loglf, theta, m, z, fit='individual')
+        farr = f2(loglf, theta, m, z, fit='individual')
     
     return np.trapezoid(farr, m) # cMpc^-3
 
@@ -159,16 +159,35 @@ def read_parameters_with_bp(filename="parameters_with_bp_new.dat"):
             params.append(vals)
     return np.array(zlist), np.array(params)
 
+# def get_rhoqso_from_file(mlim, z, mbright=-35.0, filename="parameters_with_bp_new.dat"):
+#     zlist, params = read_parameters_with_bp(filename)
+#     print(f"shape of zlist: {zlist.shape}, shape of params: {params.shape}")
+#     print(f"params: {params}")
+#     print(f"zlist: {zlist}")
+#     # Find the closest z in the file
+#     idx = np.abs(zlist - z).argmin()
+#     param = params[idx]  # [phi_star, M_star, alpha, beta]
+#     # You may need to adjust this depending on your QLF/rhoqso function signature
+#     # Example: call your QLF function with these params
+#     m = np.linspace(mbright, mlim, num=1000)
+#     # Example QLF calculation (replace with your actual function):
+#     phi_star, M_star, alpha, beta = param
+#     # Example: double power law (replace with your actual formula)
+#     phi = 10.0**phi_star / (10.0**(0.4*(alpha+1)*(m-M_star)) + 10.0**(0.4*(beta+1)*(m-M_star)))
+#     rho = np.trapezoid(phi, m)
+#     return rho, param, zlist[idx]
+
+
+
 def get_rhoqso_from_file(mlim, z, mbright=-35.0, filename="parameters_with_bp_new.dat"):
     zlist, params = read_parameters_with_bp(filename)
     print(f"shape of zlist: {zlist.shape}, shape of params: {params.shape}")
     print(f"params: {params}")
     print(f"zlist: {zlist}")
+    import sys; sys.exit()
     # Find the closest z in the file
     idx = np.abs(zlist - z).argmin()
     param = params[idx]  # [phi_star, M_star, alpha, beta]
-    # You may need to adjust this depending on your QLF/rhoqso function signature
-    # Example: call your QLF function with these params
     m = np.linspace(mbright, mlim, num=1000)
     # Example QLF calculation (replace with your actual function):
     phi_star, M_star, alpha, beta = param
@@ -871,40 +890,40 @@ def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rh
 
     # plt.text(0.7, 1.2e-4, '$M_{1450}<-18$', rotation=52, fontsize=14, ha='center')
 
-    # mlim = -21
-    # individuals_cumulative_multiple(ax, individuals, mlim, '#fa3243', '$M<-21$')
-    # global_cumulative(ax, c1, mlim, 'grey')
-    # global_cumulative(ax, c2, mlim, 'forestgreen')
-    # global_cumulative(ax, c3, mlim, 'peru')
+    mlim = -21
+    individuals_cumulative_multiple(ax, individuals, mlim, '#fa3243', '$M<-21$')
+    global_cumulative(ax, c1, mlim, 'grey')
+    global_cumulative(ax, c2, mlim, 'forestgreen')
+    global_cumulative(ax, c3, mlim, 'peru')
 
-    # plt.text(0.7, 1.2e-5, '$M_{1450}<-21$', rotation=55, fontsize=14, ha='center')
+    plt.text(0.7, 1.2e-5, '$M_{1450}<-21$', rotation=55, fontsize=14, ha='center')
         
-    # mlim = -24
-    # individuals_cumulative_multiple(ax, individuals, mlim, "#4A22EC", '$M<-24$')
-    # global_cumulative(ax, c1, mlim, 'grey')
-    # global_cumulative(ax, c2, mlim, 'forestgreen')
-    # global_cumulative(ax, c3, mlim, 'peru')
+    mlim = -24
+    individuals_cumulative_multiple(ax, individuals, mlim, "#4A22EC", '$M<-24$')
+    global_cumulative(ax, c1, mlim, 'grey')
+    global_cumulative(ax, c2, mlim, 'forestgreen')
+    global_cumulative(ax, c3, mlim, 'peru')
 
-    # plt.text(0.5, 2e-7, '$M_{1450}<-24$', rotation=72, fontsize=14, ha='center')
+    plt.text(0.5, 2e-7, '$M_{1450}<-24$', rotation=72, fontsize=14, ha='center')
 
-    # mlim = -27
-    # c = '#17becf'
-    # individuals_cumulative_multiple(ax, individuals, mlim, "#0ECAB7", '$M<-27$')
+    mlim = -27
+    c = '#17becf'
+    individuals_cumulative_multiple(ax, individuals, mlim, "#0ECAB7", '$M<-27$')
     m1f, m1 = global_cumulative(ax, c1, mlim, 'grey')
     m2f, m2 = global_cumulative(ax, c2, mlim, 'forestgreen')
     m3f, m3 = global_cumulative(ax, c3, mlim, 'peru')
 
-    # plt.text(1, 2.0e-9, '$M_{1450}<-27$', rotation=67, fontsize=14, ha='center')
+    plt.text(1, 2.0e-9, '$M_{1450}<-27$', rotation=67, fontsize=14, ha='center')
 
     handles, labels = [], []
-    handles.append((m1f, m1))
-    labels.append('Model 1')
+    # handles.append((m1f, m1))
+    # labels.append('Model 1')
 
-    handles.append((m2f, m2))
-    labels.append('Model 2')
+    # handles.append((m2f, m2))
+    # labels.append('Model 2')
 
-    handles.append((m3f, m3))
-    labels.append('Model 3')
+    # handles.append((m3f, m3))
+    # labels.append('Model 3')
 
     plt.legend(handles, labels, loc='upper left', fontsize=14, handlelength=3,
                frameon=False, framealpha=0.0, labelspacing=.1,
@@ -1257,7 +1276,7 @@ if __name__ == '__main__':
     start_time = time.time()
     print("Start time:", start_time)
 
-    # lfg1 = np.load('lfg1_old_data.npy', allow_pickle=True)
+    lfg1 = np.load('lfg1.npy', allow_pickle=True)
     # lfg2 = np.load('lfg2_old_data.npy', allow_pickle=True)
     # lfg3 = np.load('lfg3_old_data.npy', allow_pickle=True)
     # bins_lfs = np.load('bins_lfs_old_data.npy', allow_pickle=True)

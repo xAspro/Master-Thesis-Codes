@@ -23,6 +23,7 @@ from numpy.polynomial.polynomial import polyval
 from pathos.multiprocessing import ProcessingPool as Pool
 import dill
 import re
+from scipy.stats import beta as beta_dist
 
 def getselfn(selfile):
     """
@@ -1591,29 +1592,50 @@ class lf:
         # print("self.prior_max_values[:-3] = ", self.prior_max_values[:-3])
         # print("self.prior_min_values[:-3] = ", self.prior_min_values[:-3])
 
-        if (np.all(theta[:-3] < self.prior_max_values[:-3]) and
-            np.all(theta[:-3] > self.prior_min_values[:-3]) and
-            # alpha_atz6 < -4.0):
-            1):
+        # if (np.all(theta[:-3] < self.prior_max_values[:-3]) and
+        #     np.all(theta[:-3] > self.prior_min_values[:-3]) and
+        #     # alpha_atz6 < -4.0):
+        #     1):
+
+        print("theta: ", theta)
+        print("min prior: ", self.min_prior_full)
+        print("max prior: ", self.max_prior_full)
+        print("theta[:-3]>self.min_prior_full[:-3]: ", theta[:-3] > self.min_prior_full[:-3])
+        print("theta[:-3]<self.max_prior_full[:-3]: ", theta[:-3] < self.max_prior_full[:-3])
+        print("np.all(theta[:-3] > self.min_prior_full[:-3]): ", np.all(theta[:-3] > self.min_prior_full[:-3]))
+        print("np.all(theta[:-3] < self.max_prior_full[:-3]): ", np.all(theta[:-3] < self.max_prior_full[:-3]))
+        
+        import sys; sys.exit("Testing log_prior_full")
+
+        if (np.all(theta[:-3] > self.min_prior_full[:-3]) and
+            np.all(theta[:-3] < self.max_prior_full[:-3])):
 
             if np.any(alpha > beta):
+                print("Alpha is greater than Beta")
                 return -np.inf
             
             if np.any(beta > 0):
+                print("Beta is greater than 0")
                 return -np.inf
             
             if Pb < 0 or Pb > 1:
+                print("Pb is out of bounds")
                 return -np.inf
             
             if Yb < -100 or Yb > 100:
+                print("Yb is out of bounds")
                 return -np.inf
             
             if Vb < 0 or Vb > 100:
+                print("Vb is out of bounds")
                 return -np.inf
             
-            # print("Returning 0!!")
+            # # print("Returning 0!!")
             return 0.0 
+            # Sample Pb from a beta distribution with alpha=2, beta=6
+            # return beta_dist.pdf(Pb, a=2, b=6)
         
+        print("Prior out of bounds")
         return -np.inf
         
     def log10phi_full(self, theta, mag, z):
@@ -1802,22 +1824,36 @@ class lf:
         initial_guess[splitlocs[2]:splitlocs[3]] = guess[splitlocs[2]:splitlocs[3]] # beta
         initial_guess[-3:] = guess[-3:]  # Pb, Yb, Vb
 
+
+        prior_range = self.prior_max_values - self.prior_min_values
+
+
+        initial_guess = [-0.33, 1.22, -7.25, -0.05, 0.32, -1.61, -23.35, -0.05, 0.14, -3.68, -0.16, -1.43] + [0.1, -5, 2]
+        self.min_prior_full = [-0.27, 1.18, -7.15, -0.03, 0.27, -1.56, -23.28, -0.03, 0.11, -3.62, -0.13, -1.39] + [0.0, -15, 0.0]
+        self.max_prior_full = [-0.39, 1.26, -7.35, -0.07, 0.37, -1.66, -23.42, -0.07, 0.17, -3.74, -0.19, -1.47] + [1.0, 1, 100]
+        initial_guess = np.array(initial_guess)
+        self.min_prior_full = np.array(self.min_prior_full)
+        self.max_prior_full = np.array(self.max_prior_full)
+
+        prior_range = self.max_prior_full - self.min_prior_full
+
         pos = np.zeros((nwalkers, ndim))
         for i in range(ndim):
-            pos[:, i] = initial_guess[i] - 0.0001 * np.random.uniform(0, 1, nwalkers)
+            # pos[:, i] = initial_guess[i] - 0.000001 * np.random.uniform(0, 1, nwalkers)
+            pos[:, i] = initial_guess[i] + 0.0000001 * prior_range[i] * np.random.uniform(-1, 1, nwalkers)
 
         # prior_range = self.prior_max_values - self.prior_min_values
         # pos = np.zeros((nwalkers, ndim))
         # for i in range(ndim):
         #     pos[:, i] = np.random.uniform(self.prior_min_values[i] + prior_range[i]/4, self.prior_max_values[i] - prior_range[i]/4, nwalkers)
 
-        scale = 2.5
+        scale = 2
 
 
         # Run MCMC for all parameters
         sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_prob_full, args=(data_full,), a=scale)
         print("Running MCMC for all parameters...")
-        sampler.run_mcmc(pos, 20000, progress=True)
+        sampler.run_mcmc(pos, 200, progress=True)
         # sampler.reset()
         # sampler.run_mcmc(None, 200000, progress=True)
         # sampler.reset()
@@ -1828,6 +1864,15 @@ class lf:
         # sampler.run_mcmc(None, 50000, progress=True)
         samples = sampler.get_chain(flat=True)
 
+
+        # Print autocorrelation time and acceptance rate
+        try:
+            tau = sampler.get_autocorr_time()
+            print("Autocorrelation time for each parameter:", tau)
+        except Exception as e:
+            print("Could not compute autocorrelation time:", e)
+        print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
+
         # Plot corner plot (same format as previous)
         labels = [f'param_{i}' for i in range(ndim - 3)] + ['Pb', 'Yb', 'Vb']
         corner.corner(samples, labels=labels, quantiles=[0.16, 0.5, 0.84], bins=20, 
@@ -1835,7 +1880,7 @@ class lf:
                       smooth=True, fill_contours=True, plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
         # plt.suptitle('Full MCMC fit', fontsize=14)
-        plt.suptitle(f"scale = {scale}", fontsize=14)
+        # plt.suptitle(f"scale = {scale}", fontsize=14)
         plt.savefig(f'mcmc_full_corner_{scale}.png')
         
         plt.close()
@@ -1850,20 +1895,13 @@ class lf:
             ax.set_ylabel(labels[i])
         axes[-1].set_xlabel('step')
         plt.tight_layout()
-        plt.suptitle(f"scale = {scale}", fontsize=14)
+        # plt.suptitle(f"scale = {scale}", fontsize=14)
         plt.savefig(f'mcmc_full_chains_{scale}.png')
         
         plt.close()
 
-        # Print autocorrelation time and acceptance rate
-        try:
-            tau = sampler.get_autocorr_time()
-            print("Autocorrelation time for each parameter:", tau)
-        except Exception as e:
-            print("Could not compute autocorrelation time:", e)
-        print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
 
-        # import sys; sys.exit("Testing mcmc_all_params")
+        import sys; sys.exit("Testing mcmc_all_params")
 
 
 
@@ -2039,7 +2077,11 @@ class lf:
 
         # guess = np.array(guess).flatten()
         # print("\n\nguess:", guess)
-        guess = np.concatenate([params[i][0] for i in range(len(params))])
+        # guess = np.concatenate([params[i][0] for i in range(len(params))])
+
+        guess = [0.04689, -0.17632, 0.23130, -0.00477, -0.04919, -0.49998, -4.94620, -0.02253, 0.07626, -1.43122, 0.23785, -1.44757]
+
+
         print("\n\nconcatenated guess:", guess)
         database = self.read_datapoints_with_bp("datapoints_with_bp.dat")
 
@@ -2153,7 +2195,7 @@ class lf:
             #     break
             length = end - start
             # Alternating signs: -0.1, +0.1, -0.1, ...
-            vals = np.array([50 * 0.1 ** (length - i) for i in range(length)])
+            vals = np.array([80 * 0.1 ** (length - i) for i in range(length)])
             max_full_x[start:end] = vals
             start = end 
 
@@ -2166,15 +2208,16 @@ class lf:
         # self.max_prior_full = np.where(half > double, half, double)
         # assert np.all(self.min_prior_full < self.max_prior_full)
 
-        # self.min_prior_full = np.concatenate([np.array(-1 * max_full_x), np.array([0, -100, 0])])
-        # self.max_prior_full = np.concatenate([np.array(max_full_x), np.array([1, 100, 100])])
+        self.min_prior_full = np.concatenate([np.array(-1 * max_full_x), np.array([0, -100, 0])])
+        self.max_prior_full = np.concatenate([np.array(max_full_x), np.array([1, 100, 100])])
 
+        # a = 2
 
-        self.min_prior_full = np.concatenate([np.minimum(guess[:-3] / 2, guess[:-3] * 2), np.array([0, -100, 0])])
-        self.max_prior_full = np.concatenate([np.maximum(guess[:-3] / 2, guess[:-3] * 2), np.array([1, 100, 100])])
-        print("guess:", guess)
-        print("min_prior_full:", self.min_prior_full)
-        print("max_prior_full:", self.max_prior_full)
+        # self.min_prior_full = np.concatenate([np.minimum(guess[:-3] / a, guess[:-3] * a), np.array([0, -100, 0])])
+        # self.max_prior_full = np.concatenate([np.maximum(guess[:-3] / a, guess[:-3] * a), np.array([1, 100, 100])])
+        # print("guess:", guess)
+        # print("min_prior_full:", self.min_prior_full)
+        # print("max_prior_full:", self.max_prior_full)
         # import sys; sys.exit("Testing call_mcmc")
 
         # def shift_prior(index, dir):
@@ -2231,7 +2274,7 @@ class lf:
         # import sys; sys.exit("Testing call_mcmc")
 
         guess = np.zeros_like(self.prior_max_values)
-        guess[-3:] = np.array([0.1, -5, 2])  # Pb, Yb, Vb
+        guess[-3:] = np.array([0.6, -7.14, 1.4])  # Pb, Yb, Vb
 
         print("Guess for MCMC:", guess)
         print("self.prior_min_values:", self.prior_min_values)
