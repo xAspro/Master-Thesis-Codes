@@ -1,8 +1,3 @@
-# Checked once. No implementation of this code in here. No implementation of this code in project.
-# Have multiple savefigs. need to just call the functions.
-# All rhoqso files are for fig 7 and more.
-print("In rhoqso.py")
-
 import numpy as np 
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -15,8 +10,6 @@ import matplotlib.pyplot as plt
 import sounddevice as sd
 import time
 from composite import lf
-import warnings
-warnings.filterwarnings("ignore", message="findfont: Generic family")
 
 output_data_file = 'rhoqso_output_data_2.txt'
 
@@ -46,8 +39,8 @@ def f(loglf, theta, m, z, fit='individual'):
     return 10.0**loglf(theta, m)
 
 def f2(loglf, theta, m, z, fit='individual'):
-    global cnt, last_fit
-    cnt += 1
+    # global cnt, last_fit
+    # cnt += 1
     if fit == 'composite':
         # print('\ntheta:', theta)
         # print('m:', m)
@@ -85,9 +78,10 @@ def f2(loglf, theta, m, z, fit='individual'):
 
 def rhoqso(loglf, theta, mlim, z, fit='individual', mbright=-35.0):
 
-    m = np.linspace(mbright, mlim, num=1000)
+    m = np.linspace(mbright, mlim, num=10)
     if fit == 'composite':
         # print("mlim = ", mlim)
+        # print("m = ", m)
         farr = f2(loglf, theta, m, z, fit='composite')
     else:
         farr = f2(loglf, theta, m, z, fit='individual')
@@ -179,40 +173,41 @@ def read_parameters_with_bp(filename="parameters_with_bp_new.dat"):
 
 
 
-def get_rhoqso_from_file(mlim, z, mbright=-35.0, filename="parameters_with_bp_new.dat"):
-    zlist, params = read_parameters_with_bp(filename)
-    print(f"shape of zlist: {zlist.shape}, shape of params: {params.shape}")
-    print(f"params: {params}")
-    print(f"zlist: {zlist}")
-    import sys; sys.exit()
-    # Find the closest z in the file
-    idx = np.abs(zlist - z).argmin()
-    param = params[idx]  # [phi_star, M_star, alpha, beta]
-    m = np.linspace(mbright, mlim, num=1000)
-    # Example QLF calculation (replace with your actual function):
-    phi_star, M_star, alpha, beta = param
-    # Example: double power law (replace with your actual formula)
-    phi = 10.0**phi_star / (10.0**(0.4*(alpha+1)*(m-M_star)) + 10.0**(0.4*(beta+1)*(m-M_star)))
-    rho = np.trapezoid(phi, m)
-    return rho, param, zlist[idx]
+# def get_rhoqso_from_file(mlim, z, mbright=-35.0, filename="parameters_with_bp_new.dat"):
+#     zlist, params = read_parameters_with_bp(filename)
+#     print(f"shape of zlist: {zlist.shape}, shape of params: {params.shape}")
+#     print(f"params: {params}")
+#     print(f"zlist: {zlist}")
+#     import sys; sys.exit()
+#     # Find the closest z in the file
+#     idx = np.abs(zlist - z).argmin()
+#     param = params[idx]  # [phi_star, M_star, alpha, beta]
+#     m = np.linspace(mbright, mlim, num=1000)
+#     # Example QLF calculation (replace with your actual function):
+#     phi_star, M_star, alpha, beta = param
+#     # Example: double power law (replace with your actual formula)
+#     phi = 10.0**phi_star / (10.0**(0.4*(alpha+1)*(m-M_star)) + 10.0**(0.4*(beta+1)*(m-M_star)))
+#     rho = np.trapezoid(phi, m)
+#     return rho, param, zlist[idx]
 
 
-def get_rhoqso(lfi, mlim, z, fit='individual', mbright=-35.0):
-    # lfi is just a placeholder, not used here
-    # Use get_rhoqso_from_file to get rhoqso and parameter uncertainties
-    rho, param, z_actual = get_rhoqso_from_file(mlim, z, mbright=mbright)
-    # Set dummy uncertainties (0) since we don't have samples
-    u = rho
-    l = rho
-    c = rho
-    # Attach to lfi for compatibility with rest of code
-    lfi.rhoqso = [u, l, c]
+# def get_rhoqso(lfi, mlim, z, fit='individual', mbright=-35.0):
+#     # lfi is just a placeholder, not used here
+#     # Use get_rhoqso_from_file to get rhoqso and parameter uncertainties
+#     rho, param, z_actual = get_rhoqso_from_file(mlim, z, mbright=mbright)
+#     # Set dummy uncertainties (0) since we don't have samples
+#     u = rho
+#     l = rho
+#     c = rho
+#     # Attach to lfi for compatibility with rest of code
+#     lfi.rhoqso = [u, l, c]
 
-    return
+#     return
 
 def get_rhoqso2(lfi, mlim, z, fit='individual', mbright=-35.0):
+    # Wait!!! IS THIS SUPPOSED TO BE c= MEAN or MEDIAN? CHECK THE LOGIC ONCE AGAIN PROPERLY!!!
 
-    rindices = np.random.randint(len(lfi.samples), size=300)
+    rindices = np.random.randint(len(lfi.samples), size=100)
     n = np.array([rhoqso(lfi.log10phi, theta, mlim, z, mbright=mbright) 
                   for theta
                   in lfi.samples[rindices]])
@@ -379,7 +374,7 @@ def get_rhoqso2(lfi, mlim, z, fit='individual', mbright=-35.0):
 #     return
 
 def global_cumulative(ax, theta, mlim, color, **kwargs):
-    # In this composite just is just a set of n parameter values
+    # In this composite is just a set of n parameter values
     nzs = 5000
     z = np.linspace(0, 30, nzs)
     
@@ -402,7 +397,7 @@ def global_cumulative(ax, theta, mlim, color, **kwargs):
 
 def global_cumulative2(ax, composite, mlim, color, **kwargs):
 
-    nzs = 500
+    nzs = 5
     z = np.linspace(0, 7, nzs)
     nsample = 300
     rsample = composite.samples[np.random.randint(len(composite.samples), size=nsample)]
@@ -866,7 +861,6 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
 def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rhoqso_withGlobal_multiple.pdf'):
     # bins.py data is individual
     # c1, c2, c3 are composite models
-    # I will use jst c1 and c2
 
     fig = plt.figure(figsize=(7, 11), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
@@ -876,42 +870,39 @@ def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rh
 
     ax.set_ylabel(r'$\rho(z, M_{1450} < M_\mathrm{lim})$ [cMpc$^{-3}$]')
     ax.set_xlabel('$z$')
-    ax.set_xlim(0.,8)
+    ax.set_xlim(0.,15)
 
     ax.set_yscale('log')
     # ax.set_ylim(1.0e-11, 1000000000.0)
     ax.set_ylim(1.0e-10, 1.0e3)
 
-    # mlim = -18
-    # individuals_cumulative_multiple(ax, individuals, mlim, 'k', '$M<-18$')
-    # global_cumulative(ax, c1, mlim, 'grey', label='Model 1')
-    # global_cumulative(ax, c2, mlim, 'forestgreen', label='Model 2')
-    # global_cumulative(ax, c3, mlim, 'peru', label='Model 3')
-
+    mlim = -18
+    individuals_cumulative_multiple(ax, individuals, mlim, 'k', '$M<-18$')
+    global_cumulative(ax, c1, mlim, 'forestgreen', label='Model 1')
     # plt.text(0.7, 1.2e-4, '$M_{1450}<-18$', rotation=52, fontsize=14, ha='center')
 
     mlim = -21
     individuals_cumulative_multiple(ax, individuals, mlim, '#fa3243', '$M<-21$')
-    global_cumulative(ax, c1, mlim, 'grey')
-    global_cumulative(ax, c2, mlim, 'forestgreen')
-    global_cumulative(ax, c3, mlim, 'peru')
+    global_cumulative(ax, c1, mlim, 'forestgreen')
+    # global_cumulative(ax, c2, mlim, 'forestgreen')
+    # global_cumulative(ax, c3, mlim, 'peru')
 
     plt.text(0.7, 1.2e-5, '$M_{1450}<-21$', rotation=55, fontsize=14, ha='center')
         
     mlim = -24
     individuals_cumulative_multiple(ax, individuals, mlim, "#4A22EC", '$M<-24$')
-    global_cumulative(ax, c1, mlim, 'grey')
-    global_cumulative(ax, c2, mlim, 'forestgreen')
-    global_cumulative(ax, c3, mlim, 'peru')
+    global_cumulative(ax, c1, mlim, 'forestgreen')
+    # global_cumulative(ax, c2, mlim, 'forestgreen')
+    # global_cumulative(ax, c3, mlim, 'peru')
 
     plt.text(0.5, 2e-7, '$M_{1450}<-24$', rotation=72, fontsize=14, ha='center')
 
     mlim = -27
     c = '#17becf'
     individuals_cumulative_multiple(ax, individuals, mlim, "#0ECAB7", '$M<-27$')
-    m1f, m1 = global_cumulative(ax, c1, mlim, 'grey')
-    m2f, m2 = global_cumulative(ax, c2, mlim, 'forestgreen')
-    m3f, m3 = global_cumulative(ax, c3, mlim, 'peru')
+    m1f, m1 = global_cumulative(ax, c1, mlim, 'forestgreen')
+    # m2f, m2 = global_cumulative(ax, c2, mlim, 'forestgreen')
+    # m3f, m3 = global_cumulative(ax, c3, mlim, 'peru')
 
     plt.text(1, 2.0e-9, '$M_{1450}<-27$', rotation=67, fontsize=14, ha='center')
 
@@ -1300,7 +1291,9 @@ if __name__ == '__main__':
 #   2.10997687e-02, -9.30498997e-01,  3.86334707e+00, -5.69653797e-02,
 #   2.80685425e-01, -1.70526140e+00,  3.20228984e-01, -1.71859028e+00,
 #   5.52822097e-01, -7.11719319e+00,  1.24162139e+00] #3
+
     lfg1 = [0.415052863, -2.2498412, 4.25513894, -0.00290936334, 0.0918359568, -1.3984722, 4.82932642, -0.0479319494, 0.231025046, -1.6554323, 0.266869863, -1.7333240715000002, 0.572862137, -7.10983973, 1.40129912] #4
+
     #######lfg1 = [-747.7812325200246, -8214.127987852373, -10186.337506173222, 2.4418274557634536, -153.78666448207431, 2533.8279357963534, -3058.5669186500554, -163.98379559947395, 354.26476308721436, -3720.6588539030736, -446.2531491743361, -219.40267976443226, 0.0, -100.0, 0.0]
     # lfg1 = [-0.33, 1.22, -7.25, -0.05, 0.32, -1.61, -23.35, -0.05, 0.14, -3.68, -0.16, -1.43]
     # lfg1 = [-0.32800534, 1.21827609, -7.25317654, -0.0453531 , 0.31980522, -1.61333716 -23.35463542, -0.05491733, 0.13915991, -3.68318441, -0.16158751, -1.43097968]
@@ -1316,5 +1309,5 @@ if __name__ == '__main__':
     print("End time:", end_time)
     print("Duration:", end_time - start_time)
 
-    THE ERROR MUST BE BECAUSE THE CODE WAS FOR SINGLE QUASAR DATA. NOW I AM USING THE BINNED DATA. HENCE EACH BIN IS 
-    POSSIBLY GETTING COUNTED MULTIPLE NUMBER OF TIMES AND HENCE THE VALUE IS VERY HIGH!!!
+    # THE ERROR MUST BE BECAUSE THE CODE WAS FOR SINGLE QUASAR DATA. NOW I AM USING THE BINNED DATA. HENCE EACH BIN IS 
+    # POSSIBLY GETTING COUNTED MULTIPLE NUMBER OF TIMES AND HENCE THE VALUE IS VERY HIGH!!!
