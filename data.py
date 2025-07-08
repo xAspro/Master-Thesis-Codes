@@ -176,7 +176,7 @@ def plot_data(data, plotname):
     ax.set_ylabel(r'Number of AGN')
 
     plt.ylim(7e-1, 1.0e5)
-    plt.xlim(0., 15.)
+    plt.xlim(0., 8.)
 
     plt.legend(loc='upper right', fontsize=12, handlelength=3,
                frameon=False, framealpha=0.0, labelspacing=.1,
