@@ -1183,19 +1183,16 @@ class lf:
         elif label == 'M_star':
             # self.rnge = 6.5
             # self.rnge = 4
-            self.min_rnge = np.array([0.5, 2, 6, 8])
-            self.max_rnge = np.array([0.8, 1.5, 4.5, 3])
+            self.min_rnge = np.array([0.3, 2, 2, 5])
+            self.max_rnge = np.array([0.3, 0.5, 4.5, 0.5])
         elif label == 'alpha':
             # self.rnge = 0.35
             self.rnge = np.array([0.15, 0.75, 1])
         elif label == 'beta':
             self.rnge = 0.25
 
-        print(f"coeff = {coeff}, min_rnge = {self.min_rnge}, max_rnge = {self.max_rnge}")
-        print(f"coeff - min_rnge = {coeff - self.min_rnge}, coeff + max_rnge = {coeff + self.max_rnge}")
-        # import sys; sys.exit(0)
-        # -2, -2, -4, -26
-        # 2 , 4, 2, -20
+        # print(f"coeff = {coeff}, min_rnge = {self.min_rnge}, max_rnge = {self.max_rnge}")
+        # print(f"coeff - min_rnge = {coeff - self.min_rnge}, coeff + max_rnge = {coeff + self.max_rnge}")
 
         pos_all = []
         for _ in range(n_visualize):
@@ -1601,7 +1598,7 @@ class lf:
         for i in range(len(data)):
             # if i < 2:
             #     continue
-            if i != 1:
+            if i != 3:
                 continue
             
             d = (zmean, data[i][0])
