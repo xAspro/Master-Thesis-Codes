@@ -28,6 +28,7 @@ from pathos.multiprocessing import ProcessingPool as Pool
 import dill
 import re
 from scipy.stats import beta as beta_dist
+import math
 
 def getselfn(selfile):
     """
@@ -1057,9 +1058,20 @@ class lf:
         if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
             return -np.inf
         
-        rnge = self.rnge
-        if np.any((arr < self.coeff - rnge) | (arr > self.coeff + rnge)):
-            return -np.inf
+
+        if self.min_rnge is None or self.max_rnge is None:
+            rnge = self.rnge
+            if np.any((arr < self.coeff - rnge) | (arr > self.coeff + rnge)):
+                return -np.inf
+        else:
+            if np.any((arr < self.coeff - self.min_rnge) | (arr > self.coeff + self.max_rnge)):
+                # print("\n\nself.min_rnge = ", self.min_rnge)
+                # print("self.max_rnge = ", self.max_rnge)
+                # print("self.coeff = ", self.coeff)
+                # print("self.coeff - self.min_rnge = ", self.coeff - self.min_rnge)
+                # print("self.coeff + self.max_rnge = ", self.coeff + self.max_rnge)
+                # print("arr = ", arr)
+                return -np.inf
         
         # print("Prior tag =", self.prior_tag)
         if self.prior_tag == 1:
@@ -1142,9 +1154,12 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        nburns = 20000
-        nprod = 60000
+        nburns = 2000
+        nprod = 6000
         # nprod = nburns
+
+        # nburns = 1
+        # nprod = 200000
 
         # walkers = 2 * degree + 8
         walkers = 50
@@ -1156,35 +1171,57 @@ class lf:
 
 
         self.coeff = coeff
+        self.min_rnge = None
+        self.max_rnge = None
 
         if label == 'logphi':
-            self.rnge = 2
+            # self.rnge = 2
+            # self.rnge = np.array([1.5, 1, 1.5])
+            self.min_rnge = np.array([0.25, 0.25, 1.75])
+            self.max_rnge = np.array([0.25,1.25, -0.2])
+
         elif label == 'M_star':
-            self.rnge = 6.5
+            # self.rnge = 6.5
+            # self.rnge = 4
+            self.min_rnge = np.array([0.5, 2, 6, 8])
+            self.max_rnge = np.array([0.8, 1.5, 4.5, 3])
         elif label == 'alpha':
-            self.rnge = 1
+            # self.rnge = 0.35
+            self.rnge = np.array([0.15, 0.75, 1])
         elif label == 'beta':
-            self.rnge = 2
+            self.rnge = 0.25
+
+        print(f"coeff = {coeff}, min_rnge = {self.min_rnge}, max_rnge = {self.max_rnge}")
+        print(f"coeff - min_rnge = {coeff - self.min_rnge}, coeff + max_rnge = {coeff + self.max_rnge}")
+        # import sys; sys.exit(0)
+        # -2, -2, -4, -26
+        # 2 , 4, 2, -20
 
         pos_all = []
         for _ in range(n_visualize):
             walker_pos = np.empty(ndim)
-            walker_pos[:degree+1] = coeff + np.random.uniform(-self.rnge, self.rnge, degree+1)
+            if self.min_rnge is not None and self.max_rnge is not None:
+                walker_pos[:degree+1] = coeff + np.random.uniform(-self.min_rnge, self.max_rnge, degree+1)
+            else:
+                walker_pos[:degree+1] = coeff + np.random.uniform(-self.rnge, self.rnge, degree+1)
             walker_pos[degree+1:] = self.find_Pb_Yb_Vb(y)
             pos_all.append(walker_pos)
         pos_all = np.array(pos_all)
 
 
+        labels = [f'$x^{degree - i}$' for i in range(degree + 1)] + ['Pb', 'Yb', 'Vb']
+
+
         figure = corner.corner(
             pos_all,  # All coefficients: polynomial plus nuisance parameters
-            labels=[f"param_{i}" for i in range(degree+1)] + ['Pb', 'Yb', 'Vb'],
+            labels=labels,
             show_titles=True,
             title_fmt=".2f",
             title_kwargs={"fontsize": 12}
         )
         # plt.suptitle("Initial Walker Distribution (Poly Coeffs)", fontsize=14)
         figure.tight_layout()
-        # figure.savefig(f'initial_pos_cornerstyle_{label}.png')
+        figure.savefig(f'initial_pos_cornerstyle_{label}.png')
         plt.close()
 
         pos = pos_all[:walkers]
@@ -1202,8 +1239,6 @@ class lf:
 
         samples = sampler.get_chain(flat=True)
         print("MCMC sampling completed.")
-
-        labels = [f'$x^{degree - i}$' for i in range(degree + 1)] + ['Pb', 'Yb', 'Vb']
 
         # Compute bounds that cover a central q percentile of the samples
         def central_bounds(samples, q=0.95):
@@ -1228,7 +1263,7 @@ class lf:
             return np.percentile(samples, [lower, upper], axis=0).T
 
         # Example usage: print 95% credible intervals for each parameter
-        bounds = central_bounds(samples, q=0.90)
+        bounds = central_bounds(samples, q=1)
         for i, (lo, hi) in enumerate(bounds):
             print(f"Param {i}: {lo:.4f} to {hi:.4f} (central 95%)")
 
@@ -1261,7 +1296,7 @@ class lf:
             ax = axes[i] if ndim > 1 else axes
             for j in range(walkers):
                 ax.plot(sampler.chain[j, :, i], color='k', alpha=0.1)
-            ax.set_ylabel(f'param_{i}')
+            ax.set_ylabel(labels[i])
         axes[-1].set_xlabel('step')
         plt.tight_layout()
         plt.savefig(f'mcmc-{label}_chains_{self.prior_tag}.png')
@@ -1275,25 +1310,61 @@ class lf:
             print("Could not compute autocorrelation time:", e)
         print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
 
-        # taus = []
-        # x_tau = []
-        # for i in range(nprod // 20, nprod, nprod // 20):
-        #     tau = emcee.autocorr.integrated_time(sampler.get_chain()[:i], tol=0)
-        #     taus.append(tau)
-        #     x_tau.append(i)
+        taus = []
+        x_tau = []
+        for i in range(nprod // 20, nprod, nprod // 20):
+            tau = emcee.autocorr.integrated_time(sampler.get_chain()[:i], tol=0)
+            taus.append(tau)
+            x_tau.append(i)
 
-        # # Plot autocorrelation time as a function of steps
-        # taus = np.array(taus)
-        # plt.figure(figsize=(8, 4))
-        # for i in range(ndim):
-        #     plt.plot(x_tau, taus[:, i], label=f'param_{i}')
-        # plt.xlabel('Number of steps')
-        # plt.ylabel('Autocorrelation time')
-        # plt.title('Autocorrelation time vs steps')
-        # plt.legend()
-        # plt.tight_layout()
-        # plt.savefig(f'mcmc-{label}_autocorr_{self.prior_tag}.png')
-        # plt.close()
+        # Plot autocorrelation time as a function of steps
+        taus = np.array(taus)
+        plt.figure(figsize=(8, 4))
+        for i in range(ndim):
+            plt.plot(x_tau, taus[:, i], label=f'param_{i}')
+        plt.xlabel('Number of steps')
+        plt.ylabel('Autocorrelation time')
+        plt.title('Autocorrelation time vs steps')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f'mcmc-{label}_autocorr_{self.prior_tag}.png')
+        plt.close()
+
+        # Compute autocorrelation time for each parameter
+        try:
+            tau = sampler.get_autocorr_time()
+            print("Autocorrelation time for each parameter:", tau)
+        except Exception as e:
+            print("Could not compute autocorrelation time:", e)
+            tau = np.ones(ndim) * 100  # Fallback: use 100 if tau cannot be computed
+
+        max_tau = np.max(tau)
+        thin_step = int(math.ceil(max_tau / 100.0) * 100)
+        print(f"Thinning step chosen: {thin_step}")
+
+        thinned_sample = sampler.get_chain(flat=True, thin=thin_step)
+        # np.save(f"thinned_{label}_sample.npy", thinned_sample)
+
+        # Plot thinned corner plot
+        corner.corner(thinned_sample, labels=labels, bins=20,
+                      quantiles=[0.16, 0.5, 0.84],
+                      levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
+                      smooth=True, fill_contours=True, plot_datapoints=False,
+                      show_titles=True, title_kwargs={"fontsize": 12})
+        plt.savefig(f'thinned_mcmc-{label}_corner.png')
+        plt.close()
+
+        # Plot thinned chains
+        fig, axes = plt.subplots(ndim, 1, figsize=(10, 2 * ndim), sharex=True)
+        for i in range(ndim):
+            ax = axes[i] if ndim > 1 else axes
+            for j in range(walkers):
+                ax.plot(sampler.chain[j, ::thin_step, i], color='k', alpha=0.1)
+            ax.set_ylabel(labels[i])
+        axes[-1].set_xlabel('Steps after thinning')
+        plt.tight_layout()
+        plt.savefig(f'thinned_mcmc-{label}_chains.png')
+        plt.close()
 
         # # Print MAP (maximum a posteriori) estimate
         # # Compute the log-probability for each sample and find the MAP estimate
@@ -1530,8 +1601,8 @@ class lf:
         for i in range(len(data)):
             # if i < 2:
             #     continue
-            # if i != 2:
-            #     continue
+            if i != 1:
+                continue
             
             d = (zmean, data[i][0])
             err = ((data[i][2] - data[i][1])/2.0)
