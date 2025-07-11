@@ -59,7 +59,8 @@ def getParam(individuals, param, which='old', dtype='good'):
 
     else:
 
-        zmean, zl, zu, u, l, c = np.loadtxt('bins.dat', usecols=(0,1,2,3+param*3,4+param*3,5+param*3), unpack=True)
+        # zmean, zl, zu, u, l, c = np.loadtxt('bins.dat', usecols=(0,1,2,3+param*3,4+param*3,5+param*3), unpack=True)
+        zmean, zl, zu, u, l, c = np.loadtxt('bins_K19.dat', usecols=(0,1,2,3+param*3,4+param*3,5+param*3), unpack=True)
 
     m = np.ones_like(zmean, dtype=bool)
     m[reject] = False
@@ -210,7 +211,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False):
                 xerr=np.vstack((left, right)), 
                 yerr=np.vstack((downerr, uperr)),
                 fmt='None', zorder=6)
-    ax.scatter(zmean, c, color=colors[1], edgecolor='None', zorder=6, s=40)
+    ax.scatter(zmean, c, color=colors[1], edgecolor='None', zorder=6, s=40, label="Kulkarni et al. 2019\n(included data)")
 
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt',
     #                                     usecols=(0,4,5,6), unpack=True)
@@ -245,7 +246,7 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False):
                 fmt='None', zorder=6)
 
     if show_bad_data_differently: 
-        ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[1], zorder=6, s=35)
+        ax.scatter(zmean, c, color='#ffffff', edgecolor=colors[1], zorder=6, label="Kulkarni et al. 2019\n(excluded data)", s=35)
     else:
         ax.scatter(zmean, c, color=colors[1], edgecolor='None', zorder=6, s=40)
 
@@ -274,6 +275,10 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False):
     ax.set_ylabel(r'$M_*$')
     ax.yaxis.labelpad = 12
     ax.set_xticklabels('')
+    ax.legend(loc='upper right', fontsize=6, handlelength=3,
+              frameon=False, framealpha=0.0, labelspacing=.1,
+              handletextpad=0.4, borderpad=0.2, markerscale=.5)
+
 
     return
 

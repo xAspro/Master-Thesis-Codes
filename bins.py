@@ -170,7 +170,7 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
 # zls = [(2.2, 2.4)]
 
 
-if True:
+if False:
     params = [[-0.3261, 1.2184, -7.2610],
               [-0.0439, 0.3283, -1.6293, -23.3691],
               [-0.0552, 0.1424, -3.6888],
@@ -192,12 +192,14 @@ if True:
 
 
 
-filename = 'bins_ultra_new_2.dat'
+# filename = 'bins_ultra_new_2.dat'
+filename = 'bins_check.dat'
 
 def main(cores):
     print("In main of bins.py")
 
     lfs = [] 
+    cnt = 0
 
     # Notes down the parameters for it to be later used in summary files.
     WRITE_PARAMS2 = True
@@ -214,82 +216,88 @@ def main(cores):
         print( 'sids (samples): '+'  '.join(['{:2d}'.format(int(x)) for x in np.unique(lfi.sid)]))
         print( 'sids (maps): '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps]))
         print( ' ')
+
+        cnt += lfi.z.size
         
-        g = (np.log10(1.e-6), -25.0, -3.0, -1.5)      # Initial guess for log10(phi_star), M_star, alpha, beta
-        b = lfi.bestfit(g, method=method)
+    #     g = (np.log10(1.e-6), -25.0, -3.0, -1.5)      # Initial guess for log10(phi_star), M_star, alpha, beta
+    #     b = lfi.bestfit(g, method=method)
 
-        print("\n\n\n\n\n\n\nb:\n", b)
-        print("\n\n\n\n\n\n")
+    #     print("\n\n\n\n\n\n\nb:\n", b)
+    #     print("\n\n\n\n\n\n")
 
-        zmin, zmax = zl 
+    #     zmin, zmax = zl 
         
-        if zmin < 0.3:
-            lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -10.0])
-        else:
-            lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -4.0])
+    #     if zmin < 0.3:
+    #         lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -10.0])
+    #     else:
+    #         lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -4.0])
 
-        if zmin > 5.4:
-            # Special priors for z = 6 data.
-            lfi.prior_max_values = np.array([-4.0, -20.0, -4.0, 0.0])
+    #     if zmin > 5.4:
+    #         # Special priors for z = 6 data.
+    #         lfi.prior_max_values = np.array([-4.0, -20.0, -4.0, 0.0])
 
-            # Change result of optimize.minimize so that emcee works.
-            lfi.bf.x[2] = -5.0
-        elif zmin < 0.3:
-            lfi.prior_max_values = np.array([-1.0, -15.0, 0.0, 15.0])
-        else:
-            lfi.prior_max_values = np.array([-4.0, -20.0, 0.0, 0.0])
+    #         # Change result of optimize.minimize so that emcee works.
+    #         lfi.bf.x[2] = -5.0
+    #     elif zmin < 0.3:
+    #         lfi.prior_max_values = np.array([-1.0, -15.0, 0.0, 15.0])
+    #     else:
+    #         lfi.prior_max_values = np.array([-4.0, -20.0, 0.0, 0.0])
 
-        assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
+    #     assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
         
-        lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
-        lfi.get_percentiles()
-        drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
+    #     lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
+    #     lfi.get_percentiles()
+    #     drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
 
 
 
-        # lfi.run_mcmc(ncores=int(cores))
-        # lfi.get_percentiles()
-        # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=False)
-        # print("Drawn the LF for this bin.")
+    #     # lfi.run_mcmc(ncores=int(cores))
+    #     # lfi.get_percentiles()
+    #     # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=False)
+    #     # print("Drawn the LF for this bin.")
 
 
         
-        # FOR SUMMARY (Fig 4)
-        if WRITE_PARAMS2: 
-            with open(filename, 'a') as f:
-                output = ([lfi.z.mean()] + list(zl) + lfi.phi_star
-                        + lfi.M_star + lfi.alpha + lfi.beta)
-                f.write(('{:.3f}  '*len(output)).format(*output))
-                f.write('\n')
+    #     # FOR SUMMARY (Fig 4)
+    #     if WRITE_PARAMS2: 
+    #         with open(filename, 'a') as f:
+    #             output = ([lfi.z.mean()] + list(zl) + lfi.phi_star
+    #                     + lfi.M_star + lfi.alpha + lfi.beta)
+    #             f.write(('{:.3f}  '*len(output)).format(*output))
+    #             f.write('\n')
         
-        lfs.append(lfi)
+    #     lfs.append(lfi)
 
-        # mosaic.draw(lfs)
-
-
-        # lfi.clear_samples()
-        lfi.sample_samples()
-
-    end_time = time.time()
+    #     # mosaic.draw(lfs)
 
 
+    #     # lfi.clear_samples()
+    #     lfi.sample_samples()
 
-    print()
-    print()
-    elapsed_time = end_time - start_time
-    print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
-
-    print("\n\n\nlfs:", lfs)
+    # end_time = time.time()
 
 
-    # np.save('bins_lfs_1.npy', lfs)
-    np.save('bins_lfs_ultra_new_2.npy', lfs)
 
-    print(type(lfs))
-    print(dir(lfs))
+    # print()
+    # print()
+    # elapsed_time = end_time - start_time
+    # print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
+
+    # print("\n\n\nlfs:", lfs)
+
+
+    # # np.save('bins_lfs_1.npy', lfs)
+    # np.save('bins_lfs_ultra_new_2.npy', lfs)
+
+    # print(type(lfs))
+    # print(dir(lfs))
+    print("Total number of quasars in all bins:", cnt)
 
 
 if __name__ == "__main__":
     print("In name == '__main__' of bins.py")
     cores = int(sys.argv[1]) if len(sys.argv) > 1 else 1
     main(cores)
+
+
+CHECK THIS!!! BINS IS SAYING TOTAL IS 83480, while data is saying 83488. IS THE OVERLAP BETWEEN YANG AND MCGREER IS JUST 8?

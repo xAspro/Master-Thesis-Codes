@@ -193,15 +193,25 @@ f = ['Data_new/dr7z2p2_sample.dat',
      'Data_new/dr7z3p7_sample.dat']
 l = r'SDSS DR7 Schneider et al. (2010)'
 s = sample(f, label=l)
-s.z = s.z[s.z<4.7]
+# s.z = s.z[s.z<4.7]
 data.append(s)
+
+print("data[0].z = ", data[0].z)
+print("size of data[0].z = ", data[0].z.size)
+print("data[0].m = ", data[0].m)
+print("size of data[0].m = ", data[0].m.size)
 
 f = ['Data_new/croom09sgp_sample.dat',
      'Data_new/croom09ngp_sample.dat']
 l = r'2SLAQ Croom et al. (2009)'
 s = sample(f, label=l)
-s.z = s.z[s.z<2.2]
+# s.z = s.z[s.z<2.2]
 data.append(s)
+
+print("\n\ndata[1].z = ", data[1].z)
+print("size of data[1].z = ", data[1].z.size)
+print("data[1].m = ", data[1].m)
+print("size of data[1].m = ", data[1].m.size)
 
 f = ['Data_new/bossdr9color.dat']
 l = r'BOSS DR9 colour-selected Ross et al. (2013)'
