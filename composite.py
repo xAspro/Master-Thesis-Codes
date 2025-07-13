@@ -1154,12 +1154,12 @@ class lf:
         err = np.array(err)
         self.prior_tag = 1  # Set prior tag for the MCMC run
 
-        nburns = 2000
-        nprod = 6000
+        nburns = 20000
+        nprod = 60000
         # nprod = nburns
 
         # nburns = 1
-        # nprod = 200000
+        # nprod = 1000000
 
         # walkers = 2 * degree + 8
         walkers = 50
@@ -1190,6 +1190,7 @@ class lf:
             self.rnge = np.array([0.15, 0.75, 1])
         elif label == 'beta':
             self.rnge = 0.25
+            # self.rnge = 2
 
         # print(f"coeff = {coeff}, min_rnge = {self.min_rnge}, max_rnge = {self.max_rnge}")
         # print(f"coeff - min_rnge = {coeff - self.min_rnge}, coeff + max_rnge = {coeff + self.max_rnge}")

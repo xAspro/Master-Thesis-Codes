@@ -170,11 +170,16 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
 # zls = [(2.2, 2.4)]
 
 
-if False:
+if True:
     params = [[-0.3261, 1.2184, -7.2610],
               [-0.0439, 0.3283, -1.6293, -23.3691],
               [-0.0552, 0.1424, -3.6888],
               [-0.1612, -1.4329]]
+    
+    params = [[-0.3280, 1.2183, -7.2532],
+              [-0.0454, 0.3198, -1.6133, -23.3546],
+              [-0.0549, 0.1392, -3.6832],
+              [-0.1616, -1.4310]]
     
     for i, zl in enumerate(zls):
 
@@ -245,7 +250,7 @@ def main(cores):
 
     #     assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
         
-    #     lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
+        # lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
     #     lfi.get_percentiles()
     #     drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
 
@@ -300,4 +305,4 @@ if __name__ == "__main__":
     main(cores)
 
 
-CHECK THIS!!! BINS IS SAYING TOTAL IS 83480, while data is saying 83488. IS THE OVERLAP BETWEEN YANG AND MCGREER IS JUST 8?
+# CHECK THIS!!! BINS IS SAYING TOTAL IS 83480, while data is saying 83488. IS THE OVERLAP BETWEEN YANG AND MCGREER IS JUST 8?
