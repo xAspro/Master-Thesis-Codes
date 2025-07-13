@@ -12,6 +12,7 @@ import drawlf
 import time
 import datetime
 import os
+import matplotlib.pyplot as plt
 
 
 
@@ -169,7 +170,6 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
 
 # zls = [(2.2, 2.4)]
 
-
 if True:
     params = [[-0.3261, 1.2184, -7.2610],
               [-0.0439, 0.3283, -1.6293, -23.3691],
@@ -180,14 +180,42 @@ if True:
               [-0.0454, 0.3198, -1.6133, -23.3546],
               [-0.0549, 0.1392, -3.6832],
               [-0.1616, -1.4310]]
-    
-    for i, zl in enumerate(zls):
 
-        lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
-        lfi.plot_bins_for_params(params)
-        # lfi.plot_bins_for_params_with_composite(params)
-        # import sys
-        # sys.exit("Exiting early for testing purposes.")
+    # Calculate appropriate grid size for 26 plots
+    n_plots = len(zls)  # 26
+    n_plots = 25  # For testing purposes, use 25 plots
+    n_cols = 6
+    n_cols = 5  # For testing purposes, use 5 columns
+    n_rows = int(np.ceil(n_plots / n_cols))  # This will be 5 rows
+
+    # Create figure with shared axes
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), 
+                            sharex=True, sharey=True)
+    axes = axes.flatten()
+
+    for i, zl in enumerate(zls):
+        if i < len(axes):
+            lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
+            lfi.plot_bins_for_params_mosaic(params, fig=fig, ax=axes[i], 
+                                          subplot_index=i, n_rows=n_rows, n_cols=n_cols, n_plots=n_plots)
+
+    # Hide unused subplots
+    for j in range(len(zls), len(axes)):
+        axes[j].set_visible(False)
+
+    # Add common labels
+    fig.text(0.5, 0.02, r'$M_{1450}$', ha='center', fontsize=16)
+    fig.text(0.02, 0.5, r'$\log_{10}(\phi^*)$ [cMpc$^{-3}$ mag$^{-1}$]', va='center', rotation='vertical', fontsize=16)
+    
+    # Add overall title
+    fig.suptitle('Quasar Luminosity Function across Redshift Bins', fontsize=28, y=0.98)
+
+    plt.tight_layout()
+    # Remove gaps completely
+    plt.subplots_adjust(left=0.04, bottom=0.04, top=0.94, hspace=0.0, wspace=0.0)
+    plt.savefig("QLF_bins_mosaic.png", dpi=300, bbox_inches='tight')
+    plt.savefig("QLF_bins_mosaic.pdf", bbox_inches='tight')
+    plt.show()
 
 
     import sys

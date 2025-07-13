@@ -1399,6 +1399,112 @@ class lf:
         plt.tight_layout()
         plt.savefig(f"QLF_bins_z_{np.mean(self.z):.2f}.png")
 
+    def plot_bins_for_params_mosaic(self, params, fig=None, ax=None, subplot_index=None, n_rows=None, n_cols=None, n_plots=None):
+        """
+        Inputs the data from get_qlf_data() and plots the bin for the parameters.
+        Can be used for individual plots or as part of a mosaic.
+
+        Parameters
+        ----------
+        params : list of list
+            The parameters for the QLF model, typically containing values for phi_star, M_star, alpha, and beta.
+        fig : matplotlib.figure.Figure, optional
+            Figure object for mosaic plotting
+        ax : matplotlib.axes.Axes, optional
+            Axes object for mosaic plotting
+        subplot_index : int, optional
+            Index for subplot in mosaic
+        n_rows, n_cols : int, optional
+            Grid dimensions for proper tick labeling
+
+        Returns
+        -------
+        fig, ax : if creating new plot, otherwise None
+        """
+        print("params = ", params)
+        print("zlims = ", self.zlims)
+        self.get_qlf_data()
+
+        def f(coeff, z):
+            """
+            Return a polynomial function using the coefficients provided at z.
+            """
+            return np.polyval(coeff, z)
+
+        mag = np.arange(-34, -12, 0.1)
+        log10phi_star, M_star, alpha, beta = [f(coeff, np.mean(self.z)) for coeff in params]
+
+        phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(mag-M_star)) +
+                                    10.0**(0.4*(beta+1)*(mag-M_star)))
+        phi = np.log10(phi)
+
+        # Create new figure if not provided
+        if fig is None or ax is None:
+            fig, ax = plt.subplots(figsize=(10, 6))
+            save_individual = True
+        else:
+            save_individual = False
+
+        ax.plot(mag, phi, lw=2, c='k')
+        ax.axhline(0, color='gray', linestyle='--', lw=1, alpha=0.5)
+        ax.axvline(M_star, color='red', linestyle='--', lw=1, alpha=0.5)
+        
+        # Plot the binned QLF data points for this redshift bin
+        if hasattr(self, "data"):
+            mask = (self.data.mag >= np.min(mag)) & (self.data.mag <= np.max(mag))
+            ax.errorbar(
+                self.data.mag[mask],
+                self.data.logphi[mask],
+                yerr=[self.data.downerr[mask], self.data.uperr[mask]],
+                fmt='o',
+                color='blue',
+                markersize=4
+            )
+        
+        # Add redshift as text annotation instead of title
+        ax.text(0.05, 0.95, f'{self.zlims[0]:.2f} $\le$ z $<$ {self.zlims[1]:.2f}', transform=ax.transAxes, 
+                verticalalignment='top', fontsize=10, bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+        
+        # # Set consistent limits for ALL plots (both individual and mosaic)
+        # ax.set_xlim(-12, -34)  # Note: reversed for magnitude
+        # ax.set_ylim(-16, 0)
+
+
+        # Set consistent limits for ALL plots (both individual and mosaic)
+        ax.set_xlim(-12, -34)  # Faint to bright (your preferred convention: -12 on left, -34 on right)
+        ax.set_ylim(-16, 0)
+
+        # Set consistent ticks for all plots - avoid boundary overlaps
+        ax.set_xticks(np.arange(-14, -33, -2))  # [-14, -16, -18, -20, -22, -24, -26, -28, -30, -32]
+        ax.set_yticks(np.arange(-14, 1, 2))    # [-14, -12, -10, -8, -6, -4, -2, 0]
+
+        # Handle tick labels for mosaic
+        if not save_individual and subplot_index is not None and n_rows is not None and n_cols is not None:
+            row = subplot_index // n_cols
+            col = subplot_index % n_cols
+            
+            # Only show x-axis labels on bottom row - REMOVE labels for other rows
+            if row != n_rows - 1:
+                ax.set_xticklabels(np.arange(-14, -33, -2))  # Empty list removes labels but keeps ticks
+            
+            # Only show y-axis labels on leftmost column - REMOVE labels for other columns
+            if col != 0:
+                ax.set_yticklabels(np.arange(-14, 1, 2))  # Empty list removes labels but keeps ticks
+            
+            # Ensure ticks are visible even if labels are hidden
+            ax.tick_params(which='both', direction='in', top=True, right=True)
+
+
+        if save_individual:
+            ax.set_xlabel(r'$M_{1450}$')
+            ax.set_ylabel(r'$\log_{10}(\phi^*)$')
+            ax.set_title(f'QLF at z = {np.mean(self.z):.2f}')
+            ax.legend()
+            plt.tight_layout()
+            plt.savefig(f"QLF_bins_z_{np.mean(self.z):.2f}.png")
+            return fig, ax
+        
+        return None
 
             
     # def plot_bins_for_params_with_composite(self, params):
