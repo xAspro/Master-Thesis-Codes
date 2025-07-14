@@ -1599,8 +1599,8 @@ class lf:
         for i in range(len(data)):
             # if i < 2:
             #     continue
-            if i != 3:
-                continue
+            # if i != 3:
+            #     continue
             
             d = (zmean, data[i][0])
             err = ((data[i][2] - data[i][1])/2.0)
