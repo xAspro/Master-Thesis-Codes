@@ -260,6 +260,12 @@ np.save('lfg1_2.npy', lfg1)
 import sys
 sys.exit("\n\nThe rest is not required\n\n")
 
+
+
+# The rest of the code is not implemented
+
+
+
 duration = 3  # seconds
 frequency = 440  # Hz, the frequency of the beep sound (440Hz is standard A note)
 
