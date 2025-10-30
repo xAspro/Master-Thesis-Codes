@@ -1,5 +1,3 @@
-# Checked once.. ran and gave fig 3 output.
-print("In bins.py")
 
 import sys 
 import numpy as np

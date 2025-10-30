@@ -1,9 +1,3 @@
-# Checked once. Runs without error. No implementation of this file in this file.
-print("In composite.py")
-
-
-    # THE ERROR MUST BE BECAUSE THE CODE WAS FOR SINGLE QUASAR DATA. NOW I AM USING THE BINNED DATA. HENCE EACH BIN IS 
-    # POSSIBLY GETTING COUNTED MULTIPLE NUMBER OF TIMES AND HENCE THE VALUE IS VERY HIGH!!!
 
 import numpy as np
 import scipy.optimize as op

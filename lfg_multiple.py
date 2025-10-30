@@ -1,10 +1,3 @@
-# Checked once. Didnt run. 
-# Also check bins.py, importing it might cause this to run bins fully. that should be avoided in general.
-# But that is for a later time.
-
-# evolution6.pdf is correct alomst!
-# Need to look at my error boundaries. that abs is making an issue i guess. but got the correct plot. not fully correct though. logical error.
-print("In lfg_multiple.py")
 
 import sys
 import numpy as np 

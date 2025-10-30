@@ -1,5 +1,3 @@
-# Checked once. No implementation of this code directly in here.
-print("In individual.py")
 
 import numpy as np
 import scipy.optimize as op

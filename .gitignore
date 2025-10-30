@@ -36,3 +36,31 @@ bins_lfs_old_data.npy
 *.pbs
 sync_to_cluster.sh
 convert_images_to_gifs.py
+commits.txt
+Run_Tests_For_rhoqso.py
+Run_Selmap_For_All_Files_In_Data_new.py
+Run_Selmap_summary.txt
+Run_Selmap2_For_All_INPUTS_GIVEN.py
+Run_tiling_For_All_Files_in_smooth_maps.py
+Summary Plotn Data.rtf
+CHECK.py
+Global_QLF_Estimate_using_logprob.dat
+Global_QLF_Estimate.dat
+*_sample.npy
+*.gif
+bins_check.dat
+myfiles.txt
+data_points.dat
+requirements.txt
+summa.py
+# Trivia: Summa means rough work or for no reason in tamil
+
+# Ignore all .npy files
+*.npy
+
+# But do not ignore these specific files
+!bins_lfs_mini.npy
+!mcmc_full_last_state.npy
+!lfg1.npy
+!bins_lfs_ultra_new_2.npy
+
