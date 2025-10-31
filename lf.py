@@ -1,7 +1,3 @@
-# Checked once. Didnt run. 
-# Missing Sample ID in selnfiles.
-print("In lf.py")
-
 from composite import lf
 import sys
 import time
@@ -161,7 +157,7 @@ lfg = lf(quasar_files=qlumfiles, selection_maps=selnfiles, pnum=[3,3,2,3])
 g = [-6.7, -1.8, 0.2, -26.0, -1.8, 0.2, -5.0, -1.8, -1.6, -1.8, 0.6]
 
 b = lfg.bestfit(g, method=method)
-print( b)
+print(b)
 
 # Uncomment if you want automatic priors 
 # lfg.create_param_range()
@@ -190,6 +186,6 @@ sp(lfg, individuals=bins.lfs, individuals_isfile=False)
 pg(lfg, individuals=bins.lfs)
 
 from waic_composite import waic
-print( 'WIAC=', waic(lfg))
+print('WIAC=', waic(lfg))
 
 

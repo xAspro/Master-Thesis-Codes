@@ -1,7 +1,3 @@
-# Checked once. Runs without error. Produces the output qsos2.pdf
-# Changed output name from qsos.pdf to qsos2.pdf to differentiate from the output of data.py
-print("In data2.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

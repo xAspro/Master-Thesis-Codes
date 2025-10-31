@@ -1,4 +1,5 @@
-
+# The output pdfs of this code is saved in a folder with the current date and time.
+# It can be turned off if required
 import sys 
 import numpy as np
 import individual
@@ -12,25 +13,6 @@ import datetime
 import os
 import matplotlib.pyplot as plt
 
-
-
-
-#NOTES!!!!!!!
-
-# - McGreer SDSS DR7 and S82 data were partially removed from the QLF estimate because it overlaps with the Yang et al. 2016 data.
-#   Only the faint end McGreer’s DR7 sample (M1450 > –26.73) was kept, explicitly to avoid any 
-#   double‑counting of the 99 Yang et al. quasars (all of which are M1450 <= –26.73).
-# - Also McGreer’s S82 sample was partially removed because it overlaps with the Yang et al. 2016 data.
-#   Only the faint end McGreer’s S82 sample (M1450 > –26.73) was kept, explicitly to avoid any
-#   double‑counting of the 99 Yang et al. quasars (all of which are M1450 <= –26.73).  
-
-# - Ross et al. 2013 sample is not used in the Global QLF estimate.
-# - Low‑redshift (z < 0.6) SDSS DR7 & 2SLAQ samples were not used in the QLF estimate.
-#   They had high contamination from low‑redshift galaxies and stars.
-#     ~ Maybe Richards et al. 2006 (where z < 0.6 are removed) - SDSS
-#     ~ Maybe Croom et al. 2009 (where z < 0.6 are removed) - 2dF
-
-# Need to look at sid = 8, (1, 13, 15)
 
 
 start_time = time.time()
@@ -129,33 +111,6 @@ selnfiles = [('Selmaps_with_tiles/dr7z2p2_selfunc.dat', 6248.0, 13, r'Richards e
 method = 'Nelder-Mead'
 
 
-# zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
-#        (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),
-#        (2.4, 2.5), (2.5, 2.6), (2.6, 2.7), (2.7, 2.8), (2.8, 2.9),
-#        (2.9, 3.0), (3.0, 3.1), (3.1, 3.2), (3.2, 3.3), (3.3, 3.4),
-#        (3.4, 3.5), (3.7, 4.1), (4.1, 4.7), (4.7, 5.5), (5.5, 6.5),
-#        (6.5, 7.5), (7.5, 8.5), (8.5, 9.5), (9.5, 10.5), (10.5, 12.5)
-#        ]
-
-# zls = [(4.7, 5.5), (5.5, 6.5),
-#        (6.5, 7.5), (7.5, 8.5)]
-
-# zls = [(5.5, 6.5)]
-
-# zls = [(4.1, 4.7), (4.7, 5.5), (5.5, 6.5)]
-
-# zls = [(3.4, 3.5)] 
-
-# zls = [(0.6, 0.8)]
-# zls = [(2.6, 2.7)]
-# zls = [(3.7, 4.1)]
-
-# zls = [(4.1, 4.7)]
-# zls = [(5.5, 6.5)]
-
-# Just for checking reduced zls
-# zls = [(0.1,0.4), (0.4, 0.6), (0.6, 0.8)]
-
 zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
        (1.2, 1.4), (1.4, 1.6), (1.6, 1.8), (1.8, 2.2), (2.2, 2.4),
        (2.4, 2.5), (2.5, 2.6), (2.6, 2.7), (2.7, 2.8), (2.8, 2.9),
@@ -164,11 +119,12 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
        (6.5, 8.5)
     ]
 
-# zls =[(0.1, 0.4)]
-
-# zls = [(2.2, 2.4)]
-
-if False: # This portion of code is only for trying to get the mosaic plot
+# This portion of code is only for trying to get the mosaic plot of
+# our simulated function with respect to the data
+# So, first run this with this value being False, once you get the 
+# functional form, enter it manually here (need to be automated),
+# and switch this to True, to get the mosaic plot
+if False: 
     params = [[-0.3261, 1.2184, -7.2610],
               [-0.0439, 0.3283, -1.6293, -23.3691],
               [-0.0552, 0.1424, -3.6888],
@@ -242,86 +198,86 @@ def main(cores):
 
         lfi = lf(quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
 
-        print( 'z =', zl)
-        print( '{:d} quasars in this bin.'.format(lfi.z.size))
-        print( 'sids (samples): '+'  '.join(['{:2d}'.format(int(x)) for x in np.unique(lfi.sid)]))
-        print( 'sids (maps): '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps]))
-        print( ' ')
+        print('z =', zl)
+        print('{:d} quasars in this bin.'.format(lfi.z.size))
+        print('sids (samples): '+'  '.join(['{:2d}'.format(int(x)) for x in np.unique(lfi.sid)]))
+        print('sids (maps): '+'  '.join(['{:2d}'.format(x.sid) for x in lfi.maps]))
+        print(' ')
 
         cnt += lfi.z.size
         
-    #     g = (np.log10(1.e-6), -25.0, -3.0, -1.5)      # Initial guess for log10(phi_star), M_star, alpha, beta
-    #     b = lfi.bestfit(g, method=method)
+        g = (np.log10(1.e-6), -25.0, -3.0, -1.5)      # Initial guess for log10(phi_star), M_star, alpha, beta
+        b = lfi.bestfit(g, method=method)
 
-    #     print("\n\n\n\n\n\n\nb:\n", b)
-    #     print("\n\n\n\n\n\n")
+        print("\n\n\n\n\n\n\nb:\n", b)
+        print("\n\n\n\n\n\n")
 
-    #     zmin, zmax = zl 
+        zmin, zmax = zl 
         
-    #     if zmin < 0.3:
-    #         lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -10.0])
-    #     else:
-    #         lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -4.0])
+        if zmin < 0.3:
+            lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -10.0])
+        else:
+            lfi.prior_min_values = np.array([-14.0, -32.0, -7.0, -4.0])
 
-    #     if zmin > 5.4:
-    #         # Special priors for z = 6 data.
-    #         lfi.prior_max_values = np.array([-4.0, -20.0, -4.0, 0.0])
+        if zmin > 5.4:
+            # Special priors for z = 6 data.
+            lfi.prior_max_values = np.array([-4.0, -20.0, -4.0, 0.0])
 
-    #         # Change result of optimize.minimize so that emcee works.
-    #         lfi.bf.x[2] = -5.0
-    #     elif zmin < 0.3:
-    #         lfi.prior_max_values = np.array([-1.0, -15.0, 0.0, 15.0])
-    #     else:
-    #         lfi.prior_max_values = np.array([-4.0, -20.0, 0.0, 0.0])
+            # Change result of optimize.minimize so that emcee works.
+            lfi.bf.x[2] = -5.0
+        elif zmin < 0.3:
+            lfi.prior_max_values = np.array([-1.0, -15.0, 0.0, 15.0])
+        else:
+            lfi.prior_max_values = np.array([-4.0, -20.0, 0.0, 0.0])
 
-    #     assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
+        assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
         
-        # lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
-    #     lfi.get_percentiles()
-    #     drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
+        lfi.run_mcmc_with_bad_points(ncores=int(cores), dirname=curr_date_time)
+        lfi.get_percentiles()
+        drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
 
 
 
-    #     # lfi.run_mcmc(ncores=int(cores))
-    #     # lfi.get_percentiles()
-    #     # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=False)
-    #     # print("Drawn the LF for this bin.")
+        # lfi.run_mcmc(ncores=int(cores))
+        # lfi.get_percentiles()
+        # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=False)
+        # print("Drawn the LF for this bin.")
 
 
         
-    #     # FOR SUMMARY (Fig 4)
-    #     if WRITE_PARAMS2: 
-    #         with open(filename, 'a') as f:
-    #             output = ([lfi.z.mean()] + list(zl) + lfi.phi_star
-    #                     + lfi.M_star + lfi.alpha + lfi.beta)
-    #             f.write(('{:.3f}  '*len(output)).format(*output))
-    #             f.write('\n')
+        # FOR SUMMARY (Fig 4)
+        if WRITE_PARAMS2: 
+            with open(filename, 'a') as f:
+                output = ([lfi.z.mean()] + list(zl) + lfi.phi_star
+                        + lfi.M_star + lfi.alpha + lfi.beta)
+                f.write(('{:.3f}  '*len(output)).format(*output))
+                f.write('\n')
         
-    #     lfs.append(lfi)
+        lfs.append(lfi)
 
-    #     # mosaic.draw(lfs)
-
-
-    #     # lfi.clear_samples()
-    #     lfi.sample_samples()
-
-    # end_time = time.time()
+        # mosaic.draw(lfs)
 
 
+        # lfi.clear_samples()
+        lfi.sample_samples()
 
-    # print()
-    # print()
-    # elapsed_time = end_time - start_time
-    # print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
-
-    # print("\n\n\nlfs:", lfs)
+    end_time = time.time()
 
 
-    # # np.save('bins_lfs_1.npy', lfs)
-    # np.save('bins_lfs_ultra_new_2.npy', lfs)
 
-    # print(type(lfs))
-    # print(dir(lfs))
+    print()
+    print()
+    elapsed_time = end_time - start_time
+    print("Time taken in bins.py:", time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
+
+    print("\n\n\nlfs:", lfs)
+
+
+    # np.save('bins_lfs_1.npy', lfs)
+    np.save('bins_lfs_ultra_new_2.npy', lfs)
+
+    print(type(lfs))
+    print(dir(lfs))
     print("Total number of quasars in all bins:", cnt)
 
 
@@ -330,5 +286,3 @@ if __name__ == "__main__":
     cores = int(sys.argv[1]) if len(sys.argv) > 1 else 1
     main(cores)
 
-
-# CHECK THIS!!! BINS IS SAYING TOTAL IS 83480, while data is saying 83488. IS THE OVERLAP BETWEEN YANG AND MCGREER IS JUST 8?

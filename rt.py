@@ -1,13 +1,3 @@
-# Checked once. Didnt run.
-# FileNotFoundError: ../21cm/hm12/emissivity.dat not found.
-# 
-# 
-# AM I MISSING A FULL FOLDER?? "data = np.loadtxt('../21cm/hm12/emissivity.dat')"
-# Check this!!
-# 
-# 
-print("In rt.py")
-
 import numpy as np
 from scipy.integrate import dblquad, quad 
 import matplotlib as mpl
@@ -134,7 +124,7 @@ def j2(nu0, z0, zmax=6.0):
     return r[0]/(4.0*np.pi)   # ergs/s/Mpc^2/Hz/sr 
 
 # x = j(3.29e15, 2.0, dz=0.1)
-# print( x )
+# print(x )
 
 def gamma_HI(z, numax=1.0e18, dnu=0.1):
 
@@ -161,8 +151,8 @@ def gamma_HI(z, numax=1.0e18, dnu=0.1):
 # t1 = time.time()
 # x = gamma_HI(2.0)
 # t2 = time.time()
-# print( x)
-# print( t2-t1)
+# print(x)
+# print(t2-t1)
 
 def gamma_HI_alt(z, numax=1.0e18):
 
@@ -184,8 +174,8 @@ def gamma_HI_alt(z, numax=1.0e18):
 # t1 = time.time()
 # x = gamma_HI_alt(2.0)
 # t2 = time.time()
-# print( x)
-# print( t2-t1)
+# print(x)
+# print(t2-t1)
 
 def plot_fHI():
 

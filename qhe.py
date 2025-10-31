@@ -1,8 +1,3 @@
-# Checked once. Doesnt run.
-# This code is supposed to produce fig 11 in the paper.
-# But it is missing 'hm12/q.dat' file.
-print("In qhe.py")
-
 """Calculates Q(z) for hydrogen and helium.
 
 See also: q.py. 
@@ -74,7 +69,7 @@ down21 = data['down']*((912.0/1450.0)**0.61) """
 # downfaint21 = 0.0*data['down']
 # upfaint21 = 0.0*data['up']
 
-print( 'data loaded')
+print('data loaded')
 
 hplanck = 6.62e-27
 c_angPerSec = 2.998e18

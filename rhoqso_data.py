@@ -1,8 +1,3 @@
-# Checked once. No implementation of this code in here.
-# No files importing this file.
-# Must have been used for some testing purposes.
-print("In rhoqso_data.py")
-
 import numpy as np
 import emcee
 import matplotlib as mpl
@@ -176,19 +171,19 @@ def get_lf(lf, sid, bins, use_smooth_maps=False, use_binvol2 = False):
     # with reported binned values.  
     m = lf.M1450[lf.sid==sid]
 
-    #print( 'Originally have {:d} quasars'.format(np.size(m)))
+    #print('Originally have {:d} quasars'.format(np.size(m)))
 
 
-    #print( 'Should have {:d} quasars'.format(np.size(m[m<-24.0])))
+    #print('Should have {:d} quasars'.format(np.size(m[m<-24.0])))
     
     ms = (bins[1:]+bins[:-1])*0.5
 
     limit = np.max(ms)
     m = m[m<limit]
-    # print( 'bins=', bins)
-    #print( 'limit=', limit)
+    # print('bins=', bins)
+    #print('limit=', limit)
 
-    #print( 'Have {:d} quasars'.format(np.size(m)))
+    #print('Have {:d} quasars'.format(np.size(m)))
 
     
 
@@ -227,7 +222,7 @@ def get_lf(lf, sid, bins, use_smooth_maps=False, use_binvol2 = False):
     downerr = logphi - np.log10(nlims[0])
 
     for a in zip(mags, n):
-        print( '{:.2f}  {:d}'.format(a[0], a[1]))
+        print('{:.2f}  {:d}'.format(a[0], a[1]))
 
     return mags, left, right, logphi, uperr, downerr
 
@@ -284,7 +279,7 @@ def rhoqso_old(lfs, mag_threshold, bins):
             intphidm = np.cumsum(phidm)
 
             # for d in zip(dm, mags, logphi, phidm, intphidm):
-            #     print( '{:.2f}  {:.2f}  {:.2f}  {:.2e}  {:.2e}'.format(*d))
+            #     print('{:.2f}  {:.2f}  {:.2f}  {:.2e}  {:.2e}'.format(*d))
             
             if (mag_threshold > np.min(mags)) and (mag_threshold < np.max(mags)):
                 assert(np.all(np.diff(mags) > 0))
@@ -293,7 +288,7 @@ def rhoqso_old(lfs, mag_threshold, bins):
                 
                 rhos_thiszbin.append(rho)
                 
-                # print( 'Mlim = {:.2f}  z = {:.2f}  rho = {:.3e}'.format(mag_threshold, z, rho))
+                # print('Mlim = {:.2f}  z = {:.2f}  rho = {:.3e}'.format(mag_threshold, z, rho))
                 
         rhos.append(np.mean(rhos_thiszbin))
         zs.append(z)
@@ -320,8 +315,8 @@ def rhoqso3(lfs, mag_threshold, bins, **kwargs):
 
         Nbins = np.size(mags)
         Nsamples = len(logphis)
-        print( 'Nbins=', Nbins)
-        print( 'Nsamples=', Nsamples)
+        print('Nbins=', Nbins)
+        print('Nsamples=', Nsamples)
         total_phi = np.zeros(Nbins)
         
         for i in range(Nbins):
@@ -522,7 +517,7 @@ def test(c1, c2, c3, individuals, **kwargs):
     # dm = 0.6
     # bins = np.arange(mlim+dm/2, -35, -dm)[::-1]
     # zs, rhos, uperr, downerr = rhoqso3(individuals, mlim, bins=bins)
-    # print( 'rhos=', rhos)
+    # print('rhos=', rhos)
     # ax.scatter(zs, rhos, c='k', edgecolor='None', s=42, zorder=10, linewidths=2, label='$0.6$')
     # ax.errorbar(zs, rhos, ecolor='k', capsize=0, fmt='None', elinewidth=1,
     #             yerr=np.vstack((downerr, uperr)),
@@ -538,7 +533,7 @@ def test(c1, c2, c3, individuals, **kwargs):
     dm = 0.6
     bins = np.arange(mlim+dm/2, -35, -dm)[::-1]
     zs, rhos, uperr, downerr = rhoqso3(individuals, mlim, bins=bins)
-    print( 'rhos=', rhos)
+    print('rhos=', rhos)
     ax.scatter(zs, rhos, c='k', edgecolor='None', s=42, zorder=10, linewidths=2, label='$0.6$')
     ax.errorbar(zs, rhos, ecolor='k', capsize=0, fmt='None', elinewidth=1,
                 yerr=np.vstack((downerr, uperr)),
@@ -554,7 +549,7 @@ def test(c1, c2, c3, individuals, **kwargs):
     # dm = 0.6
     # bins = np.arange(mlim+dm/2, -35, -dm)[::-1]
     # zs, rhos, uperr, downerr = rhoqso3(individuals, mlim, bins=bins)
-    # print( 'rhos=', rhos)
+    # print('rhos=', rhos)
     # ax.scatter(zs, rhos, c='k', edgecolor='None', s=42, zorder=10, linewidths=2, label='$0.6$')
     # ax.errorbar(zs, rhos, ecolor='k', capsize=0, fmt='None', elinewidth=1,
     #             yerr=np.vstack((downerr, uperr)),
@@ -570,7 +565,7 @@ def test(c1, c2, c3, individuals, **kwargs):
     dm = 0.6
     bins = np.arange(mlim+dm/2, -35, -dm)[::-1]
     zs, rhos, uperr, downerr = rhoqso3(individuals, mlim, bins=bins)
-    print( 'rhos=', rhos)
+    print('rhos=', rhos)
     ax.scatter(zs, rhos, c='k', edgecolor='None', s=42, zorder=10, linewidths=2, label='$0.6$')
     ax.errorbar(zs, rhos, ecolor='k', capsize=0, fmt='None', elinewidth=1,
                 yerr=np.vstack((downerr, uperr)),

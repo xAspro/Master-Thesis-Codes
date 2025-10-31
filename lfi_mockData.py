@@ -1,10 +1,3 @@
-# Checked Once. Ran without error.
-# No output. No implementtion of this code in any files.
-# This code is just for checking.
-# But need to see what is lfg, zmin, zmax in here and use them.
-# Tried something in the bottom of the code. need to check this once more.
-print("In lfi_mockData.py")
-
 import sys
 import numpy as np 
 from individual_mockData import lf
@@ -54,12 +47,12 @@ def lmd(lfg, zmin, zmax):
     zl = (zmin, zmax)
     theta = lfg.bf.x
     lfi = lf(theta, lfg, quasar_files=qlumfiles, selection_maps=selnfiles, zlims=zl)
-    print( '{:d} quasars in this bin.'.format(lfi.z.size))
+    print('{:d} quasars in this bin.'.format(lfi.z.size))
 
     g = (np.log10(1.e-6), -25.0, -3.0, -1.5)
 
     b = lfi.bestfit(g, method=method)
-    print( b)
+    print(b)
 
     lfi.prior_min_values = np.array([-14.0, -32.0, -10.0, -4.0])
     if zmin > 5.4:

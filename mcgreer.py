@@ -1,7 +1,3 @@
-# Checked once. Ran without error.
-# Produces the output mcgreer.pdf
-print("In mcgreer.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -74,11 +70,11 @@ def get_lf(zrange, bins):
 
 
     v1 = np.array([binvol(x, zrange, bins, msel, psel, vol, zsel) for x in m])
-    print( v1.size)
+    print(v1.size)
 
     v1_nonzero = v1[np.where(v1>0.0)]
     m = m[np.where(v1>0.0)]
-    print( v1_nonzero.size)
+    print(v1_nonzero.size)
     
     h = np.histogram(m,bins=bins,weights=1.0/(v1_nonzero))
 
@@ -93,7 +89,7 @@ def get_lf(zrange, bins):
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
     n = np.histogram(m,bins=bins)[0]
-    print( n )
+    print(n )
 
     nlims = pci(n,interval='frequentist-confidence')
     nlims *= phi/n 
@@ -119,12 +115,12 @@ def get_lf_s82(zrange, bins):
 
     v1 = np.array([binvol(x, zrange, bins, msel, psel, vol, zsel) for x in m])
 
-    print( v1.size)
+    print(v1.size)
 
     v1_nonzero = v1[np.where(v1>0.0)]
     m = m[np.where(v1>0.0)]
 
-    print( v1_nonzero.size)
+    print(v1_nonzero.size)
     
     h = np.histogram(m,bins=bins,weights=1.0/(v1_nonzero))
 

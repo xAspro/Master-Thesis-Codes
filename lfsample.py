@@ -1,6 +1,3 @@
-# Checked once. No implementation of this file in the project
-print("In lfsample.py")
-
 import numpy as np
 import emcee
 import matplotlib as mpl

@@ -1,6 +1,3 @@
-# Checked once. No implementation of this code directly in here.
-print("In individual_mockData.py")
-
 import numpy as np
 import scipy.optimize as op
 import emcee
@@ -256,7 +253,7 @@ class lf:
                              method=method)
 
         if not result.success:
-            print( 'Likelihood optimisation did not converge.')
+            print('Likelihood optimisation did not converge.')
 
         self.bf = result 
         return result

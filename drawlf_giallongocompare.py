@@ -1,6 +1,3 @@
-# Checked once. No implementation of this code in this file.
-print("In drawlf_giallongocompare.py")
-
 import numpy as np
 import emcee
 import matplotlib as mpl
@@ -201,10 +198,10 @@ def get_lf(lf, sid, z_plot):
     phi = nums
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
-    # print( 'sid=', sid )
-    # print( 'mags=', mags)
-    # print( 'nums=', nums)
-    # print( 'total=', np.sum(nums))
+    # print('sid=', sid )
+    # print('mags=', mags)
+    # print('nums=', nums)
+    # print('total=', np.sum(nums))
 
     # Calculate errorbars on our binned LF.  These have been estimated
     # using Equations 1 and 2 of Gehrels 1986 (ApJ 303 336), as
@@ -484,8 +481,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
     if bad_data_set:
         for i in sids: 
             mags, left, right, logphi, uperr, downerr = get_lf(lf, i, z_plot)
-            print( mags[logphi>-100.0])
-            print( logphi[logphi>-100.0])
+            print(mags[logphi>-100.0])
+            print(logphi[logphi>-100.0])
             ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
                         xerr=np.vstack((left, right)), 
                         yerr=np.vstack((uperr, downerr)),
@@ -497,8 +494,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
         mags, left, right, logphi, uperr, downerr = get_lf(lf, i, z_plot)
 
-        print( mags[logphi>-100.0])
-        print( logphi[logphi>-100.0])
+        print(mags[logphi>-100.0])
+        print(logphi[logphi>-100.0])
         ax.scatter(mags, logphi, c=cs[i], edgecolor='None', zorder=4, s=20, label=dsl(i))
         ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
                     xerr=np.vstack((left, right)), 
@@ -512,8 +509,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
             continue 
         
         mags_all, left_all, right_all, logphi_all, uperr_all, downerr_all = get_lf_all(lf, i, z_plot)
-        print( mags_all[logphi_all!=logphi])
-        print( logphi_all[logphi_all!=logphi])
+        print(mags_all[logphi_all!=logphi])
+        print(logphi_all[logphi_all!=logphi])
 
         select = (logphi_all!=logphi)
         mags_all = mags_all[select]

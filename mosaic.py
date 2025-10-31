@@ -1,10 +1,3 @@
-# Checked once. No implementation of this code in here.
-#   Imported by:
-#     - bins.py
-#     - bins_mockData.py
-#     - bins_withg.py
-print("In mosaic.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -26,14 +19,14 @@ def plot(lf, ax, composite=None, yticklabels=False, xticklabels=False,
     """
 
     z_plot = lf.z.mean()
-    print( z_plot)
+    print(z_plot)
 
     render(ax, lf, composite=composite)
 
     ax.set_xlim(-19.0, -31.0)
     ax.set_ylim(-12.0, -4.0)
 
-    print( ax.get_ylim())
+    print(ax.get_ylim())
 
     ax.set_xticks(np.arange(-31, -16, 4))
     ax.set_yticks(np.arange(-12, -3, 2))
@@ -62,7 +55,7 @@ def plot(lf, ax, composite=None, yticklabels=False, xticklabels=False,
              verticalalignment='center', transform=ax.transAxes, fontsize='10')
 
     if lf.zlims[0] == 4.7:
-        # print( quasar counts manually as code will incorrectly add)
+        # print(quasar counts manually as code will incorrectly add)
         # McGreer quasars excluded due to overlap with the Yang data.
         # Expect lf.M1450.size = 263.
         num = r'{:d} ({:d}) quasars'.format(lf.M1450.size, lf.M1450.size)
@@ -70,7 +63,7 @@ def plot(lf, ax, composite=None, yticklabels=False, xticklabels=False,
                  verticalalignment='center', transform=ax.transAxes, fontsize='10')
 
     elif lf.zlims[0] == 2.2:
-        # print( quasar counts manually as code will incorrectly add 5)
+        # print(quasar counts manually as code will incorrectly add 5)
         # SDSS DR7 with redshift z = 2.2 to this bin.  These quasars
         # not actually analysed in this bin.  (They are however
         # retained in our global analysis.)  Expect lf.M1450.size =
@@ -124,7 +117,7 @@ def draw(lfs, composite=None):
     for i in range(nplots):
 
         ax = fig.add_subplot(nplots_y, nplots_x, i+1)
-        print( 'plotting', i)
+        print('plotting', i)
 
         idx_offset=0
         

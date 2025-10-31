@@ -183,9 +183,9 @@ class selmap:
 
         # self.dz = dz
         # self.dm = dm 
-        # print( 'dz={:.3f}, dm={:.3f}, sample_id={:d}'.format(dz, dm, sample_id))
-        # print( 'sample_id={:d}'.format(sample_id))
-        # print( 'size of z: ', self.z.size, '\n')
+        # print('dz={:.3f}, dm={:.3f}, sample_id={:d}'.format(dz, dm, sample_id))
+        # print('sample_id={:d}'.format(sample_id))
+        # print('size of z: ', self.z.size, '\n')
 
         self.sid = sample_id 
 
@@ -534,7 +534,7 @@ class lf:
                                                      'disp': True})
 
         if not result.success:
-            print( 'Likelihood optimisation did not converge.')
+            print('Likelihood optimisation did not converge.')
 
         self.bf = result 
         return result
@@ -2567,7 +2567,7 @@ class lf_polyb:
                                                      'disp': True})
 
         if not result.success:
-            print( 'Likelihood optimisation did not converge.')
+            print('Likelihood optimisation did not converge.')
 
         self.bf = result 
         return result

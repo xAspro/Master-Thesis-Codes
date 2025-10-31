@@ -1,6 +1,3 @@
-# Checked once. Runs fine. giallongo.pdf is the output.
-print("In giallongo.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -127,9 +124,9 @@ def render(ax, zrange):
     bins = np.array([-23.5, -21.5, -20.5, -19.5, -18.5])
 
     mags, left, right, logphi, uperr, downerr = get_lf(zrange, bins)
-    print( zrange)
-    print( mags)
-    print( 10.0**(phi-logphi[-len(phi):]))
+    print(zrange)
+    print(mags)
+    print(10.0**(phi-logphi[-len(phi):]))
 
     ax.scatter(mags, logphi, c='g', edgecolor='None', zorder=306, label='my binning', s=35)
     ax.errorbar(mags, logphi, ecolor='g', capsize=0,

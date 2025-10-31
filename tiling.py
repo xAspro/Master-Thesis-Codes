@@ -1,10 +1,3 @@
-# Ran using Run_tiling_For_All_Files_in_smooth_maps.py
-# 
-# Error in next_mag and prev_mag? Not sure, need to understand this code in more detail
-# And why are we looking at everything even if p is 0? for example jiang09 has 
-# 2.5lakh data points and roughly just 10% of it has non 0 probablity. 
-# Then why are we going for tiling based on the other points too?
-
 """Assign sizes to completeness "tiles".
 
 You only need to set data, z_tolerance, and mag_tolerance.
@@ -27,8 +20,8 @@ out_dir = 'smooth_maps/2019+/'
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
 out_file = out_dir + sys.argv[1][:-4] + '_with_tiles.dat'
-print( 'Reading ' + in_file)
-print( 'Writing to ' + out_file)
+print('Reading ' + in_file)
+print('Writing to ' + out_file)
 
 data = np.loadtxt(in_file)
 fl = open(out_file, 'w')
@@ -105,9 +98,7 @@ def next_z(i, data):
 
 def next_mag(i, data):
     """
-    Error!!! Need to see if this code is correct or should implement the change in this segment.
-    Feels like there is an error and the magnoitude is not tiled properly. will check later.
-
+    
     Parameters
     ----------
     i : int
@@ -134,9 +125,6 @@ def next_mag(i, data):
 
 def prev_mag(i, data):
     """
-    Error!!! Need to see if this code is correct or should implement the change in this segment.
-    Feels like there is an error and the magnoitude is not tiled properly. will check later.
-
     Parameters
     ----------
     i : int
@@ -234,8 +222,8 @@ fl.write('# dmags = ' + str(np.unique(dmags.round(decimals=4))) + '\n')
 
 fl.close()
 
-print( '# dzs = ' + str(np.unique(dzs.round(decimals=4))))
-print( '# dmags = ' + str(np.unique(dmags.round(decimals=4))))
+print('# dzs = ' + str(np.unique(dzs.round(decimals=4))))
+print('# dmags = ' + str(np.unique(dmags.round(decimals=4))))
 
 
 

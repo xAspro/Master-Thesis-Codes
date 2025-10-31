@@ -1,7 +1,3 @@
-# Checked once. Again just for tabulating the values in a latex format.
-# Useful for writing paper
-print("In global_tabulate.py")
-
 import numpy as np 
 
 def write(lfg1, lfg2, lfg3):
@@ -32,6 +28,6 @@ def write(lfg1, lfg2, lfg3):
     
     for i in range(14):
         fs = r'${:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$ & ${:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$ & ${:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$ \\'
-        print( fs.format(*d[i]))
+        print(fs.format(*d[i]))
 
     

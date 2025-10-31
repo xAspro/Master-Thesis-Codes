@@ -1,6 +1,3 @@
-# Checked once. Runs without error. Produces the output glikman.pdf
-print("In glikman.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -93,9 +90,9 @@ def get_lf(zrange, bins, old=True):
     v2 = np.array([binvol(x, zrange, bins, msel, psel, vol, zsel) for x in m[12:]])
 
     v = np.concatenate((v1,v2))
-    print( v.size)
+    print(v.size)
     v_nonzero = v[np.where(v>0.0)]
-    print( v_nonzero.size)
+    print(v_nonzero.size)
     m = m[np.where(v>0.0)]
     
     h = np.histogram(m,bins=bins,weights=1.0/(v_nonzero))
@@ -112,7 +109,7 @@ def get_lf(zrange, bins, old=True):
 
     n = np.histogram(m,bins=bins)[0]
 
-    print( n )
+    print(n )
 
     nlims = pci(n,interval='frequentist-confidence')
     nlims *= phi/n 

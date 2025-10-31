@@ -1,7 +1,3 @@
-# Checked once, runs without error, but no output.
-# Seems like no other file is importing this file.
-print("In chisq.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

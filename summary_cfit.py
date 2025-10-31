@@ -1,7 +1,3 @@
-# Checked once. Error
-# FileNotFoundError: [Errno 2] No such file or directory: 'phi_star.dat'
-print("In summary_cfit.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -64,7 +60,7 @@ def plot_phi_star(fig, composite, sample=False):
 
     zc = np.linspace(0, 7, 500)
     coeffs = chebfit(zmean+1, c, 2)
-    print( coeffs)
+    print(coeffs)
     plt.plot(zc, T(coeffs)(zc+1), lw=2, c='goldenrod')
 
     def func(z, p0, p1, p2):
@@ -72,7 +68,7 @@ def plot_phi_star(fig, composite, sample=False):
 
     sigma = uperr + downerr 
     popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-    print( popt)
+    print(popt)
     plt.plot(zc, func(zc+1, *popt), lw=2, c='r', dashes=[8,3])
 
     # zm, cm, uperr, downerr = np.loadtxt('Data/manti.txt', usecols=(0,1,2,3), unpack=True)
@@ -137,7 +133,7 @@ def plot_m_star(fig, composite, sample=False):
     zc = np.linspace(0, 7, 500)
 
     coeffs = chebfit(zmean+1, c, 1)
-    print( coeffs)
+    print(coeffs)
     plt.plot(zc, T(coeffs)(zc+1), lw=2, c='goldenrod')
 
     def func(z, p0, p1):
@@ -145,7 +141,7 @@ def plot_m_star(fig, composite, sample=False):
 
     sigma = np.abs(uperr + downerr)
     popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-    print( popt)
+    print(popt)
     plt.plot(zc, func(zc+1, *popt), lw=2, c='r', dashes=[8,3])
         
     ax.set_xticks((0,1,2,3,4,5,6,7))
@@ -201,7 +197,7 @@ def plot_alpha(fig, composite, sample=False):
     zc = np.linspace(0, 7, 500)
 
     coeffs = chebfit(zmean+1.0, c, 1)
-    print( coeffs)
+    print(coeffs)
     plt.plot(zc, T(coeffs)(zc+1), lw=2, c='goldenrod')
 
     def func(z, p0, p1):
@@ -209,7 +205,7 @@ def plot_alpha(fig, composite, sample=False):
 
     sigma = uperr + downerr
     popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-    print( popt)
+    print(popt)
     plt.plot(zc, func(zc+1, *popt), lw=2, c='r', dashes=[8,3])
     
 
@@ -272,7 +268,7 @@ def plot_beta(fig, composite, sample=False):
 
     zc = np.linspace(0, 7, 500)
     coeffs = chebfit(zmean+1, c, 2)
-    print( coeffs)
+    print(coeffs)
     plt.plot(zc, T(coeffs)(zc+1), lw=2, c='goldenrod')
 
     def func(z, p0, p1, p2):
@@ -280,7 +276,7 @@ def plot_beta(fig, composite, sample=False):
 
     sigma = uperr + downerr 
     popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-    print( popt)
+    print(popt)
     plt.plot(zc, func(zc+1, *popt), lw=2, c='r', dashes=[8,3])
 
     ax.set_xticks((0,1,2,3,4,5,6,7))
@@ -295,7 +291,7 @@ def summary_plot(composite=None, sample=False):
     
     fig = plt.figure(figsize=(6, 6), dpi=100)
 
-    print( 'laying out figure')
+    print('laying out figure')
 
     K = 4
     factor = 2.0           # size of one side of one panel
@@ -309,7 +305,7 @@ def summary_plot(composite=None, sample=False):
     fig.subplots_adjust(left=lb, bottom=lb, right=tr, top=tr,
                         wspace=whspace, hspace=whspace)
 
-    print( 'plotting now')
+    print('plotting now')
     
     plot_phi_star(fig, composite, sample=sample)
     plot_m_star(fig, composite, sample=sample)

@@ -1,6 +1,3 @@
-# Checked once. Runs without error. Produces the output qsos.pdf
-print("In data.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -272,7 +269,7 @@ if int(sys.argv[1]) == 0:
     sum = 0
     for x in data: 
         sum += x.z.size
-    print( 'Total number of AGN:', sum+3) # 3 qsos added by hand above.
+    print('Total number of AGN:', sum+3) # 3 qsos added by hand above.
     sys.exit()
 
 #############################################################################################################
@@ -346,5 +343,5 @@ plot_data(data, 'qsos2.pdf')
 sum = 0
 for x in data: 
     sum += x.z.size
-print( 'Total number of AGN:', sum+3) # 3 qsos added by hand above.
+print('Total number of AGN:', sum+3) # 3 qsos added by hand above.
 

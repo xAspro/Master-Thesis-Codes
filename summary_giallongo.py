@@ -1,7 +1,3 @@
-# Checked once. runs.
-# produces the output evolution_g.pdf
-print("In evolution.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

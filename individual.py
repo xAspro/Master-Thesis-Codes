@@ -78,10 +78,6 @@ def getqlums(lumfile, zlims=None):
     It is possible that the select value is None. In that case, all values
     are returned. The array sizes are not guaranteed to be the same.
 
-    CHECK THE FUNCTION ONCE MORE, LATER ON!!!
-    FOR getselfunc(), WE HAVE np.squeeze IN SELFILE CONSTRUCTOR!!!
-    NEED TO CHECK IF FOR QLUMS ALSO DO WE HAVE SOMETHING LIKE THAT TO HANDLE MULTIPLE DIMENSIONS!!!
-
     """
 
     with open(lumfile,'r') as f: 
@@ -193,11 +189,6 @@ def getselfn(selfile, zlims=None):
     The selected values are based on the redshift limits and the sample ID.
     It is possible that the select value is None. In that case, all values
     are returned. The array sizes are not guaranteed to be the same.
-
-    CHECK THE FUNCTION ONCE MORE, LATER ON!!!
-    FOR getselfunc(), WE HAVE np.squeeze IN SELFILE CONSTRUCTOR!!!
-    NEED TO CHECK IF FOR QLUMS ALSO DO WE HAVE SOMETHING LIKE THAT TO HANDLE MULTIPLE DIMENSIONS!!!
-
     """
 
     # print("In getselfn")
@@ -320,13 +311,6 @@ class selmap:
         Returns
         -------
         None
-
-        Notes
-        ------
-        CHECK!!! Understand the purpose of dz and dm in the context of the selection map.
-        CHECK!!! Understand the purpose of z_all, m_all, p_all, dz_all_array, and dm_all_array.
-        CHECK!!! Understand the if sample_id == 7 condition and its implications. It seems like it will reset.
-        CHECK!!! Understand each cases separately, again, thoroughly!!!
 
         """
 
@@ -565,9 +549,6 @@ class lf:
           the upper and lower redshift limits (`zlims[1] - zlims[0]`).
         - If `quasar_files` or `selection_maps` is None, the object will not contain 
           any data or selection maps.
-
-        CHECK!!! How can quasar_files be None?
-        CHECK!!! zlims and dz too!!!
         """
 
         self.zlims = zlims
@@ -717,7 +698,7 @@ class lf:
                                       'disp': False})
 
         if not result.success:
-            print( 'Likelihood optimisation did not converge.')
+            print('Likelihood optimisation did not converge.')
 
         self.bf = result 
         return result
@@ -754,10 +735,6 @@ class lf:
         self.prior_min_values = np.where(half < double, half, double) 
         self.prior_max_values = np.where(half > double, half, double)
         assert(np.all(self.prior_min_values < self.prior_max_values))
-
-        # MAP value for zls = (0.4, 0.6)
-        # self.prior_min_values = np.array([-7.9247152, -8.90048553, -1.24158352, -0.30304404]) - 0.2
-        # self.prior_max_values = np.array([-7.9247152, -8.90048553, -1.24158352, -0.30304404]) + 0.2
 
         return
 
@@ -1108,15 +1085,8 @@ class lf:
         
         self.get_qlf_data()
 
-        # print("Len of self.data = ", len(self.data.logphi))
-        # import sys
-        # sys.exit()
 
         print("\n\n\tNumber of cores available for MCMC: ", ncores)
-
-        # print("len(self.sid) = ", len(self.sid))
-        # print("len(sid_all) = ", len(self.sid_all))
-        # print("self.sid==self.sid_all = ", np.all(self.sid==self.sid_all))
 
         if ncores <= 1:
             pool = None
@@ -1158,23 +1128,6 @@ class lf:
 
         self.plot_chains_and_corner(dirname=dirname, prior_tag=prior_tag)
 
-        # # Plot MCMC chains for each parameter separately and save
-        # param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
-        # for i, name in enumerate(param_names):
-        #     fig, ax = plt.subplots(figsize=(12, 3))
-        #     for walker in range(self.nwalkers_with_bp):
-        #         ax.plot(self.sampler_with_bp.chain[walker, :, i], alpha=0.1)
-        #     median = np.median(self.samples_with_bp[:, i])
-        #     ax.axhline(median, color='red', linestyle='--', label='Median')
-        #     ax.set_ylabel(name)
-        #     ax.set_xlabel('step')
-        #     ax.legend(fontsize=8)
-        #     plt.tight_layout()
-        #     # plt.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_chains_{i}_with_bad_points_{np.mean(self.z):.3f}.png")
-        #     plt.savefig(f"{dirname}Chains_{np.mean(self.z)}_{self.prior_tag}_Individual_{i}_with_bad_points.png")
-        #     plt.close(fig)
-
-
         if np.any(np.isnan(tau)):
             print("Warning: Autocorrelation time contains NaN values. This may indicate convergence issues.")
             with open(f"{dirname}nan_flagged", "w") as f:
@@ -1182,36 +1135,6 @@ class lf:
             import sys
             sys.exit("Exiting due to NaN in autocorrelation time.")
 
-        # print("\n\ntau:", tau)
-        # print("self.sampler_with_bp.get_chain().shape[0] / 50:", self.sampler_with_bp.get_chain().shape[0] / 50)
-        # print("tau > self.sampler_with_bp.get_chain().shape[0] / 50:", tau > self.sampler_with_bp.get_chain().shape[0] / 50)
-        # if np.any(tau > self.sampler_with_bp.get_chain().shape[0] / 50):
-        #     print("\n\n\nRecomputing MCMC with more steps...\n\n\n")
-        #     self.sampler_with_bp.reset()
-        #     self.sampler_with_bp.run_mcmc(None, 60000, progress=True)
-        #     self.samples_with_bp = self.sampler_with_bp.get_chain(flat=True)
-
-        #     self.plot_chains_and_corner(dirname=dirname, prior_tag=prior_tag, run_counter=1)
-
-        #     # Print autocorrelation time and acceptance rate for the sampler with bad points
-        #     try:
-        #         tau = self.sampler_with_bp.get_autocorr_time()
-        #     except AutocorrError as e:
-        #         print("Could not compute reliable autocorrelation time:", e)
-        #         tau = e.tau 
-        #         warning_msg = str(e)
-
-        #     print("Autocorrelation time (per parameter):", tau)
-        #     acceptance_fraction = self.sampler_with_bp.acceptance_fraction
-        #     print("Mean acceptance fraction:", np.mean(acceptance_fraction))
-        #     print("Acceptance fraction per walker:", acceptance_fraction)
-
-
-
-        # import sys
-        # from datetime import datetime
-        # sys.exit(f"\nQuitting for testing purposes\nprior tag = {self.prior_tag}\nTime right now = {datetime.now()}\n")
-        
         self.samples = self.samples_with_bp[:, :-3]
         self.marginalise_and_find_MAP()
         self.savedata_with_bp()
@@ -1705,10 +1628,6 @@ class lf:
         -------
         - volume : float
             The volume of the quasar sample in cMpc^3.
-
-        Notes
-        -----
-        CHECK!!! This function is not used in the code.
         """
 
         smap = [x for x in self.maps if x.sid == sample_id]
@@ -1866,10 +1785,6 @@ class lf:
         Returns
         -------
         None
-
-        Notes
-        -----
-        CHECK!!! This function is called only if `draw` is called with `plotlit=True`.
         """
         
         qlf_file = 'Data/allqlfs.dat'
@@ -1922,10 +1837,6 @@ class lf:
         Returns
         -------
         None
-
-        Notes
-        -----
-        CHECK!!! This function is not called in the code.
         """
 
         with open(filename, 'r') as f:

@@ -1,7 +1,3 @@
-# Checked once. Runs without error.
-# Produces boss.pdf as output.
-print("In boss.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

@@ -1,3 +1,12 @@
+"""
+The code needs to be checked, for compatibility. The function 
+we obtained till now by running `lfg_multiple.py` needs to be used here.
+However, it needs to be checked for compatibility, as we are using a 
+different statistical technique from before. We will need to include
+the weightage factor used in finding the double power law parameters,
+and its functional form, to remove the systematics from the data.
+"""
+
 import numpy as np 
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -205,8 +214,7 @@ def read_parameters_with_bp(filename="parameters_with_bp_new.dat"):
 #     return
 
 def get_rhoqso2(lfi, mlim, z, fit='individual', mbright=-35.0):
-    # Wait!!! IS THIS SUPPOSED TO BE c= MEAN or MEDIAN? CHECK THE LOGIC ONCE AGAIN PROPERLY!!!
-
+    
     rindices = np.random.randint(len(lfi.samples), size=100)
     n = np.array([rhoqso(lfi.log10phi, theta, mlim, z, mbright=mbright) 
                   for theta
@@ -709,9 +717,9 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
     #     plt.plot(z, e[i], lw=2, c='red', zorder=5, alpha=0.1)
 
     # up = np.percentile(e, 15.87, axis=0)
-    # print( 'up=', up )
+    # print('up=', up )
     # down = np.percentile(e, 84.13, axis=0)
-    # print( 'down=', down)
+    # print('down=', down)
     # tw18f = ax.fill_between(z, down, y2=up, color='red', zorder=5, alpha=0.6, edgecolor='None')
     
     # b = np.median(e, axis=0)
@@ -1308,6 +1316,3 @@ if __name__ == '__main__':
     end_time = time.time()
     print("End time:", end_time)
     print("Duration:", end_time - start_time)
-
-    # THE ERROR MUST BE BECAUSE THE CODE WAS FOR SINGLE QUASAR DATA. NOW I AM USING THE BINNED DATA. HENCE EACH BIN IS 
-    # POSSIBLY GETTING COUNTED MULTIPLE NUMBER OF TIMES AND HENCE THE VALUE IS VERY HIGH!!!

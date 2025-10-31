@@ -1,8 +1,3 @@
-# Checked once. Runs and produces the output lf.pdf, rhoqso_test.pdf, drhoqsodz_test.pdf, and evolutionFC.pdf.
-# I added few more commands to produce three more plots.
-# rhoqso and rhoqso_global.pdf s are used in fig 7 in the paper.
-print("In rhoqso_test.py")
-
 import numpy as np 
 import matplotlib as mpl
 mpl.use('Agg') 

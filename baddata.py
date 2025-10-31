@@ -1,6 +1,3 @@
-# Checked the code and it is working fine. It produces the output qsos_NotIncluded.pdf
-print("In baddata.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 

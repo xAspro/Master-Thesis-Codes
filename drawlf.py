@@ -1,6 +1,3 @@
-# Checked once. No implementation of this code directly in here.
-print("In drawlf.py")
-
 import numpy as np
 import emcee
 import matplotlib as mpl
@@ -322,10 +319,10 @@ def get_lf(lf, sid, z_plot, special='None'):
     # phi = np.where(phi==0, 1e-150, phi)  # Avoid log10(0)
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
-    # print( 'sid=', sid )
-    # print( 'mags=', mags)
-    # print( 'nums=', nums)
-    # print( 'total=', np.sum(nums))
+    # print('sid=', sid )
+    # print('mags=', mags)
+    # print('nums=', nums)
+    # print('total=', np.sum(nums))
 
     # Calculate errorbars on our binned LF.  These have been estimated
     # using Equations 1 and 2 of Gehrels 1986 (ApJ 303 336), as
@@ -679,8 +676,6 @@ def savedata_with_bp(lf):
 
 def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=True, c2=None, c3=None, includes_bad_points=False):
     """
-    CHECK!!!! Entering the details upto bins.py point.
-
     Adds the posterior sample LFs and best fit LF to the given axes.
 
     Parameters
@@ -710,15 +705,6 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
     -----
     - This function does not return any value, but modifies the axes 
       to include the luminosity function plots.
-    """
-    # print("In drawlf.py render")
-    # show_individual_fit, lf
-    # Everything else is not given this time
-
-    """
-
-    Plot data, best fit LF, and posterior LFs.
-
     """
 
     z_plot = lf.z.mean() 
@@ -750,8 +736,6 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
             
 
     if composite is not None:
-        # CHECK!!! This is not used when calling from bins.py
-        # Will be used for other cases like lfgs
 
         nmags = 200 
         mags = np.linspace(-34.0, -12.0, num=nmags)
@@ -772,8 +756,6 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
 
     if c2 is not None: 
-        # CHECK!!! This is not used when calling from bins.py
-        # Will be used for other cases like lfgs
 
         nmags = 200 
         mags = np.linspace(-34.0, -12.0, num=nmags)
@@ -794,8 +776,6 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
 
     if c3 is not None: 
-        # CHECK!!! This is not used when calling from bins.py
-        # Will be used for other cases like lfgs
         
         nmags = 200 
         mags = np.linspace(-34.0, -12.0, num=nmags)
@@ -886,8 +866,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
     if bad_data_set:
         for i in sids: 
             mags, left, right, logphi, uperr, downerr = get_lf(lf, i, z_plot)
-            print( mags[logphi>-100.0])
-            print( logphi[logphi>-100.0])
+            print(mags[logphi>-100.0])
+            print(logphi[logphi>-100.0])
             ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
                         xerr=np.vstack((left, right)), 
                         yerr=np.vstack((uperr, downerr)),
@@ -904,8 +884,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
         mags, left, right, logphi, uperr, downerr = get_lf(lf, i, z_plot)
 
-        # print( mags[logphi>-100.0])
-        # print( logphi[logphi>-100.0])
+        # print(mags[logphi>-100.0])
+        # print(logphi[logphi>-100.0])
 
         mask = logphi > -100.0
         data.append([])
@@ -955,8 +935,8 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         
         # For the rejected bins!
         mags_all, left_all, right_all, logphi_all, uperr_all, downerr_all = get_lf_all(lf, i, z_plot)
-        # print( mags_all[logphi_all!=logphi])
-        # print( logphi_all[logphi_all!=logphi])
+        # print(mags_all[logphi_all!=logphi])
+        # print(logphi_all[logphi_all!=logphi])
 
         select = (logphi_all!=logphi)
         print("select= ", select)

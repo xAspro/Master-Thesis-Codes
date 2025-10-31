@@ -1,6 +1,3 @@
-# Checked once. No implementation of this code directly in here.
-print("In giallongo_compare.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -121,7 +118,7 @@ def plot(ax, lf, zrange):
 
     handles, labels = ax.get_legend_handles_labels()
 
-    print( handles)
+    print(handles)
 
     if zrange[0] < 4.2: 
         myorder = [2,4,3,5,1,0]
