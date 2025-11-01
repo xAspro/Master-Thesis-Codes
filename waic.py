@@ -1,6 +1,3 @@
-# Checked once. well written comments. Doesnt execute here.
-print("In waic.py")
-
 import numpy as np
 
 def ppost(lf, mag, theta):

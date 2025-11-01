@@ -1,9 +1,3 @@
-# Didnt have any import statements in the original file. Added them.
-# Dont have any other file to implement this file. This file is never run!
-# But except for one function, all of the functions here take no arguments.
-# The code is also supposed to produce a plot named 'e_1ry_evol.pdf'
-print("In hm12.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')

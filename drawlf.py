@@ -21,14 +21,6 @@ cosmo = {'omega_M_0':0.3,
 xlim = (-12.0, -34.0)
 ylim = (-16.0, 0.0)
 
-# xlim = (125, -100)
-# ylim = (-125, 125)
-
-# xlim = (25, -50)
-# ylim = (-45, 25)
-
-# xlim = (-30, -40)
-# ylim = (-5.0, 5.0)
 
 """Makes LF plots at particular redshifts.  Shows data with
 individual and composite models.  This is similar to the draw()
@@ -37,8 +29,6 @@ function in individual.py but is more flexible.
 """
 
 def lfsample(theta, n, mlims):
-    # print("In drawlf.py lfsample")
-
     """
     Return n qso magnitudes between mlims[0] and mlims[1] when the LF
     is described by parameters theta.
@@ -49,7 +39,6 @@ def lfsample(theta, n, mlims):
     mmax = mlims[1]
 
     def lnprob(x, theta):
-        # print("In drawlf.py lfsample lnprob")
 
         if x < mmax and x > mmin: 
             mag = x 
@@ -154,8 +143,6 @@ def plot_bestfit_lf(lf, ax, mags, **kwargs):
     return bf 
 
 def binVol(self, selmap, mrange, zrange):
-    # print("In drawlf.py binVol")
-
     """
 
     Calculate volume in an M-z bin for *one* selmap.
@@ -175,8 +162,6 @@ def binVol(self, selmap, mrange, zrange):
 
 
 def binVol_all(self, selmap, mrange, zrange):
-    # print("In drawlf.py binVol_all")
-
     """
 
     Calculate volume in an M-z bin for *one* selmap.
@@ -196,17 +181,13 @@ def binVol_all(self, selmap, mrange, zrange):
 
 
 def totBinVol(lf, m, mbins, selmaps):
-    # print("In drawlf.py totBinVol")
-
     """
 
     Given magnitude bins mbins and a list of selection maps
     selmaps, compute the volume for an object with magnitude m.
 
     """
-    # print("In drawlf.py totBinVol")
-    # print("m= ", m)
-    # print("mbins= ", mbins)
+    
     idx = np.searchsorted(mbins, m)
     mlow = mbins[idx-1]
     mhigh = mbins[idx]
@@ -219,8 +200,6 @@ def totBinVol(lf, m, mbins, selmaps):
 
 
 def totBinVol_all(lf, m, mbins, selmaps):
-    # print("In drawlf.py totBinVol_all")
-
     """
 
     Given magnitude bins mbins and a list of selection maps
@@ -278,7 +257,6 @@ def get_lf(lf, sid, z_plot, special='None'):
 
     m = lf.M1450_all[lf.sid_all==sid] 
 
-    # print("\n\n\n\n\t\tm= ", m, "\n\n\n\n")
 
     selmaps = [x for x in lf.maps if x.sid == sid]
 
@@ -436,8 +414,6 @@ def get_lf_all(lf, sid, z_plot, special='None'):
 
 
 def get_lf_sample(lf, sid, z_plot):
-    # print("In drawlf.py get_lf_sample")
-
     # Bin data.  This is only for visualisation and to compare
     # with reported binned values.  
 
@@ -494,7 +470,6 @@ def get_lf_sample(lf, sid, z_plot):
 
 
 def plot_giallongo_z5p75(lf, ax, mags):
-    # print("In drawlf.py plot_giallongo_z5p75")
 
     M_star_giallongo = -23.4
     log10phi_star_giallongo = -5.8
@@ -510,7 +485,6 @@ def plot_giallongo_z5p75(lf, ax, mags):
 
 
 def plot_giallongo_z4p75(lf, ax, mags):
-    # print("In drawlf.py plot_giallongo_z4p75")
 
     M_star_giallongo = -23.6
     log10phi_star_giallongo = -5.7
@@ -526,7 +500,6 @@ def plot_giallongo_z4p75(lf, ax, mags):
 
 
 def plot_giallongo_z4p25(lf, ax, mags):
-    # print("In drawlf.py plot_giallongo_z4p25")
 
     M_star_giallongo = -23.2
     log10phi_star_giallongo = -5.2
@@ -563,7 +536,6 @@ def savedata(data):
     return 
 
 def find_bad_points(lf):
-    # print("In drawlf.py find_bad_points")
 
     epsilon = 1e-10  # To avoid division by zero or log(0) issues
 
@@ -627,7 +599,6 @@ def find_bad_points(lf):
     return
 
 def dsl(lf, i):
-    print("In drawlf.py dsl")
     print("i= ", i)
     for x in lf.maps:
         print("x.sid= ", x.sid, "\tx.label= ", x.label)

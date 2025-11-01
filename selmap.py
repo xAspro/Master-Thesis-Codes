@@ -1,12 +1,3 @@
-# Already run by Run_Selmap_for_all_files_in_Data_new.py
-# 
-# Need to understand what is the bottom code doing? What is compare.pdf?
-# compare.pdf is just a comparison of p and p found after interpolation
-#
-# Dont change this code. work with selmap2.py
-
-print("In selmap.py")
-
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg') 
@@ -55,18 +46,6 @@ def plot_selmap(z, m, p, title='', filename='Selmap_Plots/selmap.pdf',
     print("Saving fig in filename: ", filename)
     plt.savefig(filename, bbox_inches='tight')
 
-##############################################################################################################
-##                                                                                                          ##
-##                                                                                                          ##
-##   qso_file and map_file seems consistent if we swap them in the context of this code(not logically)      ##
-##   croom_selfunc is different from sample. selfunc has 976 entries in total(for both ngp and sgp),        ##
-##   and 640 of them are read.                                                                              ##
-##   sample has 7k+(NGP) and 2k+(SGP) entries in total.                                                     ##
-##   Selfunc is just a map with mesh points with probability values.                                        ##
-##   Sample is a list of quasars with their redshifts and magnitudes.                                       ##
-##                                                                                                          ##
-##                                                                                                          ##
-##############################################################################################################
 
 map_file = 'Data_new/croom09ngp_selfunc.dat'
 qso_file = 'Data_new/croom09ngp_sample.dat'
@@ -113,8 +92,6 @@ if METHOD == 'spline':
     #
 
     tck = bisplrep(z, m, p)
-    # znew = np.linspace(0, 3.5, num=500)
-    # mnew = np.linspace(-30, -16, num=500)
 
     znew = np.linspace(zmin, zmax, num=500)
     mnew = np.linspace(Mbright, Mfaint, num=500)
@@ -125,9 +102,6 @@ if METHOD == 'spline':
 if METHOD == 'linear':
     points = np.vstack((z,m)).T
     f = linInterp(points, p)
-    
-    # znew = np.linspace(0, 3.5, num=500)
-    # mnew = np.linspace(-30, -16, num=500)
 
     znew = np.linspace(zmin, zmax, num=500)
     mnew = np.linspace(Mbright, Mfaint, num=500)

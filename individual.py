@@ -41,15 +41,15 @@ def getqlums(lumfile, zlims=None):
 
     Parameters
     ----------
-    lumfile : str
+    - lumfile : str
         The file containing the quasar luminosities.
-    zlims : list of float, optional
+    - zlims : list of float, optional
         The redshift limits for the quasar luminosities. 
         The default is None.
 
     Returns
     -------
-    tuple
+    - tuple
         A tuple containing the following elements:
         - z : ndarray
             The redshifts of the selected quasars.
@@ -85,10 +85,6 @@ def getqlums(lumfile, zlims=None):
                                                 usecols=(1,2,3,4,5),
                                                 unpack=True)
     if zlims is None:
-        # print("In getqlums")
-        # print("In lumfile = ", lumfile)
-        # print("zlims is None")
-        # print("select1 is None")
         select = None
     else:
         z_min, z_max = zlims 
@@ -100,8 +96,6 @@ def getqlums(lumfile, zlims=None):
     area_all = area[select]
     sample_id_all = sample_id[select]
 
-    # print("z = ", z, "\t\tsample_id = ", sample_id)
-    # print("z_all = ", z_all)
 
     try:
         sid = sample_id[0]
@@ -142,18 +136,6 @@ def getqlums(lumfile, zlims=None):
     area = area_all[select]
     sample_id = sample_id_all[select]
 
-    # if select is None:
-    #     print("In getqlums")
-    #     print("In lumfile = ", lumfile)
-    #     print("select2 is None")
-    #     print("z: ", z)
-    #     print("size of z: ", z.size)
-    # if z.size != 0:
-    #     print("\n\n\n\n\n\t\t\t\tz[0]: ", z[0])
-    #     # CHECK THIS!!!!
-    #     # Sometimes z will be a number and sometimes it will be an array of a number(at least while calling bins.py)
-    #     # Because bins.py always gives zlims, so None case will occur only when select2 is None!
-
     return (z, mag, p, area, sample_id, z_all, mag_all, p_all,
             area_all, sample_id_all)
         
@@ -165,9 +147,9 @@ def getselfn(selfile, zlims=None):
 
     Parameters
     ----------
-    selfile : str
+    - selfile : str
         The file containing the selection map.
-    zlims : list of float, optional
+    - zlims : list of float, optional
         The redshift limits for the quasar luminosities. 
         The default is None.
 
@@ -190,12 +172,9 @@ def getselfn(selfile, zlims=None):
     It is possible that the select value is None. In that case, all values
     are returned. The array sizes are not guaranteed to be the same.
     """
-
-    # print("In getselfn")
-    # print("selfile: ", selfile)
+    
 
     with open(selfile,'r') as f: 
-        # print("f: ", f)
         z, mag, p, dz, dm = np.loadtxt(f, usecols=(1,2,3,4,5), unpack=True)
 
     if zlims is None:
@@ -223,7 +202,7 @@ def volume(z, area, cosmo=cosmo):
 
     Returns
     -------
-    float
+    - float
         Comoving volume in cMpc^3 per unit redshift.
     """
 
@@ -238,12 +217,12 @@ def percentiles(x):
 
     Parameters
     ----------
-    x : array_like
+    - x : array_like
         Input array.
 
     Returns
     -------
-    list
+    - list
         List containing the upper, lower, and central percentiles.
     """
     
@@ -307,10 +286,6 @@ class selmap:
         - zlims : list of float, optional
             The redshift limits for the selection map. 
             The default is None.
-
-        Returns
-        -------
-        None
 
         """
 
@@ -539,9 +514,6 @@ class lf:
         - zlims : list of float, optional
             The redshift limits for the quasar luminosities.
 
-        Returns
-        -------
-        None
 
         Notes
         -----
@@ -713,13 +685,6 @@ class lf:
         best-fit values. A redundant assertion is included to ensure that the 
         minimum values are always less than the maximum values.
 
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
 
         Attributes
         ----------
@@ -744,12 +709,12 @@ class lf:
 
         Parameters
         ----------
-        theta : ndarray
+        - theta : ndarray
             The parameter vector to be evaluated.
 
         Returns
         -------
-        float
+        - float
             The log prior probability. Returns 0.0 if theta is within the prior
             bounds, and -np.inf if theta is outside the prior bounds.
         """
@@ -766,12 +731,12 @@ class lf:
 
         Parameters
         ----------
-        theta : ndarray
+        - theta : ndarray
             The parameter vector to be evaluated.
 
         Returns
         -------
-        float
+        - float
             The log-probability of the QLF model given the parameters. Returns -np.inf
             if the log prior is not finite.
         """
@@ -797,9 +762,10 @@ class lf:
             The number of CPU cores to use for parallel processing. This allows the MCMC
             sampling to be performed in parallel, speeding up the computation.
 
-        Returns
-        -------
-        None
+
+        Notes
+        -----
+        Unable to do parallel processing. That portion of code is irrelevant and not used.
 
         """
         
@@ -808,10 +774,10 @@ class lf:
         pos = [self.mcmc_start + 1e-4*np.random.randn(self.ndim) for i
                in range(self.nwalkers)]
 
-        print("\n\n\tNumber of cores available for MCMC: ", ncores)
+        # print("\n\n\tNumber of cores available for MCMC: ", ncores)
 
-        pool = Pool(ncores)
-        print("Using multiprocessing pool with {} cores...\n\n\n".format(ncores))
+        # pool = Pool(ncores)
+        # print("Using multiprocessing pool with {} cores...\n\n\n".format(ncores))
 
         # lnprob_pickable = dill.loads(dill.dumps(self._lnprob))
         # self.sampler = emcee.EnsembleSampler(self.nwalkers, self.ndim,
@@ -827,6 +793,9 @@ class lf:
         return
     
     def find_Pb_Yb_Vb(self):
+        """
+        Generate random values for Pb, Yb, and Vb based on the best-fit parameters.
+        """
         Pb = np.random.uniform(0.0, 1.0, size=self.nwalkers_with_bp)
 
         mean = self.bf.x[0]
@@ -846,6 +815,13 @@ class lf:
         return np.array([Pb, Yb, Vb]).T
     
     def get_qlf_data(self):
+        """
+        Compute the binned QLF for all sample IDs and store the results in the `self.data` attribute.
+        This function calculates the binned QLF for each unique sample ID in the data,
+        using the effective volume (Veff) for each bin. It also calculates error bars
+        on the binned LF using the Gehrels 1986 method.
+
+        """
 
         data = []
         for sid in np.unique(self.sid):
@@ -936,6 +912,20 @@ class lf:
         return
     
     def _lnprior_with_bad_points(self, params):
+        """
+        Compute the log prior probability for the given parameters.
+
+        Parameters
+        ----------
+        - params : ndarray
+            The parameter vector containing the QLF parameters and bad point parameters.
+
+        Returns
+        -------
+        - float
+            The log prior probability. Returns 0 if the parameters are within the prior
+            bounds, and -np.inf if any parameter is outside the prior bounds.
+        """
         logphi, M_star, alpha, beta = params[:4]
         Pb, Yb, Vb = params[4:]
 
@@ -964,28 +954,41 @@ class lf:
             # print("Returning 0 for prior tag 1")
             return 0
         
-        elif self.prior_tag == 2:
-            if Pb < 0 or Pb > 1:
-                return -np.inf
-            if Vb <= 0:
-                return -np.inf
+        # elif self.prior_tag == 2:
+        #     if Pb < 0 or Pb > 1:
+        #         return -np.inf
+        #     if Vb <= 0:
+        #         return -np.inf
             
-            if logphi < -20 or logphi > 0:
-                return -np.inf
+        #     if logphi < -20 or logphi > 0:
+        #         return -np.inf
             
-            if M_star < -50 or M_star > 0:
-                return -np.inf
+        #     if M_star < -50 or M_star > 0:
+        #         return -np.inf
             
-            if alpha < -7 or alpha > beta:
-                return -np.inf
+        #     if alpha < -7 or alpha > beta:
+        #         return -np.inf
             
-            if beta > 0:
-                return -np.inf
-            # print("Returning 0 for prior tag 2")
-            return - np.log(1 + Pb) - np.log(1 + Vb) 
+        #     if beta > 0:
+        #         return -np.inf
+        #     # print("Returning 0 for prior tag 2")
+        #     return - np.log(1 + Pb) - np.log(1 + Vb) 
         
     
     def _lnlikelihood_with_bad_points(self, params):
+        """
+        Compute the log-likelihood for the QLF model with bad data points.
+
+        Parameters
+        ----------
+        - params : ndarray
+            The parameter vector containing the QLF parameters and bad point parameters.
+
+        Returns
+        -------
+        - float
+            The log-likelihood for the QLF model with bad data points.
+        """
         func_params = params[:4]
         Pb, Yb, Vb = params[4:]
 
@@ -1004,6 +1007,19 @@ class lf:
         return lnL
     
     def _lnposterior_with_bad_points(self, params):
+        """
+        Compute the log-posterior probability for the QLF model with bad data points.
+        
+        Parameters
+        ----------
+        - params : ndarray
+            The parameter vector containing the QLF parameters and bad point parameters.
+
+        Returns
+        -------
+        - float
+            The log-posterior probability for the QLF model with bad data points.
+        """
         lp = self._lnprior_with_bad_points(params)
         if not np.isfinite(lp):
             return -np.inf
@@ -1015,6 +1031,23 @@ class lf:
         return lp + ll
     
     def plot_chains_and_corner(self, dirname='', prior_tag=1, run_counter=0):
+        """
+        Plot MCMC chains and corner plot for the QLF parameters with bad data points.
+        
+        Parameters
+        ----------
+        - dirname : str, optional
+            The directory name where the output files will be saved. The default is an empty string.
+        - prior_tag : int, optional
+            The prior tag to be used for differentiating between different models. The default is 1.
+        - run_counter : int, optional
+            A counter to differentiate between multiple runs. The default is 0.
+
+
+        Notes
+        -----
+        run_counter is not used currently.
+        """
         # Print parameter medians and 1-sigma intervals
         param_names = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
         self.cred_interval = []
@@ -1033,16 +1066,6 @@ class lf:
             title_kwargs={"fontsize": 12},
             quantiles=[0.16, 0.5, 0.84],
         )
-        # fig = corner.corner(self.samples_with_bp, labels=[r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$'],
-        #               quantiles=[0.16, 0.5, 0.84], bins=20, 
-        #               levels=[0.1175, 0.393, 0.676, 0.865, 0.955, 0.989],
-        #             #   levels=[0.1175, 0.393, 0.676, 0.865],
-        #               smooth=True,
-        #               fill_contours=True,
-        #               plot_datapoints=False,
-        #               show_titles=True, title_kwargs={"fontsize": 12})
-        # fig.suptitle(f"Prior Model: {prior_tag}\nrun_counter: {run_counter}", fontsize=16)
-        # fig.savefig(f"{dirname}mcmc_{np.mean(self.z)}_{self.prior_tag}_checking_corner_with_bad_points_{np.mean(self.z):.3f}.png")
         plt.savefig(f"{dirname}Corner_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points_{run_counter}.png")
         plt.savefig(f"{dirname}Corner_{np.mean(self.z):.4f}_{self.prior_tag}_with_bad_points_{run_counter}.pdf")
 
@@ -1066,6 +1089,27 @@ class lf:
 
 
     def run_mcmc_with_bad_points(self, ncores, dirname='', prior_tag=1):
+        """
+        Run Markov Chain Monte Carlo (MCMC) sampling to estimate the posterior distribution
+        of the QLF parameters, accounting for potential bad data points.
+        This function initializes the MCMC sampler, runs the sampling process, and stores
+        the samples in the `self.samples_with_bp` attribute.
+
+        Parameters
+        ----------
+        - ncores : int
+            The number of CPU cores to use for parallel processing. This allows the MCMC
+            sampling to be performed in parallel, speeding up the computation.
+        - dirname : str, optional
+            The directory name where the output files will be saved. The default is an empty string.
+        - prior_tag : int, optional
+            The prior tag to be used for differentiating between different models. The default is 1.
+
+
+        Notes
+        -----
+        Unable to do parallel processing. That code is irrelevant. Just keep ncores as 1
+        """
 
         self.prior_tag = prior_tag
 
@@ -1075,8 +1119,6 @@ class lf:
         # manually setting the guess for beta to be negative.
         if self.bf.x[3] > 0:
             self.mcmc_start[3] = -2.0
-
-        # self.mcmc_start = [-5.7, -21.3, -2.74, -1.0]
 
         pos_with_bp = np.hstack([
             self.bf.x + 1 * np.random.uniform(-1, 1, size=(self.nwalkers_with_bp, self.bf.x.size)),
@@ -1154,6 +1196,7 @@ class lf:
         - n_samples : int, optional
             The number of samples to draw from the posterior distribution.
             The default is 1000.
+
         """
         if self.samples_with_bp is not None:
             idx = np.random.choice(self.samples_with_bp.shape[0], size=n_samples, replace=False)
@@ -1169,14 +1212,7 @@ class lf:
         
         This method clears the `samples` attribute and resets the `sampler` attribute
         to None, effectively removing any previously stored MCMC samples.
-        
-        Parameters
-        ----------
-        None
-        
-        Returns
-        -------
-        None
+                
         """
         self.samples = None
         self.sampler = None
@@ -1186,42 +1222,44 @@ class lf:
     
 
     def corner_quantile(self, samples, central_fraction=0.8, **kwargs):
+        """
+        Create a corner plot with quantile-based parameter ranges.
+
+        Parameters
+        ----------
+        - samples : ndarray
+            The MCMC samples to be plotted.
+        - central_fraction : float, optional
+            The fraction of the central distribution to include in the plot. The default is 0.8.
+        - **kwargs : dict
+            Additional keyword arguments to be passed to the corner.corner function.
+
+        Returns
+        -------
+        - fig : Figure
+            The corner plot figure.
+        """
         lower_q = (1 - central_fraction) / 2
         upper_q = 1 - lower_q
         bounds = [
             (np.quantile(samples[:, i], lower_q), np.quantile(samples[:, i], upper_q))
             for i in range(samples.shape[1])
         ]
-        # This is for checking purpose.
+
         # Variance alone is checked from the left tail.
         bounds[-1] = (np.min(samples[:, -1]), np.quantile(samples[:, -1], upper_q))
         return corner.corner(samples, range=bounds, **kwargs)
     
     def marginalise_and_find_MAP(self):
-        # OG Method
-        # print("\nFinding MAP (maximum a posteriori) values with bad points...")
-        # log_probs = np.array([self._lnposterior_with_bad_points(theta) for theta in self.samples_with_bp])
-        # map_idx = np.argmax(log_probs)
-        # self.map_params = self.samples_with_bp[map_idx]
-        # print("\nMAP (maximum a posteriori) values with bad points:")
-        # labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
-        # for i, val in enumerate(self.map_params):
-        #     print(f"{labels[i]}: {val:.4f}")
-        # print("\nMAP (maximum a posteriori) values with bad points stored in self.map_params.")
+        """
+        Marginalize the posterior distribution and find the Maximum A Posteriori (MAP) values
+        for the QLF parameters.
 
-        # Method 2
-        # print("\nFinding MAP (maximum a posteriori) values with bad points...")
-        # marginalized_samples = self.samples_with_bp[:, :-3]
-        # H, edges = np.histogramdd(marginalized_samples, bins=50, density=True)
-        # max_idx = np.unravel_index(np.argmax(H), H.shape)
-        # self.map_params = np.array([edges[i][max_idx[i]] for i in range(len(edges))])
-        # print("\nMAP (maximum a posteriori) values with bad points:")
-        # labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$']
-        # for i, val in enumerate(self.map_params):
-        #     print(f"{labels[i]}: {val:.4f}")
-        # print("\nMAP (maximum a posteriori) values with bad points stored in self.map_params.")
+        This method computes the MAP values for the QLF parameters by taking the median
+        of the MCMC samples stored in `self.samples_with_bp`. The MAP values are stored
+        in the `self.map_params` attribute and printed to the console.
 
-        # But Better Method
+        """
         self.map_params = np.median(self.samples_with_bp, axis=0)
         print("\nMAP (maximum a posteriori) values with bad points:")
         labels = [r'$\phi_*$', r'$M_*$', r'$\alpha$', r'$\beta$', r'$P_b$', r'$Y_b$', r'$V_b$']
@@ -1232,6 +1270,10 @@ class lf:
 
 
     def savedata_with_bp(self):
+        """
+        Save the QLF parameters with bad points to a data file.
+
+        """
         if self.zlims == (0.1, 0.4):
             with open("parameters_with_bp_new.dat", "w") as f:
                 f.write("# The parameters of the QLF with bad points are given here.\n")
@@ -1257,14 +1299,11 @@ class lf:
 
         Parameters
         ----------
-        params : list of list
+        - params : list of list
             The parameters for the QLF model, typically containing values for phi_star, M_star, alpha, and beta.
-        zlims : tuple
+        - zlims : tuple
             A tuple containing the redshift limits (zmin, zmax) for which the bin is to be plotted.
 
-        Returns
-        -------
-        None
         """
         # params[0] = logphi params
         # params[1] = M_star params
@@ -1286,10 +1325,6 @@ class lf:
         mag = np.arange(-34, -12, 0.1)
 
         log10phi_star, M_star, alpha, beta = [f(coeff, np.mean(self.z)) for coeff in params]
-        # print("log10phi_star = ", log10phi_star)
-        # print("M_star = ", M_star)
-        # print("alpha = ", alpha)
-        # print("beta = ", beta)
 
         phi = 10.0**log10phi_star / (10.0**(0.4*(alpha+1)*(mag-M_star)) +
                                      10.0**(0.4*(beta+1)*(mag-M_star)))
@@ -1327,20 +1362,23 @@ class lf:
 
         Parameters
         ----------
-        params : list of list
+        - params : list of list
             The parameters for the QLF model, typically containing values for phi_star, M_star, alpha, and beta.
-        fig : matplotlib.figure.Figure, optional
+        - fig : matplotlib.figure.Figure, optional
             Figure object for mosaic plotting
-        ax : matplotlib.axes.Axes, optional
+        - ax : matplotlib.axes.Axes, optional
             Axes object for mosaic plotting
-        subplot_index : int, optional
+        - subplot_index : int, optional
             Index for subplot in mosaic
-        n_rows, n_cols : int, optional
+        - n_rows, n_cols : int, optional
             Grid dimensions for proper tick labeling
 
         Returns
         -------
-        fig, ax : if creating new plot, otherwise None
+        - fig: matplotlib.figure.Figure or None
+            Figure object if individual plot is created, else None
+        - ax: matplotlib.axes.Axes or None
+            Axes object if individual plot is created, else None
         """
         print("params = ", params)
         print("zlims = ", self.zlims)
@@ -1386,10 +1424,6 @@ class lf:
         ax.text(0.05, 0.95, f'{self.zlims[0]:.2f} $\le$ z $<$ {self.zlims[1]:.2f}', transform=ax.transAxes, 
                 verticalalignment='top', fontsize=10, bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
         
-        # # Set consistent limits for ALL plots (both individual and mosaic)
-        # ax.set_xlim(-12, -34)  # Note: reversed for magnitude
-        # ax.set_ylim(-16, 0)
-
 
         # Set consistent limits for ALL plots (both individual and mosaic)
         ax.set_xlim(-12, -34)  # Faint to bright (your preferred convention: -12 on left, -34 on right)
@@ -1427,34 +1461,6 @@ class lf:
         
         return None
 
-            
-    # def plot_bins_for_params_with_composite(self, params):
-
-    #     def f(coeff, z):
-    #         """
-    #         Return a polynomial function using the coefficients provided at z.
-    #         """
-    #         print("coeff = ", coeff)
-    #         print("z = ", z)
-    #         return np.polyval(coeff, z)
-        
-
-    #     labels = ["logphi", "M_star", "alpha", "beta"]
-    #     par = 
-    #     for i in range(len(params)):
-    #         label = labels[i]
-    #         samples_loaded = np.load(f"{label}_sample.npy")
-    #         print(samples_loaded.shape)
-
-
-
-
-
-
-
-
-
-
 
     def get_percentiles(self):
         """
@@ -1464,13 +1470,6 @@ class lf:
         (phi_star, M_star, alpha, and beta) based on the provided samples. 
         The computed percentiles are stored as attributes of the object.
 
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
         """
         self.phi_star = percentiles(self.samples[:,0])
         self.M_star = percentiles(self.samples[:,1])
@@ -1490,9 +1489,6 @@ class lf:
         - dirname : str, optional
             Directory name to save the plot. The default is ''.
 
-        Returns
-        -------
-        None
         """
 
         mpl.rcParams['font.size'] = '14'
@@ -1517,9 +1513,6 @@ class lf:
         - ylabel : str
             The label for the y-axis.
 
-        Returns
-        -------
-        None
         """
 
         ax = fig.add_subplot(self.bf.x.size, 1, param+1)
@@ -1546,9 +1539,6 @@ class lf:
         - dirname : str, optional
             Directory name to save the plot. The default is ''.
 
-        Returns
-        -------
-        None
         """
 
         mpl.rcParams['font.size'] = '10'
@@ -1578,10 +1568,7 @@ class lf:
             The absolute magnitudes for which to compute the luminosity function.
         - kwargs : keyword arguments
             Additional keyword arguments for plotting (e.g., color, linestyle).
-
-        Returns
-        -------
-        None    
+    
         """
 
         random_thetas = self.samples[np.random.randint(len(self.samples), size=300)]
@@ -1604,9 +1591,6 @@ class lf:
         - kwargs : keyword arguments
             Additional keyword arguments for plotting (e.g., color, linestyle).
             
-        Returns
-        -------
-        None
         """
 
         phi_fit = self.log10phi(self.bf.x, mags)
@@ -1782,9 +1766,6 @@ class lf:
         - z_plot : float
             The redshift at which to plot the literature data.
 
-        Returns
-        -------
-        None
         """
         
         qlf_file = 'Data/allqlfs.dat'
@@ -1834,9 +1815,6 @@ class lf:
         - filename : str
             The name of the file containing the QLF data.
 
-        Returns
-        -------
-        None
         """
 
         with open(filename, 'r') as f:
@@ -1865,9 +1843,6 @@ class lf:
         - plotlit : bool, optional
             Whether to plot literature data. The default is False.
 
-        Returns
-        -------
-        None
         """
         mpl.rcParams['font.size'] = '22'
 

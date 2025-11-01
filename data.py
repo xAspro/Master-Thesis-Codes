@@ -75,9 +75,6 @@ class sample:
         label : str, optional
             Label for the data. Defaults to None.
             
-        Returns
-        -------
-        None
 
         """
 
@@ -110,10 +107,6 @@ def plot_data(data, plotname):
     
     plotname : str
         The name of the file where the plot will be saved.
-
-    Returns
-    -------
-    None
 
     """
 

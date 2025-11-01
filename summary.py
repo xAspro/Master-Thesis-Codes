@@ -725,7 +725,7 @@ def summary_plot(composite=None, individuals=None, compOpt=None, sample=False):
     print("plot_beta done")
 
     plt.savefig('evolution.pdf',bbox_inches='tight')
-    print("In summary.py summary_plot > plt.savefig('evolution.pdf',bbox_inches='tight')")
+    print('Saved figure to evolution.pdf')
 
     mpl.rcParams['font.size'] = '22'
     

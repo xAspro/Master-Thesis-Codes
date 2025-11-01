@@ -119,16 +119,36 @@ zls = [(0.1, 0.4), (0.4, 0.6), (0.6, 0.8), (0.8, 1.0), (1.0, 1.2),
        (6.5, 8.5)
     ]
 
-# This portion of code is only for trying to get the mosaic plot of
-# our simulated function with respect to the data
-# So, first run this with this value being False, once you get the 
-# functional form, enter it manually here (need to be automated),
-# and switch this to True, to get the mosaic plot
-if False: 
-    params = [[-0.3261, 1.2184, -7.2610],
-              [-0.0439, 0.3283, -1.6293, -23.3691],
-              [-0.0552, 0.1424, -3.6888],
-              [-0.1612, -1.4329]]
+# -----------------------------------------------------------------------------
+# Mosaic Plot Toggle and Parameter Setup
+# -----------------------------------------------------------------------------
+# This section controls whether to run the mosaic plot visualization
+# for our simulated function compared to the data.
+#
+# Workflow:
+#   1️ First run with `mosaic_plot_run = False`:
+#       - This executes the main analysis code and produces binned lf.
+#       - Then `lfg_multiple` needs to be run and it will produce the best fit parameters.
+#
+#   2️ Then (manually for now) copy those fitted parameters into `params` below
+#       and set `mosaic_plot_run = True` to generate the mosaic plot.
+#
+#   > TODO (Automation):
+#       - Automate parameter transfer by saving the fitted parameters to a file 
+#         and then loading them here directly.
+#       - Once automated, the manual copy-paste of params will no longer be needed.
+# -----------------------------------------------------------------------------
+
+
+mosaic_plot_run = False  # Set to True after first run to produce the mosaic plot
+
+if mosaic_plot_run:
+
+    # params value from previous runs
+    # params = [[-0.3261, 1.2184, -7.2610],
+    #           [-0.0439, 0.3283, -1.6293, -23.3691],
+    #           [-0.0552, 0.1424, -3.6888],
+    #           [-0.1612, -1.4329]]
     
     params = [[-0.3280, 1.2183, -7.2532],
               [-0.0454, 0.3198, -1.6133, -23.3546],
@@ -153,19 +173,16 @@ if False:
             lfi.plot_bins_for_params_mosaic(params, fig=fig, ax=axes[i], 
                                           subplot_index=i, n_rows=n_rows, n_cols=n_cols, n_plots=n_plots)
 
-    # Hide unused subplots
+
     for j in range(len(zls), len(axes)):
         axes[j].set_visible(False)
 
-    # Add common labels
     fig.text(0.5, 0.02, r'$M_{1450}$', ha='center', fontsize=16)
     fig.text(0.02, 0.5, r'$\log_{10}(\phi^*)$ [cMpc$^{-3}$ mag$^{-1}$]', va='center', rotation='vertical', fontsize=16)
     
-    # Add overall title
     fig.suptitle('Quasar Luminosity Function across Redshift Bins', fontsize=28, y=0.98)
 
     plt.tight_layout()
-    # Remove gaps completely
     plt.subplots_adjust(left=0.04, bottom=0.04, top=0.94, hspace=0.0, wspace=0.0)
     plt.savefig("QLF_bins_mosaic.png", dpi=300, bbox_inches='tight')
     plt.savefig("QLF_bins_mosaic.pdf", bbox_inches='tight')
@@ -183,8 +200,6 @@ if False:
 filename = 'bins_check.dat'
 
 def main(cores):
-    print("In main of bins.py")
-
     lfs = [] 
     cnt = 0
 
@@ -236,14 +251,6 @@ def main(cores):
         lfi.get_percentiles()
         drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=True)
 
-
-
-        # lfi.run_mcmc(ncores=int(cores))
-        # lfi.get_percentiles()
-        # drawlf.draw(lfi, dirname=curr_date_time, show_individual_fit=True, includes_bad_points=False)
-        # print("Drawn the LF for this bin.")
-
-
         
         # FOR SUMMARY (Fig 4)
         if WRITE_PARAMS2: 
@@ -282,7 +289,6 @@ def main(cores):
 
 
 if __name__ == "__main__":
-    print("In name == '__main__' of bins.py")
     cores = int(sys.argv[1]) if len(sys.argv) > 1 else 1
     main(cores)
 

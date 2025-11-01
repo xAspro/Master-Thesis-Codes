@@ -136,12 +136,10 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     ax.set_yticks(np.arange(-12, -4, 1))
 
     if compOpt is not None: 
-        print("Inside plot_phi_star, compOpt is not None")
         phi = compOpt.atz(z, compOpt.getparams(compOpt.bf.x)[0])
         ax.plot(z, phi, color='g', zorder=2, dashes=[7,2])
 
     if composite is not None: 
-        print("Inside plot_phi_star, composite is not None")
         # bf = np.median(composite.samples, axis=0)
         bf = composite.map_params
         if sample:
@@ -175,11 +173,9 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
         ax.plot(z, phi, color='k', zorder=5, lw=1)
 
     if lfg_break is not None: 
-        print("Inside plot_phi_star, lfg_break is not None")
         plot_model(lfg_break, 0, ax)
 
     if lfg_polyb is not None: 
-        print("Inside plot_phi_star, lfg_polyb is not None")
         plot_model_polyb(lfg_polyb, 0, ax)
 
     zmean, zl, zu, u, l, c = getParam(individuals, 0, which='new', dtype='good')
@@ -646,9 +642,9 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     handles.append((m3f,m3))
     labels.append('Model 3')
 
-    # Print the initial handles and labels
-    print("Initial handles:", handles)
-    print("Initial labels:", labels)
+    # # Print the initial handles and labels
+    # print("Initial handles:", handles)
+    # print("Initial labels:", labels)
 
     # Filter out (None, None) entries
     filtered_handles_labels = [(h, l) for h, l in zip(handles, labels) if h != (None, None)]
@@ -693,14 +689,10 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     # ax.set_yticks(np.arange(-3, 0.2, 0.5))
     
     if compOpt is not None:
-        print("Inside plot_beta, compOpt is not None")
         beta = compOpt.atz_beta(z, compOpt.getparams(compOpt.bf.x)[3])
         ax.plot(z, beta, color='g', zorder=2, dashes=[7,2])
 
     if composite is not None:
-        print("Inside plot_beta, composite is not None")
-
-
         # bf = np.median(composite.samples, axis=0)
         # beta = composite.atz_beta(z, composite.getparams(bf)[3])
         # ax.plot(z, beta, color='k', zorder=2, lw=1)
@@ -715,7 +707,6 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
         
         if sample:
-            print("Inside plot_beta, sample is True")
             nsample = 10000
             np.random.seed()
             rsample = composite.samples[3][np.random.randint(len(composite.samples[3]), size=nsample)]
@@ -742,11 +733,9 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
         # ax.plot(z, beta, color='k', zorder=2, lw=1)
 
     if lfg_break is not None: 
-        print("Inside plot_beta, lfg_break is not None")
         plot_model(lfg_break, 3, ax)
 
     if lfg_polyb is not None: 
-        print("Inside plot_beta, lfg_polyb is not None")
         plot_model_polyb(lfg_polyb, 3, ax)
 
     zmean, zl, zu, u, l, c = getParam(individuals, 3, which='new', dtype='good')
@@ -769,7 +758,6 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
     cfit = False
     if cfit:
-        print("Inside plot_beta, cfit is True")
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 3)
         print(coeffs)
@@ -785,7 +773,6 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
     polyfit = False
     if polyfit:
-        print("Inside plot_beta, polyfit is True")
         zc = np.linspace(0, 7, 500)
         p = np.polyfit(np.log10(zmean+10), c, 2)
         print(p)
@@ -794,7 +781,6 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
 
     curvefit = False
     if curvefit:
-        print("Inside plot_beta, curvefit is True")
         zc = np.linspace(0, 7, 500)
         
         def func(z, h, f0, z0, a, b):

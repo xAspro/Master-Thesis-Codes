@@ -617,73 +617,42 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
 
     """
 
-    # These redshift bins are labelled "bad" and are plotted differently.
+    # These ids were labelled "bad" and were plotted differently.
     # reject = [0, 1, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-
-    # print("\n\nIn individuals_cumulative_multiple")
-    # print("individuals=", individuals)
-    # print("mlim=", mlim)
-    # print("len(individuals)=", len(individuals))
 
     reject = []
 
-    # reject = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
-
-    # print("reject=", reject)
     m = np.ones(len(individuals), dtype=bool)
-    # print("m=", m)
-    # print("m[reject]=", m[reject])
     m[reject] = False
     
     minv = np.logical_not(m)
 
-    # print("reject=", reject)
-    # print("m=", m)
-    # print("len(m)=", len(m))
-
-    # for i, x in enumerate(individuals):
-    #     print("i=", i)
-    #     print("x=", x)
-
-    #     print("i in set(reject)=", i in set(reject))
 
     individuals_good = [x for i, x in enumerate(individuals) if i not in set(reject)]
-    # print("individuals_good=", individuals_good)
     individuals_bad = [x for i, x in enumerate(individuals) if i in set(reject)]
-    # print("individuals_bad=", individuals_bad)
     
     for x in individuals:
         get_rhoqso2(x, mlim, x.z.mean())
-        # print("x=", x)
     
     c = np.array([x.rhoqso[2] for x in individuals_good])
     u = np.array([x.rhoqso[0] for x in individuals_good])
     l = np.array([x.rhoqso[1] for x in individuals_good])
 
-    # print("\n\n\n\n\n\t[u, l, c]=", [u, l, c])
-
     rho = c
     rho_up = np.abs(u - c)
     rho_low = np.abs(c - l)
 
-    # print("[rho_up, rho_low]=", [rho_up, rho_low])
-    # print("rho=", rho)
-
-    with open("check.dat", "w") as fcheck:
-        for i in range(len(c)):
-            fcheck.write(f"{u[i]:.6g} {l[i]:.6g} {c[i]:.6g} {rho_up[i]:.6g} {rho_low[i]:.6g}\n")
-    # import sys; sys.exit(0)
+    # with open("check.dat", "w") as fcheck:
+    #     for i in range(len(c)):
+    #         fcheck.write(f"{u[i]:.6g} {l[i]:.6g} {c[i]:.6g} {rho_up[i]:.6g} {rho_low[i]:.6g}\n")
 
     zs = np.array([x.z.mean() for x in individuals_good])
     uz = np.array([x.zlims[0] for x in individuals_good])
     lz = np.array([x.zlims[1] for x in individuals_good])
-
-    # print("[uz, zs, lz]=", [uz, zs, lz])
     
     uzerr = np.abs(uz - zs)
     lzerr = np.abs(zs - lz)
 
-    # print("[uzerr, lzerr]=", [uzerr, lzerr])
     print("\n*************************************************************\n")
 
     with open(output_data_file, 'a') as f:
@@ -867,8 +836,6 @@ def individuals_cumulative_multiple(ax, individuals, mlim, color, label):
 #     return
 
 def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rhoqso_withGlobal_multiple.pdf'):
-    # bins.py data is individual
-    # c1, c2, c3 are composite models
 
     fig = plt.figure(figsize=(7, 11), dpi=100)
     ax = fig.add_subplot(1, 1, 1)
@@ -881,7 +848,6 @@ def draw_withGlobal_multiple(c1, c2, c3, individuals, select=False, filename='rh
     ax.set_xlim(0.,15)
 
     ax.set_yscale('log')
-    # ax.set_ylim(1.0e-11, 1000000000.0)
     ax.set_ylim(1.0e-10, 1.0e3)
 
     mlim = -18
