@@ -48,6 +48,9 @@ Global_QLF_Estimate_using_logprob.dat
 Global_QLF_Estimate.dat
 *_sample.npy
 *.gif
+smooth_maps/2019+/
+Data_2019+/
+Data_2019+_RAW/
 bins_check.dat
 myfiles.txt
 data_points.dat
