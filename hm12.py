@@ -144,7 +144,7 @@ def plot_dtaudn():
 
     print('z=', z)
     t1 = np.trapezoid(fn, x=np.log(n))
-    print('t1=', t1 )
+    print('t1=', t1)
     
     fn = n * f(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='k', dashes=[7,2])
@@ -158,7 +158,7 @@ def plot_dtaudn():
 
     print('z=', z)
     t1 = np.trapezoid(fn, x=np.log(n))
-    print('t1=', t1 )
+    print('t1=', t1)
     
     fn = n * f(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='r', dashes=[7,2])
@@ -172,7 +172,7 @@ def plot_dtaudn():
 
     print('z=', z)
     t1 = np.trapezoid(fn, x=np.log(n))
-    print('t1=', t1 )
+    print('t1=', t1)
     
     fn = n * f(n, z) * (1.0-np.exp(-n*sigma_HI(nu0)))
     ax.plot(np.log10(n), np.log10(fn), lw=2, c='b', dashes=[7,2])

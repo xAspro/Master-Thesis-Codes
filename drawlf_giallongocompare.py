@@ -198,7 +198,7 @@ def get_lf(lf, sid, z_plot):
     phi = nums
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
-    # print('sid=', sid )
+    # print('sid=', sid)
     # print('mags=', mags)
     # print('nums=', nums)
     # print('total=', np.sum(nums))

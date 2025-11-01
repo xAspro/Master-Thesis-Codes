@@ -108,10 +108,7 @@ def plot_posterior_sample_lfs(lf, ax, maglims, **kwargs):
     up = np.percentile(phi, 15.87, axis=0)
     down = np.percentile(phi, 84.13, axis=0)
         
-    # print("\n\n\n\nup= ", up)
-    # print("\n\n\n\ndown= ", down)
     f = ax.fill_between(mags, down, y2=up, color='#ffbf00', alpha=0.7)
-    # f = ax.fill_between(mags, down, y2=up, color=kwargs['c'], alpha=0.7)
 
     return f
 
@@ -294,13 +291,8 @@ def get_lf(lf, sid, z_plot, special='None'):
     right = h[1][1:] - mags
 
     phi = nums
-    # phi = np.where(phi==0, 1e-150, phi)  # Avoid log10(0)
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
-    # print('sid=', sid )
-    # print('mags=', mags)
-    # print('nums=', nums)
-    # print('total=', np.sum(nums))
 
     # Calculate errorbars on our binned LF.  These have been estimated
     # using Equations 1 and 2 of Gehrels 1986 (ApJ 303 336), as
@@ -310,7 +302,6 @@ def get_lf(lf, sid, z_plot, special='None'):
     # does not say so.
     n = np.histogram(m, bins=bins)[0]
     nlims = pci(n,interval='frequentist-confidence')
-    # nlims = np.where(nlims==0, 1e-150, nlims)
     nlims *= phi/n 
     uperr = np.log10(nlims[1]) - logphi 
     downerr = logphi - np.log10(nlims[0])
@@ -358,7 +349,6 @@ def get_lf_all(lf, sid, z_plot, special='None'):
 
     m = lf.M1450_all[lf.sid_all==sid]
 
-    # print("\n\n\n\n\t\tm= ", m, "\n\n\n\n")
 
     selmaps = [x for x in lf.maps if x.sid == sid]
 
@@ -394,7 +384,6 @@ def get_lf_all(lf, sid, z_plot, special='None'):
     right = h[1][1:] - mags
 
     phi = nums
-    # phi = np.where(phi==0, 1e-150, phi)  # Avoid log10(0)
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
     # Calculate errorbars on our binned LF.  These have been estimated
@@ -405,7 +394,6 @@ def get_lf_all(lf, sid, z_plot, special='None'):
     # does not say so.
     n = np.histogram(m, bins=bins)[0]
     nlims = pci(n,interval='frequentist-confidence')
-    # nlims = np.where(nlims==0, 1e-150, nlims)
     nlims *= phi/n 
     uperr = np.log10(nlims[1]) - logphi 
     downerr = logphi - np.log10(nlims[0])
@@ -450,7 +438,6 @@ def get_lf_sample(lf, sid, z_plot):
     right = h[1][1:] - mags
 
     phi = nums
-    # phi = np.where(phi==0, 1e-150, phi)  # Avoid log10(0)
     logphi = np.log10(phi) # cMpc^-3 mag^-1
 
     # Calculate errorbars on our binned LF.  These have been estimated
@@ -461,7 +448,6 @@ def get_lf_sample(lf, sid, z_plot):
     # does not say so.
     n = np.histogram(m, bins=bins)[0]
     nlims = pci(n,interval='frequentist-confidence')
-    # nlims = np.where(nlims==0, 1e-150, nlims)  # Avoid log10(0)
     nlims *= phi/n 
     uperr = np.log10(nlims[1]) - logphi 
     downerr = logphi - np.log10(nlims[0])
@@ -514,7 +500,6 @@ def plot_giallongo_z4p25(lf, ax, mags):
     return 
 
 def savedata(data):
-    # print("\n\nIn drawlf.py savedata\n")
     zlims = data[0]
     if zlims == (0.1, 0.4):
     # if zlims == (5.5, 6.5):
@@ -551,7 +536,7 @@ def find_bad_points(lf):
     # Pb, Yb, Vb = lf.map_params[-3:]
     # safe_Vb = Vb + epsilon
 
-    updated_data = []
+
     print("lf.data= ", lf.data)
 
     data = lf.data
@@ -575,24 +560,24 @@ def find_bad_points(lf):
 
     # is_bad = log_bad_prob > -0.69  # This is equivalent to 50% in linear scale
     is_bad = log_bad_prob > -0.1  # This is equivalent to 90% in linear scale
-    print("log_bad_prob= ", log_bad_prob, "\texp(log_bad_prob)= ", np.exp(log_bad_prob))
 
-    for i in range(len(sid)):
-        if is_bad[i]:
-            print(f"\nBad point found: sid={sid[i]}, mag={mag[i]}, logphi={logphi[i]}, log_err={log_err}, bad_prob={log_bad_prob[i]}")
-            print("p_fg= ", log_p_fg[i])
-            print("p_bg= ", log_p_bg[i])
-            print("numerator= ", log_numerator[i])
-            print("denominator= ", log_denominator[i])
-            print("Pb= ", Pb)
 
-        else:
-            print(f"\n\nGood point: sid={sid[i]}, mag={mag[i]}, logphi={logphi[i]}, bad_prob={log_bad_prob[i]}")
-            print("p_fg= ", log_p_fg[i])
-            print("p_bg= ", log_p_bg[i])
-            print("numerator= ", log_numerator[i])
-            print("denominator= ", log_denominator[i])
-            print("Pb= ", Pb)
+    # for i in range(len(sid)):
+    #     if is_bad[i]:
+    #         print(f"\nBad point found: sid={sid[i]}, mag={mag[i]}, logphi={logphi[i]}, log_err={log_err}, bad_prob={log_bad_prob[i]}")
+    #         print("p_fg= ", log_p_fg[i])
+    #         print("p_bg= ", log_p_bg[i])
+    #         print("numerator= ", log_numerator[i])
+    #         print("denominator= ", log_denominator[i])
+    #         print("Pb= ", Pb)
+
+    #     else:
+    #         print(f"\n\nGood point: sid={sid[i]}, mag={mag[i]}, logphi={logphi[i]}, bad_prob={log_bad_prob[i]}")
+    #         print("p_fg= ", log_p_fg[i])
+    #         print("p_bg= ", log_p_bg[i])
+    #         print("numerator= ", log_numerator[i])
+    #         print("denominator= ", log_denominator[i])
+    #         print("Pb= ", Pb)
 
     lf.data = lf.data._replace(is_bad=is_bad, bad_prob=np.exp(log_bad_prob))
 
@@ -766,17 +751,6 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         c3bf, = ax.plot(mags, p, color='brown', zorder=5, lw=1)
         
         
-    cs = { 1 : '#1f77b4', # "blue"
-           6 : '#17becf', # "cyan"
-           7 : '#9467bd', # "purple"
-           8 : '#8c564b', # "brown"
-           10 : '#ff7f0e', # "orange"
-           11 : '#7f7f7f', # "grey"
-           13 : '#d62728', # "red"
-           15 : '#2ca02c', # "green"
-           17 : '#bcbd22', # "yellow"
-           18 : '#e377c2' # "pink"
-    }
 
     cs = { 
         1: '#1f77b4',  # blue
@@ -855,43 +829,13 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
 
         mags, left, right, logphi, uperr, downerr = get_lf(lf, i, z_plot)
 
-        # print(mags[logphi>-100.0])
-        # print(logphi[logphi>-100.0])
 
         mask = logphi > -100.0
         data.append([])
         data[cnt].append(dsl(lf, i))
         for j in range(len(mags[mask])):
-            # print(f"\nj = {j} out of {len(mags[mask])}")
-            # print("mags[mask][j]= ", mags[mask][j])
-            # print("logphi[mask][j]= ", logphi[mask][j])
-            # print("right[mask][j]= ", right[mask][j])
-            # print("left[mask][j]= ", left[mask][j])
-            # print("uperr[mask][j]= ", uperr[mask][j])
-            # print("downerr[mask][j]= ", downerr[mask][j])
             data[cnt].append([1, mags[mask][j], logphi[mask][j], right[mask][j], left[mask][j], uperr[mask][j], downerr[mask][j]])
 
-        # print("data[cnt]= ", data[cnt])
-        # print("data= ", data)
-
-
-        # For some reason, the omitted data are not actually omitted. 
-        # Since the data points dont make any sense, they dont show up.
-        # But they are still there in the background.
-        # Theplot could have been done after masking the data points.
-        # mask = logphi > -100.0
-        # mags = mags[mask]
-        # logphi = logphi[mask]
-        # and so on.
-        # If I do this, I need to do the same for rejected bins as well.
-
-        # print("mags= ", mags)
-        # print("left= ", left)
-        # print("right= ", right)
-        
-        # print("logphi= ", logphi)
-        # print("uperr= ", uperr)
-        # print("downerr= ", downerr)
         ax.scatter(mags, logphi, c=cs[i], edgecolor='None', zorder=4, s=20, label=dsl(lf, i))
         ax.errorbar(mags, logphi, ecolor=cs[i], capsize=0,
                     xerr=np.vstack((left, right)), 
@@ -906,23 +850,9 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         
         # For the rejected bins!
         mags_all, left_all, right_all, logphi_all, uperr_all, downerr_all = get_lf_all(lf, i, z_plot)
-        # print(mags_all[logphi_all!=logphi])
-        # print(logphi_all[logphi_all!=logphi])
 
         select = (logphi_all!=logphi)
-        print("select= ", select)
-        # select = (mags_all==mags)
-        # print("select= ", select)
-        # select = (left_all==left)
-        # print("select= ", select)
-        # select = (right_all==right)
-        # print("select= ", select)
-        # select = (uperr_all==uperr)
-        # print("select= ", select)
-        # select = (downerr_all==downerr)
-        # print("select= ", select)
-        # import sys
-        # sys.exit(0)
+
         mags_all = mags_all[select]
         left_all = left_all[select]
         right_all = right_all[select]
@@ -933,12 +863,6 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
         mask = logphi_all > -100.0
 
         for j in range(len(mags_all[mask])):
-            print("mags_all[mask][j]= ", mags_all[mask][j])
-            print("logphi_all[mask][j]= ", logphi_all[mask][j])
-            print("right_all[mask][j]= ", right_all[mask][j])
-            print("left_all[mask][j]= ", left_all[mask][j])
-            print("uperr_all[mask][j]= ", uperr_all[mask][j])
-            print("downerr_all[mask][j]= ", downerr_all[mask][j])
             data[cnt].append([0, mags_all[mask][j], logphi_all[mask][j], right_all[mask][j], left_all[mask][j], uperr_all[mask][j], downerr_all[mask][j]])
 
         if mags_all.any(): 
@@ -950,22 +874,15 @@ def render(ax, lf, composite=None, showMockSample=False, show_individual_fit=Tru
                        zorder=4, s=16, label=dsl(lf, i)+' (rejected bin)')
             
     if includes_bad_points:
-        print("\n\n\n\n\n\n\t\tIncluding bad points in the plot")
-        print("len(lf.data.sid)= ", len(lf.data.sid))
-        print("lf.data= ", lf.data)
-        print("lf.data.is_bad= ", lf.data.is_bad)
         find_bad_points(lf)
-        print("len(lf.data.sid)= ", len(lf.data.sid))
-        print("lf.data= ", lf.data)
-        print("lf.data.is_bad= ", lf.data.is_bad)
         mask = lf.data.is_bad
         sids_unique = np.unique(lf.data.sid[mask])
-        print("sids_unique= ", sids_unique)
+
 
         for sid in sids_unique:
             i = int(sid)
             mask2 = (lf.data.sid == i) & mask
-            print("mask2= ", mask2)
+
             mags, mag_err, logphi, uperr, downerr = lf.data.mag[mask2], lf.data.mag_err[mask2], \
                 lf.data.logphi[mask2], lf.data.uperr[mask2], lf.data.downerr[mask2]
             
@@ -1034,11 +951,9 @@ def draw(lf, composite=None, dirname='', showMockSample=False, show_individual_f
     render(ax, lf, composite=composite, showMockSample=showMockSample,
            show_individual_fit=show_individual_fit, includes_bad_points=includes_bad_points)
 
-    # ax.set_xlim(-12.0, -34.0)
-    # ax.set_ylim(-16.0, 0.0)
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
-    # ax.set_xticks(np.arange(-34,-11, 2))
+
 
     ax.set_xlabel(r'$M_{1450}$')
     ax.set_ylabel(r'$\log_{10}\left(\phi/\mathrm{cMpc}^{-3}\,\mathrm{mag}^{-1}\right)$')

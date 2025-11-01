@@ -129,7 +129,7 @@ assert(np.all(lfi.prior_min_values < lfi.prior_max_values))
     
 lfi.run_mcmc()
 bf = np.median(lfi.samples, axis=0)
-print(bf )
+print(bf)
 
 lfi.get_percentiles()
 

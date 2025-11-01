@@ -66,4 +66,4 @@ for i in range(len(z)-1,-1,-1):
                   g_21[i], dg_21_plus[i], dg_21_minus[i])
 
                   
-    print(s )
+    print(s)

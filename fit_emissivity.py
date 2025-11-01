@@ -56,7 +56,7 @@ def fit(x, y, sigma):
     down = np.percentile(samples, 15.87, axis=0)
     print('down=', down)
     up = np.percentile(samples, 84.13, axis=0)
-    print('up=', up )
+    print('up=', up)
 
     # plt.figure()
     # f = corner.corner(samples, labels=['a', 'b', 'c', 'd', 'e'], truths=bf)

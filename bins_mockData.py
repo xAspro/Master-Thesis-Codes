@@ -86,7 +86,7 @@ def bins(composite):
 
         g = (np.log10(1.e-6), -25.0, -3.0, -1.5)
         b = lfi.bestfit(g, method=method)
-        print(b )
+        print(b)
 
         lfi.prior_min_values = np.array([-14.0, -32.0, -10.0, -4.0])
         zmin, zmax = zl 

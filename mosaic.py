@@ -54,7 +54,7 @@ def plot(lf, ax, composite=None, yticklabels=False, xticklabels=False,
              verticalalignment='center', transform=ax.transAxes, fontsize='10')
 
     if lf.zlims[0] == 4.7:
-        # print(quasar counts manually as code will incorrectly add)
+        # Print quasar counts manually as code will incorrectly add
         # McGreer quasars excluded due to overlap with the Yang data.
         # Expect lf.M1450.size = 263.
         num = r'{:d} ({:d}) quasars'.format(lf.M1450.size, lf.M1450.size)
@@ -62,7 +62,7 @@ def plot(lf, ax, composite=None, yticklabels=False, xticklabels=False,
                  verticalalignment='center', transform=ax.transAxes, fontsize='10')
 
     elif lf.zlims[0] == 2.2:
-        # print(quasar counts manually as code will incorrectly add 5)
+        # Print quasar counts manually as code will incorrectly add 5
         # SDSS DR7 with redshift z = 2.2 to this bin.  These quasars
         # not actually analysed in this bin.  (They are however
         # retained in our global analysis.)  Expect lf.M1450.size =

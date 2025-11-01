@@ -148,18 +148,11 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
             rsample = composite.samples[0][np.random.randint(len(composite.samples[0]), size=nsample)]
             nzs = len(z) 
             phi = np.zeros((nsample, nzs))
-            # print("rsample.shape:", rsample.shape)
-            # import sys; sys.exit(0)
             # phi = composite.atz(z, rsample[0])
 
             for i, theta in enumerate(rsample):
-                # print("theta:", theta)
-                # print("theta.shape:", theta.shape)
                 # params = composite.getparams(theta)
-                # print("params:", params)
                 params = theta[:-3]
-                # print("params:", params)
-                # print("params.shape:", params.shape)
                 phi[i] = composite.atz(z, params) 
                 
             up = np.percentile(phi, 15.87, axis=0)
@@ -167,8 +160,6 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
             ax.fill_between(z, down, y2=up, color='grey', zorder=5, alpha=0.7)
             
         # phi = np.median(phi, axis=0)
-        print("bf:", bf)
-        print("bf[0]:", bf[0])
         phi = composite.atz(z, bf[0])
         ax.plot(z, phi, color='k', zorder=5, lw=1)
 
@@ -207,33 +198,6 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
                 fmt='None', zorder=6)
     ax.scatter(zm, centre, color='#ffffff', edgecolor='grey', zorder=6, s=27)
 
-
-    # # print('zmean:', zmean)
-    # # print('zm:', zm)
-    # # print('len(zmean):', len(zmean))
-    # # print('len(zm):', len(zm))
-    # # print('zm[:10]:', zm[:10])
-    # # print('zmean[:10]:', zmean[:10])
-    # print('c:', c)
-    # print('centre:', centre)
-    # # print('min(zmean[:10]):', np.min(zmean[:10]))
-    # # print('max(zmean[:10]):', np.max(zmean[:10]))
-    # # print('min(zm):', np.min(zm))
-    # # print('max(zm):', np.max(zm))
-    # print('min(c):', np.min(c))
-    # print('max(c):', np.max(c))
-    
-    
-    # print()
-    # print("Good data:")
-    # for i in range(len(zmean)):
-    #     print(f"{i}: {zmean[i]}, {c[i]}")
-    # print()
-    # print()
-
-
-    # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
-    # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = zmin
     xlim_r = zmax
     ax.set_xlim(xlim_l, xlim_r)
@@ -250,7 +214,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
         print("Using Chebyshev fit for phi*")
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 2)
-        print(coeffs )
+        print(coeffs)
         # plt.plot(zc, T(coeffs)(zc+1), lw=1, c='k', dashes=[7,2],
         #          label='Least-square Chebyshev French curve', zorder=3)
 
@@ -283,8 +247,6 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False, 
     #             fmt='None', zorder=4)
     # ax.scatter(zm, cm, color='#ffffff', edgecolor='grey', zorder=4, s=30)
 
-    # ax.set_xticks((0,1,2,3,4,5,6,7))
-    # ax.set_xticks((0,1,2,3,4,5,6,7,8,9,10,11,12))
     ax.set_ylabel(r'$\log_{10}\left(\phi_*/\mathrm{mag}^{-1}'+
                   r'\mathrm{cMpc}^{-3}\right)$')
     ax.yaxis.labelpad = 8
@@ -312,9 +274,6 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     ax.yaxis.tick_right()
     ax.yaxis.set_ticks_position('both')
     ax.yaxis.set_label_position('right')
-    # ax.set_xlim(zmin, zmax)
-    # ax.set_ylim(-32, -20)
-    # ax.set_yticks(np.arange(-32, -19, 2))
 
     if compOpt is not None:
         M = compOpt.atz(z, compOpt.getparams(compOpt.bf.x)[1])
@@ -332,20 +291,12 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
             M = np.zeros((nsample, nzs))
 
             for i, theta in enumerate(rsample):
-                # print('theta:', theta)
-                # print("theta.shape:", theta.shape)
                 # params = composite.getparams(theta)
                 params = theta[:-3]
-                print('params:', params)
                 M[i] = composite.atz(z, params) 
                 
             up = np.percentile(M, 15.87, axis=0)
             down = np.percentile(M, 84.13, axis=0)
-            print("\n\n\n\n\n\n")
-            print('up:', up)
-            print('down:', down)
-            print("M:", M)
-            print("\n\n\n\n\n\n")
             ax.fill_between(z, down, y2=up, color='grey', zorder=5, alpha=0.7)
 
             
@@ -389,8 +340,6 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     if cfit:
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 1)
-        print('cm=', coeffs)
-        # plt.plot(zc, T(coeffs)(zc+1), lw=1, c='k', dashes=[7,2], zorder=3) 
 
         def func(z, p0, p1):
             return T([p0, p1])(z)
@@ -412,32 +361,6 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
     ax.scatter(zm, centre, color='#ffffff', edgecolor='grey', zorder=6, s=27, label='excluded data')
         
 
-    # print('zmean:', zmean)
-    # print('zm:', zm)
-    # print('len(zmean):', len(zmean))
-    # print('len(zm):', len(zm))
-    # print('zm[:10]:', zm[:10])
-    # print('zmean[:10]:', zmean[:10])
-    # print('c:', c)
-    # print('centre:', centre)
-    # # print('min(zmean[:10]):', np.min(zmean[:10]))
-    # # print('max(zmean[:10]):', np.max(zmean[:10]))
-    # # print('min(zm):', np.min(zm))
-    # # print('max(zm):', np.max(zm))
-    # print('min(c):', np.min(c))
-    # print('max(c):', np.max(c))
-    
-    
-    # print()
-    # print("Good data:")
-    # for i in range(len(zmean)):
-    #     print(f"{i}: {zmean[i]}, {c[i]}")
-    # print()
-    # print()
-
-
-    # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
-    # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = zmin
     xlim_r = zmax
     ax.set_xlim(xlim_l, xlim_r)
@@ -471,7 +394,6 @@ def plot_m_star(fig, composite, individuals=None, compOpt=None, sample=False, lf
         print(popt)
         plt.plot(zc, func(zc, *popt), lw=1, c='r', dashes=[7,2])
         
-    # ax.set_xticks((0,1,2,3,4,5,6,7))
     ax.set_ylabel(r'$M_*$')
     ax.yaxis.labelpad = 12
     ax.set_xticklabels('')
@@ -592,32 +514,6 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     ax.scatter(zm, centre, color='#ffffff', edgecolor='grey', zorder=6, s=27)
 
 
-    # print('zmean:', zmean)
-    # print('zm:', zm)
-    # print('len(zmean):', len(zmean))
-    # print('len(zm):', len(zm))
-    # print('zm[:10]:', zm[:10])
-    # print('zmean[:10]:', zmean[:10])
-    # print('c:', c)
-    # print('centre:', centre)
-    # # print('min(zmean[:10]):', np.min(zmean[:10]))
-    # # print('max(zmean[:10]):', np.max(zmean[:10]))
-    # # print('min(zm):', np.min(zm))
-    # # print('max(zm):', np.max(zm))
-    # print('min(c):', np.min(c))
-    # print('max(c):', np.max(c))
-    
-    
-    # print()
-    # print("Good data:")
-    # for i in range(len(zmean)):
-    #     print(f"{i}: {zmean[i]}, {c[i]}")
-    # print()
-    # print()
-
-
-    # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
-    # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = zmin
     xlim_r = zmax
     ax.set_xlim(xlim_l, xlim_r)
@@ -642,28 +538,18 @@ def plot_alpha(fig, composite, individuals=None, compOpt=None, sample=False, lfg
     handles.append((m3f,m3))
     labels.append('Model 3')
 
-    # # Print the initial handles and labels
-    # print("Initial handles:", handles)
-    # print("Initial labels:", labels)
 
-    # Filter out (None, None) entries
     filtered_handles_labels = [(h, l) for h, l in zip(handles, labels) if h != (None, None)]
     handles, labels = zip(*filtered_handles_labels) if filtered_handles_labels else ([], [])
 
-    # Convert single-element tuples to lists
     handles = list(handles)
     labels = list(labels)
-
-    # Print the filtered handles and labels
-    print("\nFiltered handles:", handles)
-    print("Filtered labels:", labels)
 
     plt.legend(handles, labels, loc='upper right', fontsize=10,
                handlelength=3, frameon=False, framealpha=0.0,
                labelspacing=.1, handletextpad=0.3, borderpad=0.1,
                scatterpoints=1)
 
-    # ax.set_xticks((0,1,2,3,4,5,6,7))
     ax.set_ylabel(r'$\alpha$ (bright-end slope)')
     ax.set_xlabel('$z$')
 
@@ -682,11 +568,6 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     ax.yaxis.tick_right()
     ax.yaxis.set_ticks_position('both')
     ax.yaxis.set_label_position('right')
-    # ax.set_xlim(zmin, zmax)
-    # ax.set_ylim(-3, 0)
-    # ax.set_ylim(min(-3, np.min(individuals[0].beta[1]), np.min(individuals[0].beta[2])),
-                # max(0, np.max(individuals[0].beta[1]), np.max(individuals[0].beta[2])))
-    # ax.set_yticks(np.arange(-3, 0.2, 0.5))
     
     if compOpt is not None:
         beta = compOpt.atz_beta(z, compOpt.getparams(compOpt.bf.x)[3])
@@ -760,23 +641,21 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     if cfit:
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 3)
-        print(coeffs)
-        # plt.plot(zc, T(coeffs)(zc+1), lw=1, c='k', dashes=[7,2], zorder=3)
+
 
         def func(z, p0, p1, p2, p3):
                 return T([p0, p1, p2, p3])(z)
 
         sigma = u - l 
         popt, pcov = curve_fit(func, zmean+1, c, sigma=sigma, p0=[coeffs])
-        print('cb=', popt)
+
         plt.plot(zc, func(zc+1, *popt), lw=1, c='r', dashes=[7,2])
 
     polyfit = False
     if polyfit:
         zc = np.linspace(0, 7, 500)
         p = np.polyfit(np.log10(zmean+10), c, 2)
-        print(p)
-        # plt.plot(zc, np.polyval(p, np.log10((zc+1))), lw=1, c='k', dashes=[7,2], zorder=3)
+
         plt.plot(zc, np.polyval(p, np.log10((zc+10))), lw=1, c='k', dashes=[7,2], zorder=3)
 
     curvefit = False
@@ -788,9 +667,8 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
             return h + f0/(10.0**(a*zeta) + 10.0**(b*zeta))
 
         sigma = u - l 
-        #popt, pcov = curve_fit(func, zmean, c, sigma=sigma, p0=[-4,4.2,2.0,1.4,-0.7])
         popt, pcov = curve_fit(func, zmean, c, sigma=sigma, p0=[-4,4.2,4.0,1.4,-0.7])
-        print(popt)
+
         plt.plot(zc, func(zc, *popt), lw=1, c='k', dashes=[7,2])
 
     zm, zl, zu, u, l, centre = getParam(individuals, 3, which='new', dtype='bad')
@@ -804,32 +682,6 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
                 fmt='None', zorder=6)
     ax.scatter(zm, centre, color='#ffffff', edgecolor='grey', zorder=6, s=27)
 
-    # print('zmean:', zmean)
-    # print('zm:', zm)
-    # print('len(zmean):', len(zmean))
-    # print('len(zm):', len(zm))
-    # print('zm[:10]:', zm[:10])
-    # print('zmean[:10]:', zmean[:10])
-    # print('c:', c)
-    # print('centre:', centre)
-    # # print('min(zmean[:10]):', np.min(zmean[:10]))
-    # # print('max(zmean[:10]):', np.max(zmean[:10]))
-    # # print('min(zm):', np.min(zm))
-    # # print('max(zm):', np.max(zm))
-    # print('min(c):', np.min(c))
-    # print('max(c):', np.max(c))
-    
-    
-    # print()
-    # print("Good data:")
-    # for i in range(len(zmean)):
-    #     print(f"{i}: {zmean[i]}, {c[i]}")
-    # print()
-    # print()
-
-
-    # xlim_l = min(np.min(zmean[:10]),np.min(zm[:10]))-1
-    # xlim_r = max(np.max(zmean[:10]),np.max(zm[:10]))+1
     xlim_l = zmin
     xlim_r = zmax
     ax.set_xlim(xlim_l, xlim_r)
@@ -847,10 +699,7 @@ def plot_beta(fig, composite, individuals=None, compOpt=None, sample=False, lfg_
     # ax.errorbar(zm, cm, ecolor='grey', capsize=0,
     #             yerr=np.vstack((downerr, uperr)),
     #             fmt='None', zorder=4)
-    # ax.scatter(zm, cm, color='#ffffff', edgecolor='grey', zorder=4, s=30)
     
-    # ax.set_xticks((0,1,2,3,4,5,6,7))
-    # ax.set_xticks((0,1,2,3,4,5,6,7,8,9,10,11,12))
     ax.set_ylabel(r'$\beta$ (faint-end slope)')
     ax.set_xlabel('$z$')
 

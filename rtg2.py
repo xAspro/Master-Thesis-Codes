@@ -489,7 +489,7 @@ def j(emodel, loglf=None, theta=None, dz=0.1, n_ws=200, n_ws_int=100, zmax=7.0):
     gs = []
 
     print('zmax=', zmax)
-    print('zmin=', zmin )
+    print('zmin=', zmin)
     
     for z in zs:
 
@@ -1101,7 +1101,7 @@ def draw_g(lfg, z2=None, g2=None, individuals=None):
     g = np.zeros((nsample, nzs))
 
     for i, x in enumerate(rsample):
-        print(i )
+        print(i)
         z, g[i] = j(emissivity, loglf=lfg.log10phi, theta=x, zmax=zmax)
 
     up = np.percentile(g, 15.87, axis=0)/1.0e-12

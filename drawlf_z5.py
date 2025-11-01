@@ -130,7 +130,7 @@ def get_lf(lf, z_plot, sids):
     # does not say so.
     n = np.histogram(m,bins=bins)[0]
 
-    print(n )
+    print(n)
 
     nlims = pci(n,interval='frequentist-confidence')
     nlims *= phi/n 
@@ -138,7 +138,7 @@ def get_lf(lf, z_plot, sids):
     downerr = logphi - np.log10(nlims[0])
 
     print(mags)
-    print(logphi )
+    print(logphi)
 
     return mags, left, right, logphi, uperr, downerr
 

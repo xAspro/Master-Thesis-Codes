@@ -109,7 +109,7 @@ def get_lf(zrange, bins, old=True):
 
     n = np.histogram(m,bins=bins)[0]
 
-    print(n )
+    print(n)
 
     nlims = pci(n,interval='frequentist-confidence')
     nlims *= phi/n 

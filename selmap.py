@@ -81,7 +81,7 @@ Mbright = -16
 Mfaint = -32 
 
 print('Using zmin = {:g} and zmax = {:g}'.format(zmin, zmax))
-print('Using Mbright = {:g} and Mfaint = {:g}'.format(Mbright, Mfaint) )
+print('Using Mbright = {:g} and Mfaint = {:g}'.format(Mbright, Mfaint))
 
 plot_selmap(z, m, p, title='2SLAQ NGP', filename='Selmap_Plots/selmap_ngp3.pdf',
             show_qsos=True, qso_file=qso_file)

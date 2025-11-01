@@ -186,5 +186,5 @@ lfi.chains()
 
 lfi.draw(lfi.z.mean(),plotlit=False)
 
-# print('WIAC=', waic.waic(lfi) )
+# print('WIAC=', waic.waic(lfi))
 

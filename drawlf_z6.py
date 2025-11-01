@@ -89,7 +89,7 @@ def get_lf(lf, z_plot, sids):
 
     m1 = np.concatenate((m[:2],m[3:6]))
     v1 = np.array([volm(x, msel, psel, vol, zsel) for x in m1])
-    print('v1=', v1 )
+    print('v1=', v1)
 
     # Jiang 2009
     area = 195.0 # deg^2
@@ -136,7 +136,7 @@ def get_lf(lf, z_plot, sids):
     # right = b[1:] - mags
     
     print(mags)
-    print(phi )
+    print(phi)
     
     return mags, left, right, logphi, uperr, downerr
 

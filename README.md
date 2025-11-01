@@ -51,6 +51,7 @@ The primary goal was to modernize the codebase, incorporate a more flexible stat
 2. **Documentation and Code Comments**  
    - Partial documentation has been added across several files to clarify functionality and data flow.  
    - Some sections still contain redundant or commented-out code blocks retained from intermediate testing stages. These can be cleaned or consolidated as development continues.
+   - Full documentation can be added in future development phases to ensure consistency and maintainability.
 
 3. **Mixture-Model Framework Integration**  
    - Implemented a mixture model following the approach of *Hogg et al., “Data Analysis Recipes: Fitting a Model to Data”* to handle unknown uncertainties and systematic effects in luminosity function fitting.  

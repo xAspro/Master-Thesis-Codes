@@ -57,8 +57,26 @@ def getselfn(selfile):
     return z, mag, p, dz, dm 
 
 def getqlums(lumfile):
+    """
+    Read quasar luminosities.
+    
+    Parameters
+    ----------
+    - lumfile : str
+        File path to the luminosity data.
 
-    """Read quasar luminosities."""
+    Returns
+    -------
+    - z : numpy.ndarray
+        Array of redshift values.
+
+    - mag : numpy.ndarray
+        Array of magnitude values.
+
+    - p : numpy.ndarray
+        Array of selection probability values.
+
+    """
 
     z, mag, p, area, sample_id = np.loadtxt(lumfile, usecols=(1,2,3,4,5),
                                             unpack=True)
@@ -133,28 +151,28 @@ class selmap:
 
     Attributes
     ----------
-    z : numpy.ndarray
+    - z : numpy.ndarray
         Array of redshift values.
 
-    m : numpy.ndarray
+    - m : numpy.ndarray
         Array of magnitude values.
 
-    p : numpy.ndarray
+    - p : numpy.ndarray
         Array of selection probability values.
 
-    dz : numpy.ndarray
+    - dz : numpy.ndarray
         Array of redshift bin widths.
 
-    dm : numpy.ndarray
+    - dm : numpy.ndarray
         Array of magnitude bin widths.
 
-    area : float
+    - area : float
         Area of survey for the selection map.
 
-    sid : int
+    - sid : int
         Identifier or index for the selection map.
 
-    volume : numpy.ndarray
+    - volume : numpy.ndarray
         Array of comoving volume elements.
     
     """
@@ -176,12 +194,6 @@ class selmap:
         """
 
         self.z, self.m, self.p, self.dz, self.dm  = getselfn(selection_map_file)
-
-        # self.dz = dz
-        # self.dm = dm 
-        # print('dz={:.3f}, dm={:.3f}, sample_id={:d}'.format(dz, dm, sample_id))
-        # print('sample_id={:d}'.format(sample_id))
-        # print('size of z: ', self.z.size, '\n')
 
         self.sid = sample_id 
 
@@ -319,14 +331,10 @@ class lf:
             z, m, p = getqlums(datafile)
             try:
                 self.z=np.append(self.z,z)
-                # print('\n\n\n\t\tsize of z: ', z.size)
-                # print('\n\n\n\t\tshape of z: ', z.shape)
                 self.M1450=np.append(self.M1450,m)
                 self.p=np.append(self.p,p)
             except(AttributeError):
                 self.z=z
-                # print('\n\n\n\t\t\tsize of single z: ', z.size)
-                # print('\n\n\n\t\t\tshape of single z: ', z.shape)
                 self.M1450=m
                 self.p=p
 
@@ -334,11 +342,31 @@ class lf:
 
         return
 
+    # def atz(self, z, p):
+        # """
+        # Creates a Chebyshev polynomial for redshift evolution of 
+        # QLF parameters (p), and evaluates it at '1+z'.
+        # Equation 16 of Kulkarni 2019.
+
+        # Parameters
+        # ----------
+        # - z : numpy.ndarray
+        #     Array of redshift values.
+
+        # - p : numpy.ndarray
+        #     Array of parameters.
+
+        # Returns
+        # -------
+        # - (numpy.ndarray) Array of QLF parameters.
+        # """
+
+        # return T(p)(1+z)
+
     def atz(self, z, p):
         """
-        Creates a Chebyshev polynomial for redshift evolution of 
-        QLF parameters (p), and evaluates it at '1+z'.
-        Equation 16 of Kulkarni 2019.
+        Creates a Polynomial Model for redshift evolution of
+        QLF parameters (p), and evaluates it at 'z'.
 
         Parameters
         ----------
@@ -353,13 +381,35 @@ class lf:
         - (numpy.ndarray) Array of QLF parameters.
         """
         return np.polyval(p, z)
-        # return T(p)(1+z)
+        
     
+    # def atz_beta(self, z, p):
+    #     """
+    #     Creates a Double Power Law for redshift evolution of beta,
+    #     and calculated the value at the given data points.
+    #     Equation 17 of Kulkarni 2019.
+
+    #     Parameters
+    #     ----------
+    #     - z : numpy.ndarray
+    #         Array of redshift values.
+
+    #     - p : numpy.ndarray
+    #         Array of parameters.
+
+    #     Returns
+    #     -------
+    #     - (numpy.ndarray) Array of parameters for beta.
+    #     """
+
+        # h, f0, z0, a, b = p 
+        # zeta = np.log10((1.0+z)/(1.0+z0))
+        # return h + f0/(10.0**(a*zeta) + 10.0**(b*zeta))
+
     def atz_beta(self, z, p):
         """
-        Creates a Double Power Law for redshift evolution of beta,
-        and calculated the value at the given data points.
-        Equation 17 of Kulkarni 2019.
+        Creates a Polynomial Model for redshift evolution of beta,
+        and evaluates it at 'z'.
 
         Parameters
         ----------
@@ -373,11 +423,6 @@ class lf:
         -------
         - (numpy.ndarray) Array of parameters for beta.
         """
-
-        # h, f0, z0, a, b = p 
-        # zeta = np.log10((1.0+z)/(1.0+z0))
-        # return h + f0/(10.0**(a*zeta) + 10.0**(b*zeta))
-    
         return np.polyval(p, z)
     
     # def atz_beta2(self, z, p):
@@ -889,28 +934,30 @@ class lf:
         with open(filename, 'r') as f:
             print(f"Reading parameters from {filename}...")
             for line in f:
-                # print(line)
                 line = line.strip()
+
                 # Skip comments and empty lines
                 if not line or line.startswith('#'):
                     continue
-                # print(f"Processing line: {line}")
+
                 # Split by the two '|' separators
                 if line.count('|') == 2:
-                    # print(f"Line has 2 '|' separators: {line}")
                     parts = line.split('|')
                     left = parts[0].strip()
                     middle = parts[1].strip()
                     right = parts[2].strip()
+
                     # left: zmean
                     z = float(left)
                     # middle: 4 parameter values
                     vals = [float(x) for x in middle.split()]
                     # right: 4 pairs of intervals (lower upper for each param)
                     right_parts = right.split()
+
                     interval_pairs = []
                     for i in range(0, 8, 2):
                         interval_pairs.append([float(right_parts[i]), float(right_parts[i+1])])
+
                     zmean.append(z)
                     values.append(vals)
                     intervals.append(interval_pairs)
@@ -919,7 +966,6 @@ class lf:
         zmean = np.array(zmean)
         values = np.array(values)
         intervals = np.array(intervals)  # shape (N, 4, 2)
-        # print(f"zmean shape: {zmean.shape}, values shape: {values.shape}, intervals shape: {intervals.shape}")
 
         ret = []
         for i in range(len(zmean)):
@@ -953,44 +999,16 @@ class lf:
             Function to evaluate the fitted polynomial.
         """
         x, y = data
-        # Fit using weighted least squares
         
-        # # Fit Chebyshev polynomial (automatically scales x to [-1, 1])
-        # cheb_fit = T.fit(x, y, degree, w=1.0/err)
-        # # cheb_fit is a callable polynomial function
-        # poly_fn = cheb_fit
-        # coeffs = cheb_fit.coef  # Chebyshev coefficients
-
-        # # Plot the data points with error bars and the best-fit polynomial curve
-        # plt.figure(figsize=(8, 5))
-        # plt.errorbar(x, y, yerr=err, fmt='o', label='Data', capsize=3)
-        # x_fit = np.linspace(np.min(x), np.max(x), 200)
-        # y_fit = poly_fn(x_fit)
-        # plt.plot(x_fit, y_fit, 'r-', label='Best-fit polynomial')
-
-        # # Estimate 1-sigma error band for the fit using covariance matrix
-        # # (np.polyfit does not return cov by default, so we use a simple MC approach)
-        # n_mc = 1000
-        # mc_curves = []
-        # for _ in range(n_mc):
-        #     y_mc = y + np.random.normal(0, err)
-        #     cheb_mc = T.fit(x, y_mc, degree, w=1.0/err)
-        #     mc_curves.append(cheb_mc(x_fit))  # Use the Chebyshev object directly
-        # mc_curves = np.array(mc_curves)
-        # y_std = np.std(mc_curves, axis=0)
-
-        # Fit normal polynomial (monomial basis)
         coeffs = np.polyfit(x, y, degree, w=1.0/err)
         poly_fn = np.poly1d(coeffs)
 
-        # Plot the data points with error bars and the best-fit polynomial curve
         plt.figure(figsize=(8, 5))
         plt.errorbar(x, y, yerr=err, fmt='o', label='Data', capsize=3)
         x_fit = np.linspace(np.min(x), np.max(x), 200)
         y_fit = poly_fn(x_fit)
         plt.plot(x_fit, y_fit, 'r-', label='Best-fit polynomial')
 
-        # Estimate 1-sigma error band for the fit using covariance matrix
         n_mc = 1000
         mc_curves = []
         for _ in range(n_mc):
@@ -1015,18 +1033,8 @@ class lf:
     def logprior_for_1_param(self, theta):
         arr = theta[:-3]
         Pb, Yb, Vb = theta[-3:]
-        # if np.any((-50 > arr) | (arr > 50)):
-        #     return -np.inf
-        # x2 = arr[0]
-        # x1 = arr[1]
-        # x0 = arr[2]
-        # if not ((-50 < x2 < 50) and (-50 < x1 < 50) and (-50 < x0 < 50)):
-        #     return -np.inf
-        # if (np.any((-50 > arr) | (arr > 50))):
         if (np.any((-50 > arr) | (arr > 7))): # for beta and alpha
             return -np.inf
-        # if (np.any((-40 > arr) | (arr > 5))): ## FOR m_star
-        #     return -np.inf
         if not ((0 < Pb < 1) and (0 < Vb < 1e2) and (-1e2 < Yb < 1e2)):
             return -np.inf
         
@@ -1037,15 +1045,8 @@ class lf:
                 return -np.inf
         else:
             if np.any((arr < self.coeff - self.min_rnge) | (arr > self.coeff + self.max_rnge)):
-                # print("\n\nself.min_rnge = ", self.min_rnge)
-                # print("self.max_rnge = ", self.max_rnge)
-                # print("self.coeff = ", self.coeff)
-                # print("self.coeff - self.min_rnge = ", self.coeff - self.min_rnge)
-                # print("self.coeff + self.max_rnge = ", self.coeff + self.max_rnge)
-                # print("arr = ", arr)
                 return -np.inf
         
-        # print("Prior tag =", self.prior_tag)
         if self.prior_tag == 1:
             # print("Returning 0 for prior tag 1")
             return 0.0
@@ -1072,18 +1073,6 @@ class lf:
         lnL = np.sum(np.logaddexp(a, b))
 
         if np.isnan(lnL):
-            print("\nNaN in loglike_for_1_param")
-            print("Pb =", Pb)
-            print("Yb =", Yb)
-            print("Vb =", Vb)
-            print("safe_sig2 =", safe_sig2)
-            print("safe_Vb =", safe_Vb)
-            print("logforeground_model =", logforeground_model)
-            print("logbackground_model =", logbackground_model)
-            print("a =", a)
-            print("b =", b)
-            print("lnL =", lnL)
-            print()
             return -np.inf
 
         return lnL
@@ -1147,25 +1136,16 @@ class lf:
         self.max_rnge = None
 
         if label == 'logphi':
-            # self.rnge = 2
-            # self.rnge = np.array([1.5, 1, 1.5])
             self.min_rnge = np.array([0.25, 0.25, 1.75])
             self.max_rnge = np.array([0.25,1.25, -0.2])
 
         elif label == 'M_star':
-            # self.rnge = 6.5
-            # self.rnge = 4
             self.min_rnge = np.array([0.3, 2, 2, 5])
             self.max_rnge = np.array([0.3, 0.5, 4.5, 0.5])
         elif label == 'alpha':
-            # self.rnge = 0.35
             self.rnge = np.array([0.15, 0.75, 1])
         elif label == 'beta':
             self.rnge = 0.25
-            # self.rnge = 2
-
-        # print(f"coeff = {coeff}, min_rnge = {self.min_rnge}, max_rnge = {self.max_rnge}")
-        # print(f"coeff - min_rnge = {coeff - self.min_rnge}, coeff + max_rnge = {coeff + self.max_rnge}")
 
         pos_all = []
         for _ in range(n_visualize):
@@ -1232,7 +1212,7 @@ class lf:
             upper = 100 * (1 + q) / 2
             return np.percentile(samples, [lower, upper], axis=0).T
 
-        # Example usage: print 95% credible intervals for each parameter
+
         bounds = central_bounds(samples, q=1)
         for i, (lo, hi) in enumerate(bounds):
             print(f"Param {i}: {lo:.4f} to {hi:.4f} (central 95%)")
@@ -1244,7 +1224,7 @@ class lf:
                       fill_contours=True,
                       plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
-        # plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
+
         plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Orignal.png')
         plt.close()
 
@@ -1255,7 +1235,7 @@ class lf:
                       fill_contours=True,
                       plot_datapoints=False,
                       show_titles=True, title_kwargs={"fontsize": 12})
-        # plt.suptitle(f'Prior tag: {self.prior_tag}', fontsize=14)
+
         plt.savefig(f'mcmc-{label}_results_{self.prior_tag}_Clean.png')
         plt.close()
 
@@ -1433,14 +1413,7 @@ class lf:
         - is_bad : array-like
             Boolean array indicating which points are considered "bad".
         """
-        # print("degree= ", degree)
-        # print("map_params.shape= ", map_params.shape)
-        # print("map_params= ", map_params)
-        # print("x.shape= ", x.shape)
-        # print("y.shape= ", np.array(y).shape)
-        # print("x= ", x)
-        # print("y= ", y)
-        # import sys; sys.exit("\n\nTesting find_bad_points")
+
         nuisance_params = map_params[-3:]  # Last three parameters are Pb, Yb, Vb
         map_params = map_params[:-3]  # Exclude nuisance parameters for polynomial fit
         # poly_fn = T(map_params[:degree+1])
@@ -1618,40 +1591,10 @@ class lf:
         alpha = self.atz(z, params[2])
         beta = self.atz_beta(z, params[3])
 
-        # print("theta = ", theta)
-
-        # print("alpha = ", alpha)
-        # print("beta = ", beta)
         alpha_atz6 = self.atz(6.0, alpha) 
 
         Pb, Yb, Vb = theta[-3:]
 
-
-
-        # print("theta: ", theta)
-        # print("min prior: ", self.min_prior_full)
-        # print("max prior: ", self.max_prior_full)
-        # print("theta[:-3]>self.min_prior_full[:-3]: ", theta[:-3] > self.min_prior_full[:-3])
-        # print("theta[:-3]<self.max_prior_full[:-3]: ", theta[:-3] < self.max_prior_full[:-3])
-        # print("np.all(theta[:-3] > self.min_prior_full[:-3]): ", np.all(theta[:-3] > self.min_prior_full[:-3]))
-        # print("np.all(theta[:-3] < self.max_prior_full[:-3]): ", np.all(theta[:-3] < self.max_prior_full[:-3]))
-        
-        # import sys; sys.exit("Testing log_prior_full")
-
-
-
-        # if np.any(alpha > beta):
-        #     print("Alpha is greater than Beta")
-        #     return -np.inf
-
-
-        # if np.any(alpha < beta):
-        #     print("Alpha is greater than Beta")
-        #     return -np.inf
-        
-        # if np.any(beta > 0):
-        #     print("Beta is greater than 0")
-        #     return -np.inf
         
         if Pb < 0 or Pb > 1:
             print("Pb is out of bounds")
@@ -1665,81 +1608,20 @@ class lf:
             print("Vb is out of bounds")
             return -np.inf
         
-        # print("Returning 0!!")
         return 0.0 
-        # Sample Pb from a beta distribution with alpha=2, beta=6
-        # return beta_dist.pdf(Pb, a=2, b=6)
-
-        if (np.all(theta[:-3] > self.min_prior_full[:-3]) and
-            np.all(theta[:-3] < self.max_prior_full[:-3])):
-
-            # if np.any(alpha > beta):
-            #     print("Alpha is greater than Beta")
-            #     return -np.inf
-
-            if np.any(alpha > beta):
-                print("Alpha is greater than Beta")
-                return -np.inf
-            
-            # if np.any(beta > 0):
-            #     print("Beta is greater than 0")
-            #     return -np.inf
-            
-            if Pb < 0 or Pb > 1:
-                print("Pb is out of bounds")
-                return -np.inf
-            
-            if Yb < -100 or Yb > 100:
-                print("Yb is out of bounds")
-                return -np.inf
-            
-            if Vb < 0 or Vb > 100:
-                print("Vb is out of bounds")
-                return -np.inf
-            
-            # print("Returning 0!!")
-            return 0.0 
-            # Sample Pb from a beta distribution with alpha=2, beta=6
-            # return beta_dist.pdf(Pb, a=2, b=6)
-        
-        print("Prior out of bounds")
-        return -np.inf
         
     def log10phi_full(self, theta, mag, z):
         """
         Calculate the log10 of the QLF for the full dataset.
         """
-        # print("theta = ", theta)
-        params = self.getparams(theta)
-        # print("params = ", params)
-        # import sys; sys.exit("Testing log10phi_full")
 
-        # print("params = ", params)
+        params = self.getparams(theta)
 
         log10phi_star = self.atz(z, params[0])
         M_star = self.atz(z, params[1])
         alpha = self.atz(z, params[2])
         beta = self.atz_beta(z, params[3])
-        # Already removed nuisance parameters from theta
-        # Pb, Yb, Vb = params[-3:]
-
-
-
-        # print("\nlog10phi_star = ", log10phi_star)
-        # print("M_star = ", M_star)
-        # print("alpha = ", alpha)
-        # print("beta = ", beta)
         
-
-        # print(f"log10phi_star = {log10phi_star}, M_star = {M_star}, alpha = {alpha}, beta = {beta}")
-        # # print(f"mag = {mag}, z = {z}")
-        # print(f"shape of mag = {mag.shape}, shape of z = {z.shape}")
-
-        # print(f"shape of log10phi_star = {log10phi_star.shape}, shape of M_star = {M_star.shape}")
-        # print(f"shape of alpha = {alpha.shape}, shape of beta = {beta.shape}")
-        # print(f"shape of M_star = {M_star.shape}, shape of mag = {mag.shape}")
-
-        # import sys; sys.exit("Testing log10phi_full")
 
         ln10 = np.log(10)
 
@@ -1751,9 +1633,6 @@ class lf:
 
         log10phi = log10_num - log10_den
 
-        # print(f"log10phi shape = {log10phi.shape}, mag shape = {mag.shape}, z shape = {z.shape}")
-        
-        # import sys; sys.exit("Testing log10phi_full")
         return log10phi
 
     def neg_log_like_full(self, theta, data_full):

@@ -125,7 +125,7 @@ def plot_phi_star(fig, composite, individuals=None, compOpt=None, sample=False):
     if cfit:
         zc = np.linspace(0, 7, 500)
         coeffs = chebfit(zmean+1, c, 2)
-        print(coeffs )
+        print(coeffs)
         # plt.plot(zc, T(coeffs)(zc+1), lw=1, c='k', dashes=[7,2],
         #          label='Least-square Chebyshev French curve', zorder=3)
 

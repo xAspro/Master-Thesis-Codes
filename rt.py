@@ -124,7 +124,7 @@ def j2(nu0, z0, zmax=6.0):
     return r[0]/(4.0*np.pi)   # ergs/s/Mpc^2/Hz/sr 
 
 # x = j(3.29e15, 2.0, dz=0.1)
-# print(x )
+# print(x)
 
 def gamma_HI(z, numax=1.0e18, dnu=0.1):
 
